@@ -1,0 +1,28 @@
+<html>
+<head>
+  <link rel="stylesheet" href="./index.css" />
+</head>
+<body>
+  <script src="./elm-canvas.js"></script>
+
+  <elm-canvas>
+    <canvas height="500" width="500" style="border: 2px solid red"></canvas>
+  </elm-canvas>
+
+  <script>
+    const canvas = document.querySelector('elm-canvas')
+
+    let time = performance.now()
+    let i = 0
+    requestAnimationFrame(function render (now) {
+      let delta = now - time
+      time = now
+      canvas.cmds = [
+        {type: "field", name: "fillStyle", value: "green"},
+        {type: "function", name: "fillRect", args: [i, i, 2, 2]}]
+      i += delta;
+      requestAnimationFrame(render)
+    })
+  </script>
+</body>
+</html>
