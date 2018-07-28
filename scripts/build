@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for f in src/Examples/*.elm; do
+  elm make "$f" --output "./public/$(basename "$f" .elm).js"
+done

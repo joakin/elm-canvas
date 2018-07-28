@@ -1,0 +1,15 @@
+body {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+elm-canvas {
+  background-color: white;
+  box-shadow: 0 0 200px rgba(0, 0, 0, 0.07);
+}
