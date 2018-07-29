@@ -1,0 +1,461 @@
+[
+  {
+    "name": "Canvas",
+    "comment": " This library exposes a low level API that mirrors most of the DOM canvas\nAPI.\n\nTo use it, remember to include the `elm-canvas` custom element script in your\npage before you initialize your Elm application.\n\n  - <http://unpkg.com/elm-canvas/elm-canvas.js>\n  - <http://npmjs.com/package/elm-canvas>\n\nWARNING: This library is intended as a very low-level API that mirrors the DOM\nAPI almost exactly, while providing a bit of extra type safety where it makes\nsense. The DOM API is highly stateful and side-effectful, so be careful. To\nunderstand how to use this library properly, please read the MDN docs:\n<https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D> and\nall the nested pages\n\n\n# Usage in HTML\n\n@docs element\n\n\n# Composing Commands\n\n@docs Command, batch\n\n\n# Colors\n\n@docs fillStyle, strokeStyle\n\n\n# Text\n\n@docs font, TextAlign, textAlign, TextBaseLine, textBaseline, fillText, strokeText\n\n\n# Shapes\n\n@docs clearRect, fillCircle, fillRect, strokeRect\n\n\n# Paths\n\n@docs beginPath, closePath, FillRule, fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect\n\n\n# Line settings\n\n@docs LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit, setLineDash\n\n\n# Shadows\n\n@docs shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY\n\n\n# Global Canvas settings\n\n@docs globalAlpha, GlobalCompositeOperationMode, globalCompositeOperation, save, restore\n\n\n# Global Canvas transforms\n\n@docs rotate, scale, translate, transform, setTransform\n\n",
+    "aliases": [
+      {
+        "name": "Command",
+        "comment": " Represents a command to execute on the DOM canvas. You build commands with\nthe helper functions the library exposes, which mirror the canvas API.\n\nThen, you pass the commands to the `element` you render on the view, and they\nwill be run!\n\n",
+        "args": [],
+        "type": "Json.Encode.Value"
+      }
+    ],
+    "types": [
+      {
+        "name": "FillRule",
+        "comment": " ",
+        "args": [],
+        "cases": [
+          [
+            "NonZero",
+            []
+          ],
+          [
+            "EvenOdd",
+            []
+          ]
+        ]
+      },
+      {
+        "name": "GlobalCompositeOperationMode",
+        "comment": " Type of compositing operation, identifying which of the compositing or\nblending mode operations to use. See the chapter\n[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)\nfrom the Canvas Tutorial.\n\nFor more information and pictures of what each mode does, see the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation).\n\n",
+        "args": [],
+        "cases": [
+          [
+            "SourceOver",
+            []
+          ],
+          [
+            "SourceIn",
+            []
+          ],
+          [
+            "SourceOut",
+            []
+          ],
+          [
+            "SourceAtop",
+            []
+          ],
+          [
+            "DestinationOver",
+            []
+          ],
+          [
+            "DestinationIn",
+            []
+          ],
+          [
+            "DestinationOut",
+            []
+          ],
+          [
+            "DestinationAtop",
+            []
+          ],
+          [
+            "Lighter",
+            []
+          ],
+          [
+            "Copy",
+            []
+          ],
+          [
+            "Xor",
+            []
+          ],
+          [
+            "Multiply",
+            []
+          ],
+          [
+            "Screen",
+            []
+          ],
+          [
+            "Overlay",
+            []
+          ],
+          [
+            "Darken",
+            []
+          ],
+          [
+            "Lighten",
+            []
+          ],
+          [
+            "ColorDodge",
+            []
+          ],
+          [
+            "ColorBurn",
+            []
+          ],
+          [
+            "HardLight",
+            []
+          ],
+          [
+            "SoftLight",
+            []
+          ],
+          [
+            "Difference",
+            []
+          ],
+          [
+            "Exclusion",
+            []
+          ],
+          [
+            "Hue",
+            []
+          ],
+          [
+            "Saturation",
+            []
+          ],
+          [
+            "Color",
+            []
+          ],
+          [
+            "Luminosity",
+            []
+          ]
+        ]
+      },
+      {
+        "name": "LineCap",
+        "comment": " Type of end points for line drawn.\n\n  - ButtCap\n      - The ends of lines are squared off at the endpoints.\n  - RoundCap\n      - The ends of lines are rounded.\n  - SquareCap\n      - The ends of lines are squared off by adding a box with an equal width\n        and half the height of the line's thickness.\n\n",
+        "args": [],
+        "cases": [
+          [
+            "ButtCap",
+            []
+          ],
+          [
+            "RoundCap",
+            []
+          ],
+          [
+            "SquareCap",
+            []
+          ]
+        ]
+      },
+      {
+        "name": "LineJoin",
+        "comment": " Determines how two connecting segments with non-zero lengths in a shape are\njoined together. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)\n\n  - Round\n      - Rounds off the corners of a shape by filling an additional sector of disc\n        centered at the common endpoint of connected segments. The radius for these\n        rounded corners is equal to the line width.\n  - Bevel\n      - Fills an additional triangular area between the common endpoint of\n        connected segments, and the separate outside rectangular corners of each segment.\n  - Miter\n      - Connected segments are joined by extending their outside edges to connect\n        at a single point, with the effect of filling an additional lozenge-shaped\n        area. This setting is affected by the miterLimit property.\n\n",
+        "args": [],
+        "cases": [
+          [
+            "BevelJoin",
+            []
+          ],
+          [
+            "RoundJoin",
+            []
+          ],
+          [
+            "MiterJoin",
+            []
+          ]
+        ]
+      },
+      {
+        "name": "TextAlign",
+        "comment": " Type of text alignment\n\n  - Left\n      - The text is left-aligned.\n  - Right\n      - The text is right-aligned.\n  - Center\n      - The text is centered.\n  - Start\n      - The text is aligned at the normal start of the line (left-aligned for\n        left-to-right locales, right-aligned for right-to-left locales).\n  - End\n      - The text is aligned at the normal end of the line (right-aligned for\n        left-to-right locales, left-aligned for right-to-left locales).\n\n",
+        "args": [],
+        "cases": [
+          [
+            "Left",
+            []
+          ],
+          [
+            "Right",
+            []
+          ],
+          [
+            "Center",
+            []
+          ],
+          [
+            "Start",
+            []
+          ],
+          [
+            "End",
+            []
+          ]
+        ]
+      },
+      {
+        "name": "TextBaseLine",
+        "comment": " Type of text baseline.\n\n  - Top\n      - The text baseline is the top of the em square.\n  - Hanging\n      - The text baseline is the hanging baseline. (Used by Tibetan and other Indic scripts.)\n  - Middle\n      - The text baseline is the middle of the em square.\n  - Alphabetic\n      - The text baseline is the normal alphabetic baseline.\n  - Ideographic\n      - The text baseline is the ideographic baseline; this is the bottom of the body of the characters, if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese and Korean scripts.)\n  - Bottom\n      - The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.\n\n",
+        "args": [],
+        "cases": [
+          [
+            "Top",
+            []
+          ],
+          [
+            "Hanging",
+            []
+          ],
+          [
+            "Middle",
+            []
+          ],
+          [
+            "Alphabetic",
+            []
+          ],
+          [
+            "Ideographic",
+            []
+          ],
+          [
+            "Bottom",
+            []
+          ]
+        ]
+      }
+    ],
+    "values": [
+      {
+        "name": "arc",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Float -> Bool -> Canvas.Command"
+      },
+      {
+        "name": "arcTo",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "batch",
+        "comment": " Batch a list of Commands into a single Command. Useful to compose functions\nthat generate lists of commands without having to do List manipulations all the time.\n\n    clearScreen : Command\n    clearScreen =\n        batch\n            [ clearRect 0 0 400 400\n            , fillStyle (Color.rgb 0 0 0)\n            ]\n\n",
+        "type": "List Canvas.Command -> Canvas.Command"
+      },
+      {
+        "name": "beginPath",
+        "comment": " ",
+        "type": "Canvas.Command"
+      },
+      {
+        "name": "bezierCurveTo",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "clearRect",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "clip",
+        "comment": " ",
+        "type": "Canvas.FillRule -> Canvas.Command"
+      },
+      {
+        "name": "closePath",
+        "comment": " ",
+        "type": "Canvas.Command"
+      },
+      {
+        "name": "element",
+        "comment": " Create a Html element that you can use in your view.\n\n    view : Model -> Html Msg\n    view { isRunning, time } =\n        Canvas.element\n            width\n            height\n            [ onClick ToggleRunning ]\n            [ Canvas.clearScreen\n            , Canvas.fillStyle (Color.rgba 0 0 0 1)\n            , List.range 0 100\n                |> List.map (renderItem time)\n                |> batch\n            ]\n\n",
+        "type": "Int -> Int -> List (Html.Attribute msg) -> List Canvas.Command -> Html.Html msg"
+      },
+      {
+        "name": "fill",
+        "comment": " ",
+        "type": "Canvas.FillRule -> Canvas.Command"
+      },
+      {
+        "name": "fillCircle",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "fillRect",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "fillStyle",
+        "comment": " Specifies the color or style to use inside shapes. The default is #000\n(black). [MDN Docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle)\n\n    fillStyle (Color.rgba 125 200 255 0.6)\n\n",
+        "type": "Color.Color -> Canvas.Command"
+      },
+      {
+        "name": "fillText",
+        "comment": " ",
+        "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Command"
+      },
+      {
+        "name": "font",
+        "comment": " Specifies the current text style being used when drawing text. This string\nuses the same syntax as the [CSS\nfont](https://developer.mozilla.org/en-US/docs/Web/CSS/font) specifier. The\ndefault font is 10px sans-serif. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font)\n\n    [ font \"48px serif\"\n    , strokeText \"Hello world\" 50 100\n    ]\n\n",
+        "type": "String -> Canvas.Command"
+      },
+      {
+        "name": "globalAlpha",
+        "comment": " Specifies the alpha value that is applied to shapes and images before they are\ndrawn onto the canvas. The value is in the range from 0.0 (fully transparent) to\n1.0 (fully opaque). The default value is 1.0. Values outside the range,\nincluding `Infinity` and `NaN` will not be set and globalAlpha will retain its\nprevious value.\n\nSee also the chapter [Applying styles and color](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalAlpha)\n\n    -- Drawing two transparent rectangles\n    [ globalAlpha 0.5\n    , fillStyle (Color.rgb 0 0 255)\n    , fillRect 10 10 100 100\n    , fillStyle (Color.rgb 255 0 0)\n    , fillRect 50 50 100 100\n    ]\n\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "globalCompositeOperation",
+        "comment": " Sets the type of compositing operation to apply when drawing new shapes,\nwhere type is a `GlobalCompositeOperationMode` identifying which of the\ncompositing or blending mode operations to use.\n\nSee the chapter\n[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)\nfrom the Canvas Tutorial, or visit the [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)\nfor more information and pictures of what each mode does.\n\n    globalCompositeOperation Screen\n\n",
+        "type": "Canvas.GlobalCompositeOperationMode -> Canvas.Command"
+      },
+      {
+        "name": "lineCap",
+        "comment": " Determines how the end points of every line are drawn. See `LineCap` for the\npossible types. By default this property is set to `ButtCap`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)\n\n    [ beginPath\n    , moveTo 0 0\n    , lineWidth 15\n    , lineCap RoundCap\n    , lineTo 100 100\n    , stroke\n    ]\n\n",
+        "type": "Canvas.LineCap -> Canvas.Command"
+      },
+      {
+        "name": "lineDashOffset",
+        "comment": " Sets the line dash pattern offset or \"phase\". [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)\n\n    [ setLineDash [4, 16]\n    , lineDashOffset 2\n    , beginPath\n    , moveTo 0 100\n    , lineTo 400 100\n    , stroke\n    ]\n\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "lineJoin",
+        "comment": " Sets how two connecting segments (of lines, arcs or curves) with\nnon-zero lengths in a shape are joined together (degenerate segments with zero\nlengths, whose specified endpoints and control points are exactly at the same\nposition, are skipped). See the type `LineJoin`.\n\nBy default this property is set to `MiterJoin`. Note that the lineJoin setting\nhas no effect if the two connected segments have the same direction, because no\njoining area will be added in this case.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)\n\n    [ lineWidth 10\n    , lineJoin RoundJoin\n    , beginPath\n    , moveTo 0 0\n    , lineTo 200 100\n    , lineTo 300 0\n    , stroke\n    ]\n\n",
+        "type": "Canvas.LineJoin -> Canvas.Command"
+      },
+      {
+        "name": "lineTo",
+        "comment": " ",
+        "type": "Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "lineWidth",
+        "comment": " Sets the thickness of lines in space units. When setting, zero, negative,\nInfinity and NaN values are ignored; otherwise the current value is set to the\nnew value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)\n\n    [ beginPath\n    , moveTo 0 0\n    , lineWidth 15\n    , lineTo 100 100\n    , stroke\n    ]\n\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "miterLimit",
+        "comment": " Sets the miter limit ratio in space units. When setting, zero, negative,\nInfinity and NaN values are ignored; otherwise the current value is set to the\nnew value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "moveTo",
+        "comment": " ",
+        "type": "Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "quadraticCurveTo",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "rect",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "restore",
+        "comment": " ",
+        "type": "Canvas.Command"
+      },
+      {
+        "name": "rotate",
+        "comment": " ",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "save",
+        "comment": " ",
+        "type": "Canvas.Command"
+      },
+      {
+        "name": "scale",
+        "comment": " ",
+        "type": "Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "setLineDash",
+        "comment": " ",
+        "type": "List Float -> Canvas.Command"
+      },
+      {
+        "name": "setTransform",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "shadowBlur",
+        "comment": " Specifies the level of the blurring effect; this value doesn't correspond to\na number of pixels and is not affected by the current transformation matrix. The\ndefault value is 0. Negative, Infinity or NaN values are ignored. Note that\nshadows are only drawn, if the `shadowColor` property is set to\na non-transparent value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowBlur)\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowBlur 10\n    , fillStyle (Color.rgb 255 255 255)\n    , fillRect 10 10 100 100\n    ]\n\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "shadowColor",
+        "comment": " Specifies the color of the shadow. [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowColor)\n\nNote that shadows are only drawn, if the shadowColor property is set\n(non-transparent) and either the shadowBlur, the shadowOffsetX, or the\nshadowOffsetY property are non-zero.\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowOffsetY 10\n    , shadowOffsetX 10\n    , fillStyle (Color.rgb 0 255 0)\n    , fillRect 10 10 100 100\n    ]\n\n",
+        "type": "Color.Color -> Canvas.Command"
+      },
+      {
+        "name": "shadowOffsetX",
+        "comment": " Specifies the distance that the shadow will be offset in horizontal\ndistance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX)\n\nThe default value is 0. Infinity or NaN values are ignored.\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowOffsetY 10\n    , shadowOffsetX 10\n    , fillStyle (Color.rgb 0 255 0)\n    , fillRect 10 10 100 100\n    ]\n\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "shadowOffsetY",
+        "comment": " Specifies the distance that the shadow will be offset in vertical\ndistance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetY)\n\nThe default value is 0. Infinity or NaN values are ignored.\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowOffsetY 10\n    , shadowOffsetX 10\n    , fillStyle (Color.rgb 0 255 0)\n    , fillRect 10 10 100 100\n    ]\n\n",
+        "type": "Float -> Canvas.Command"
+      },
+      {
+        "name": "stroke",
+        "comment": " ",
+        "type": "Canvas.Command"
+      },
+      {
+        "name": "strokeRect",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "strokeStyle",
+        "comment": " Specifies the color or style to use for the lines around shapes. The default\nis #000 (black). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle)\n\n    [ strokeStyle (Color.rgb 0 0 255)\n    , strokeRect 10 10 100 100\n    ]\n\n",
+        "type": "Color.Color -> Canvas.Command"
+      },
+      {
+        "name": "strokeText",
+        "comment": " ",
+        "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Command"
+      },
+      {
+        "name": "textAlign",
+        "comment": " Specifies the current text alignment being used when drawing text. Beware\nthat the alignment is based on the x value of the `fillText` command. So if\n`textAlign` is `Center`, then the text would be drawn at `x - (width / 2)`.\n\nThe default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)\n\n    [ font \"48px serif\"\n    , textAlign Left\n    , strokeText \"Hello world\" 0 100\n    ]\n\n",
+        "type": "Canvas.TextAlign -> Canvas.Command"
+      },
+      {
+        "name": "textBaseline",
+        "comment": " Specifies the current text baseline being used when drawing text.\n\nThe default value is `Alphabetic`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)\n\nSee [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)\nfor examples and rendering of the different modes.\n\n",
+        "type": "Canvas.TextBaseLine -> Canvas.Command"
+      },
+      {
+        "name": "transform",
+        "comment": " ",
+        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+      },
+      {
+        "name": "translate",
+        "comment": " ",
+        "type": "Float -> Float -> Canvas.Command"
+      }
+    ],
+    "generated-with-elm-version": "0.18.0"
+  }
+]
