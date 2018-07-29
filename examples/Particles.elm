@@ -1,4 +1,4 @@
-module Examples.Main exposing (main)
+module Examples.Particles exposing (main)
 
 import AnimationFrame exposing (times)
 import Html exposing (..)
@@ -36,14 +36,49 @@ subscriptions model =
     times AnimationFrame
 
 
+h : Float
+h =
+    500
+
+
+w : Float
+w =
+    500
+
+
+padding : Float
+padding =
+    w / 6
+
+
+cellW : Float
+cellW =
+    w - (padding * 2)
+
+
+cellH : Float
+cellH =
+    h - (padding * 2)
+
+
+particleColor : Color
+particleColor =
+    Color.rgba 0 0 0 0.1
+
+
+numParticles : Int
+numParticles =
+    1000
+
+
 init : ( Model, Cmd Msg )
 init =
-    ( List.range 0 1000
+    ( List.range 0 numParticles
         |> List.map
             (\i ->
                 { x = w / 2
                 , y = h / 2
-                , size = 2
+                , size = 3
                 , speedMod = toFloat ((i * 4236) % 345)
                 , deviation = toFloat ((i * 2346) % 4435)
                 }
@@ -63,29 +98,18 @@ update msg model =
                 updatePoint point =
                     { point
                         | x =
-                            (normalize (sin ((time / (300 + point.speedMod)) + point.deviation))) * (w * 0.5) + w * 0.25
+                            (normalize (sin ((time / (300 + point.speedMod)) + point.deviation)))
+                                * cellW
+                                + padding
                         , y =
-                            (normalize (cos ((time / (500 - point.speedMod)) + point.deviation + 4543))) * (h * 0.5) + h * 0.25
+                            (normalize (cos ((time / (500 - point.speedMod)) + point.deviation + 4543)))
+                                * cellH
+                                + padding
                     }
             in
                 ( List.map updatePoint model
                 , Cmd.none
                 )
-
-
-h : Float
-h =
-    500
-
-
-w : Float
-w =
-    500
-
-
-particleColor : Color
-particleColor =
-    Color.rgba 0 0 0 0.1
 
 
 view : Model -> Html Msg
@@ -105,4 +129,4 @@ view model =
 
 drawPoint : Point -> Value
 drawPoint { x, y, size } =
-    Canvas.fillRect (x - size / 2) (y - size / 2) size size
+    Canvas.fillCircle (x - size / 2) (y - size / 2) (size / 2)

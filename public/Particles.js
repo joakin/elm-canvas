@@ -9796,45 +9796,19 @@ var _user$project$Canvas$fillCircle = F3(
 			});
 	});
 
-var _user$project$Examples_Main$drawPoint = function (_p0) {
+var _user$project$Examples_Particles$drawPoint = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1.size;
-	return A4(_user$project$Canvas$fillRect, _p1.x - (_p2 / 2), _p1.y - (_p2 / 2), _p2, _p2);
+	return A3(_user$project$Canvas$fillCircle, _p1.x - (_p2 / 2), _p1.y - (_p2 / 2), _p2 / 2);
 };
-var _user$project$Examples_Main$particleColor = A4(_elm_lang$core$Color$rgba, 0, 0, 0, 0.1);
-var _user$project$Examples_Main$w = 500;
-var _user$project$Examples_Main$h = 500;
-var _user$project$Examples_Main$view = function (model) {
-	return A4(
-		_user$project$Canvas$element,
-		_elm_lang$core$Basics$round(_user$project$Examples_Main$h),
-		_elm_lang$core$Basics$round(_user$project$Examples_Main$w),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$style(
-				{ctor: '[]'}),
-			_1: {ctor: '[]'}
-		},
-		_elm_lang$core$List$concat(
-			{
-				ctor: '::',
-				_0: {
-					ctor: '::',
-					_0: A4(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_Main$w, _user$project$Examples_Main$h),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Canvas$fillStyle(_user$project$Examples_Main$particleColor),
-						_1: {ctor: '[]'}
-					}
-				},
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$List$map, _user$project$Examples_Main$drawPoint, model),
-					_1: {ctor: '[]'}
-				}
-			}));
-};
-var _user$project$Examples_Main$update = F2(
+var _user$project$Examples_Particles$numParticles = 1000;
+var _user$project$Examples_Particles$particleColor = A4(_elm_lang$core$Color$rgba, 0, 0, 0, 0.1);
+var _user$project$Examples_Particles$w = 500;
+var _user$project$Examples_Particles$padding = _user$project$Examples_Particles$w / 6;
+var _user$project$Examples_Particles$cellW = _user$project$Examples_Particles$w - (_user$project$Examples_Particles$padding * 2);
+var _user$project$Examples_Particles$h = 500;
+var _user$project$Examples_Particles$cellH = _user$project$Examples_Particles$h - (_user$project$Examples_Particles$padding * 2);
+var _user$project$Examples_Particles$update = F2(
 	function (msg, model) {
 		var _p3 = msg;
 		var _p4 = _p3._0;
@@ -9846,9 +9820,9 @@ var _user$project$Examples_Main$update = F2(
 				point,
 				{
 					x: (normalize(
-						_elm_lang$core$Basics$sin((_p4 / (300 + point.speedMod)) + point.deviation)) * (_user$project$Examples_Main$w * 0.5)) + (_user$project$Examples_Main$w * 0.25),
+						_elm_lang$core$Basics$sin((_p4 / (300 + point.speedMod)) + point.deviation)) * _user$project$Examples_Particles$cellW) + _user$project$Examples_Particles$padding,
 					y: (normalize(
-						_elm_lang$core$Basics$cos(((_p4 / (500 - point.speedMod)) + point.deviation) + 4543)) * (_user$project$Examples_Main$h * 0.5)) + (_user$project$Examples_Main$h * 0.25)
+						_elm_lang$core$Basics$cos(((_p4 / (500 - point.speedMod)) + point.deviation) + 4543)) * _user$project$Examples_Particles$cellH) + _user$project$Examples_Particles$padding
 				});
 		};
 		return {
@@ -9857,42 +9831,72 @@ var _user$project$Examples_Main$update = F2(
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
-var _user$project$Examples_Main$init = {
+var _user$project$Examples_Particles$init = {
 	ctor: '_Tuple2',
 	_0: A2(
 		_elm_lang$core$List$map,
 		function (i) {
 			return {
-				x: _user$project$Examples_Main$w / 2,
-				y: _user$project$Examples_Main$h / 2,
-				size: 2,
+				x: _user$project$Examples_Particles$w / 2,
+				y: _user$project$Examples_Particles$h / 2,
+				size: 3,
 				speedMod: _elm_lang$core$Basics$toFloat(
 					A2(_elm_lang$core$Basics_ops['%'], i * 4236, 345)),
 				deviation: _elm_lang$core$Basics$toFloat(
 					A2(_elm_lang$core$Basics_ops['%'], i * 2346, 4435))
 			};
 		},
-		A2(_elm_lang$core$List$range, 0, 1000)),
+		A2(_elm_lang$core$List$range, 0, _user$project$Examples_Particles$numParticles)),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
-var _user$project$Examples_Main$Point = F5(
+var _user$project$Examples_Particles$view = function (model) {
+	return A4(
+		_user$project$Canvas$element,
+		_elm_lang$core$Basics$round(_user$project$Examples_Particles$h),
+		_elm_lang$core$Basics$round(_user$project$Examples_Particles$w),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		},
+		_elm_lang$core$List$concat(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '::',
+					_0: A4(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_Particles$w, _user$project$Examples_Particles$h),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Canvas$fillStyle(_user$project$Examples_Particles$particleColor),
+						_1: {ctor: '[]'}
+					}
+				},
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$List$map, _user$project$Examples_Particles$drawPoint, model),
+					_1: {ctor: '[]'}
+				}
+			}));
+};
+var _user$project$Examples_Particles$Point = F5(
 	function (a, b, c, d, e) {
 		return {x: a, y: b, size: c, deviation: d, speedMod: e};
 	});
-var _user$project$Examples_Main$AnimationFrame = function (a) {
+var _user$project$Examples_Particles$AnimationFrame = function (a) {
 	return {ctor: 'AnimationFrame', _0: a};
 };
-var _user$project$Examples_Main$subscriptions = function (model) {
-	return _elm_lang$animation_frame$AnimationFrame$times(_user$project$Examples_Main$AnimationFrame);
+var _user$project$Examples_Particles$subscriptions = function (model) {
+	return _elm_lang$animation_frame$AnimationFrame$times(_user$project$Examples_Particles$AnimationFrame);
 };
-var _user$project$Examples_Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Examples_Main$init, update: _user$project$Examples_Main$update, subscriptions: _user$project$Examples_Main$subscriptions, view: _user$project$Examples_Main$view})();
+var _user$project$Examples_Particles$main = _elm_lang$html$Html$program(
+	{init: _user$project$Examples_Particles$init, update: _user$project$Examples_Particles$update, subscriptions: _user$project$Examples_Particles$subscriptions, view: _user$project$Examples_Particles$view})();
 
 var Elm = {};
 Elm['Examples'] = Elm['Examples'] || {};
-Elm['Examples']['Main'] = Elm['Examples']['Main'] || {};
-if (typeof _user$project$Examples_Main$main !== 'undefined') {
-    _user$project$Examples_Main$main(Elm['Examples']['Main'], 'Examples.Main', undefined);
+Elm['Examples']['Particles'] = Elm['Examples']['Particles'] || {};
+if (typeof _user$project$Examples_Particles$main !== 'undefined') {
+    _user$project$Examples_Particles$main(Elm['Examples']['Particles'], 'Examples.Particles', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
