@@ -1,7 +1,7 @@
 <html>
 <head>
   <style>
-    /* you can style your program here */
+    body { margin: 0; }
   </style>
 </head>
 <body>
@@ -79,7 +79,8 @@
       },
       points: getValue(ctx, message),
     });
-    // you can use ports and stuff here
+
+    canvas.parentElement.removeChild(canvas);
   </script>
 </body>
 </html>
