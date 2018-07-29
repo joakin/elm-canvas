@@ -5519,6 +5519,385 @@ var _elm_lang$core$Time$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
 
+var _elm_lang$core$Random$onSelfMsg = F3(
+	function (_p1, _p0, seed) {
+		return _elm_lang$core$Task$succeed(seed);
+	});
+var _elm_lang$core$Random$magicNum8 = 2147483562;
+var _elm_lang$core$Random$range = function (_p2) {
+	return {ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Random$magicNum8};
+};
+var _elm_lang$core$Random$magicNum7 = 2147483399;
+var _elm_lang$core$Random$magicNum6 = 2147483563;
+var _elm_lang$core$Random$magicNum5 = 3791;
+var _elm_lang$core$Random$magicNum4 = 40692;
+var _elm_lang$core$Random$magicNum3 = 52774;
+var _elm_lang$core$Random$magicNum2 = 12211;
+var _elm_lang$core$Random$magicNum1 = 53668;
+var _elm_lang$core$Random$magicNum0 = 40014;
+var _elm_lang$core$Random$step = F2(
+	function (_p3, seed) {
+		var _p4 = _p3;
+		return _p4._0(seed);
+	});
+var _elm_lang$core$Random$onEffects = F3(
+	function (router, commands, seed) {
+		var _p5 = commands;
+		if (_p5.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(seed);
+		} else {
+			var _p6 = A2(_elm_lang$core$Random$step, _p5._0._0, seed);
+			var value = _p6._0;
+			var newSeed = _p6._1;
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (_p7) {
+					return A3(_elm_lang$core$Random$onEffects, router, _p5._1, newSeed);
+				},
+				A2(_elm_lang$core$Platform$sendToApp, router, value));
+		}
+	});
+var _elm_lang$core$Random$listHelp = F4(
+	function (list, n, generate, seed) {
+		listHelp:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.cmp(n, 1) < 0) {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$List$reverse(list),
+					_1: seed
+				};
+			} else {
+				var _p8 = generate(seed);
+				var value = _p8._0;
+				var newSeed = _p8._1;
+				var _v2 = {ctor: '::', _0: value, _1: list},
+					_v3 = n - 1,
+					_v4 = generate,
+					_v5 = newSeed;
+				list = _v2;
+				n = _v3;
+				generate = _v4;
+				seed = _v5;
+				continue listHelp;
+			}
+		}
+	});
+var _elm_lang$core$Random$minInt = -2147483648;
+var _elm_lang$core$Random$maxInt = 2147483647;
+var _elm_lang$core$Random$iLogBase = F2(
+	function (b, i) {
+		return (_elm_lang$core$Native_Utils.cmp(i, b) < 0) ? 1 : (1 + A2(_elm_lang$core$Random$iLogBase, b, (i / b) | 0));
+	});
+var _elm_lang$core$Random$command = _elm_lang$core$Native_Platform.leaf('Random');
+var _elm_lang$core$Random$Generator = function (a) {
+	return {ctor: 'Generator', _0: a};
+};
+var _elm_lang$core$Random$list = F2(
+	function (n, _p9) {
+		var _p10 = _p9;
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				return A4(
+					_elm_lang$core$Random$listHelp,
+					{ctor: '[]'},
+					n,
+					_p10._0,
+					seed);
+			});
+	});
+var _elm_lang$core$Random$map = F2(
+	function (func, _p11) {
+		var _p12 = _p11;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p13 = _p12._0(seed0);
+				var a = _p13._0;
+				var seed1 = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: func(a),
+					_1: seed1
+				};
+			});
+	});
+var _elm_lang$core$Random$map2 = F3(
+	function (func, _p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p18 = _p16._0(seed0);
+				var a = _p18._0;
+				var seed1 = _p18._1;
+				var _p19 = _p17._0(seed1);
+				var b = _p19._0;
+				var seed2 = _p19._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(func, a, b),
+					_1: seed2
+				};
+			});
+	});
+var _elm_lang$core$Random$pair = F2(
+	function (genA, genB) {
+		return A3(
+			_elm_lang$core$Random$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			genA,
+			genB);
+	});
+var _elm_lang$core$Random$map3 = F4(
+	function (func, _p22, _p21, _p20) {
+		var _p23 = _p22;
+		var _p24 = _p21;
+		var _p25 = _p20;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p26 = _p23._0(seed0);
+				var a = _p26._0;
+				var seed1 = _p26._1;
+				var _p27 = _p24._0(seed1);
+				var b = _p27._0;
+				var seed2 = _p27._1;
+				var _p28 = _p25._0(seed2);
+				var c = _p28._0;
+				var seed3 = _p28._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A3(func, a, b, c),
+					_1: seed3
+				};
+			});
+	});
+var _elm_lang$core$Random$map4 = F5(
+	function (func, _p32, _p31, _p30, _p29) {
+		var _p33 = _p32;
+		var _p34 = _p31;
+		var _p35 = _p30;
+		var _p36 = _p29;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p37 = _p33._0(seed0);
+				var a = _p37._0;
+				var seed1 = _p37._1;
+				var _p38 = _p34._0(seed1);
+				var b = _p38._0;
+				var seed2 = _p38._1;
+				var _p39 = _p35._0(seed2);
+				var c = _p39._0;
+				var seed3 = _p39._1;
+				var _p40 = _p36._0(seed3);
+				var d = _p40._0;
+				var seed4 = _p40._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A4(func, a, b, c, d),
+					_1: seed4
+				};
+			});
+	});
+var _elm_lang$core$Random$map5 = F6(
+	function (func, _p45, _p44, _p43, _p42, _p41) {
+		var _p46 = _p45;
+		var _p47 = _p44;
+		var _p48 = _p43;
+		var _p49 = _p42;
+		var _p50 = _p41;
+		return _elm_lang$core$Random$Generator(
+			function (seed0) {
+				var _p51 = _p46._0(seed0);
+				var a = _p51._0;
+				var seed1 = _p51._1;
+				var _p52 = _p47._0(seed1);
+				var b = _p52._0;
+				var seed2 = _p52._1;
+				var _p53 = _p48._0(seed2);
+				var c = _p53._0;
+				var seed3 = _p53._1;
+				var _p54 = _p49._0(seed3);
+				var d = _p54._0;
+				var seed4 = _p54._1;
+				var _p55 = _p50._0(seed4);
+				var e = _p55._0;
+				var seed5 = _p55._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A5(func, a, b, c, d, e),
+					_1: seed5
+				};
+			});
+	});
+var _elm_lang$core$Random$andThen = F2(
+	function (callback, _p56) {
+		var _p57 = _p56;
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				var _p58 = _p57._0(seed);
+				var result = _p58._0;
+				var newSeed = _p58._1;
+				var _p59 = callback(result);
+				var genB = _p59._0;
+				return genB(newSeed);
+			});
+	});
+var _elm_lang$core$Random$State = F2(
+	function (a, b) {
+		return {ctor: 'State', _0: a, _1: b};
+	});
+var _elm_lang$core$Random$initState = function (seed) {
+	var s = A2(_elm_lang$core$Basics$max, seed, 0 - seed);
+	var q = (s / (_elm_lang$core$Random$magicNum6 - 1)) | 0;
+	var s2 = A2(_elm_lang$core$Basics_ops['%'], q, _elm_lang$core$Random$magicNum7 - 1);
+	var s1 = A2(_elm_lang$core$Basics_ops['%'], s, _elm_lang$core$Random$magicNum6 - 1);
+	return A2(_elm_lang$core$Random$State, s1 + 1, s2 + 1);
+};
+var _elm_lang$core$Random$next = function (_p60) {
+	var _p61 = _p60;
+	var _p63 = _p61._1;
+	var _p62 = _p61._0;
+	var k2 = (_p63 / _elm_lang$core$Random$magicNum3) | 0;
+	var rawState2 = (_elm_lang$core$Random$magicNum4 * (_p63 - (k2 * _elm_lang$core$Random$magicNum3))) - (k2 * _elm_lang$core$Random$magicNum5);
+	var newState2 = (_elm_lang$core$Native_Utils.cmp(rawState2, 0) < 0) ? (rawState2 + _elm_lang$core$Random$magicNum7) : rawState2;
+	var k1 = (_p62 / _elm_lang$core$Random$magicNum1) | 0;
+	var rawState1 = (_elm_lang$core$Random$magicNum0 * (_p62 - (k1 * _elm_lang$core$Random$magicNum1))) - (k1 * _elm_lang$core$Random$magicNum2);
+	var newState1 = (_elm_lang$core$Native_Utils.cmp(rawState1, 0) < 0) ? (rawState1 + _elm_lang$core$Random$magicNum6) : rawState1;
+	var z = newState1 - newState2;
+	var newZ = (_elm_lang$core$Native_Utils.cmp(z, 1) < 0) ? (z + _elm_lang$core$Random$magicNum8) : z;
+	return {
+		ctor: '_Tuple2',
+		_0: newZ,
+		_1: A2(_elm_lang$core$Random$State, newState1, newState2)
+	};
+};
+var _elm_lang$core$Random$split = function (_p64) {
+	var _p65 = _p64;
+	var _p68 = _p65._1;
+	var _p67 = _p65._0;
+	var _p66 = _elm_lang$core$Tuple$second(
+		_elm_lang$core$Random$next(_p65));
+	var t1 = _p66._0;
+	var t2 = _p66._1;
+	var new_s2 = _elm_lang$core$Native_Utils.eq(_p68, 1) ? (_elm_lang$core$Random$magicNum7 - 1) : (_p68 - 1);
+	var new_s1 = _elm_lang$core$Native_Utils.eq(_p67, _elm_lang$core$Random$magicNum6 - 1) ? 1 : (_p67 + 1);
+	return {
+		ctor: '_Tuple2',
+		_0: A2(_elm_lang$core$Random$State, new_s1, t2),
+		_1: A2(_elm_lang$core$Random$State, t1, new_s2)
+	};
+};
+var _elm_lang$core$Random$Seed = function (a) {
+	return {ctor: 'Seed', _0: a};
+};
+var _elm_lang$core$Random$int = F2(
+	function (a, b) {
+		return _elm_lang$core$Random$Generator(
+			function (_p69) {
+				var _p70 = _p69;
+				var _p75 = _p70._0;
+				var base = 2147483561;
+				var f = F3(
+					function (n, acc, state) {
+						f:
+						while (true) {
+							var _p71 = n;
+							if (_p71 === 0) {
+								return {ctor: '_Tuple2', _0: acc, _1: state};
+							} else {
+								var _p72 = _p75.next(state);
+								var x = _p72._0;
+								var nextState = _p72._1;
+								var _v27 = n - 1,
+									_v28 = x + (acc * base),
+									_v29 = nextState;
+								n = _v27;
+								acc = _v28;
+								state = _v29;
+								continue f;
+							}
+						}
+					});
+				var _p73 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p73._0;
+				var hi = _p73._1;
+				var k = (hi - lo) + 1;
+				var n = A2(_elm_lang$core$Random$iLogBase, base, k);
+				var _p74 = A3(f, n, 1, _p75.state);
+				var v = _p74._0;
+				var nextState = _p74._1;
+				return {
+					ctor: '_Tuple2',
+					_0: lo + A2(_elm_lang$core$Basics_ops['%'], v, k),
+					_1: _elm_lang$core$Random$Seed(
+						_elm_lang$core$Native_Utils.update(
+							_p75,
+							{state: nextState}))
+				};
+			});
+	});
+var _elm_lang$core$Random$bool = A2(
+	_elm_lang$core$Random$map,
+	F2(
+		function (x, y) {
+			return _elm_lang$core$Native_Utils.eq(x, y);
+		})(1),
+	A2(_elm_lang$core$Random$int, 0, 1));
+var _elm_lang$core$Random$float = F2(
+	function (a, b) {
+		return _elm_lang$core$Random$Generator(
+			function (seed) {
+				var _p76 = A2(
+					_elm_lang$core$Random$step,
+					A2(_elm_lang$core$Random$int, _elm_lang$core$Random$minInt, _elm_lang$core$Random$maxInt),
+					seed);
+				var number = _p76._0;
+				var newSeed = _p76._1;
+				var negativeOneToOne = _elm_lang$core$Basics$toFloat(number) / _elm_lang$core$Basics$toFloat(_elm_lang$core$Random$maxInt - _elm_lang$core$Random$minInt);
+				var _p77 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p77._0;
+				var hi = _p77._1;
+				var scaled = ((lo + hi) / 2) + ((hi - lo) * negativeOneToOne);
+				return {ctor: '_Tuple2', _0: scaled, _1: newSeed};
+			});
+	});
+var _elm_lang$core$Random$initialSeed = function (n) {
+	return _elm_lang$core$Random$Seed(
+		{
+			state: _elm_lang$core$Random$initState(n),
+			next: _elm_lang$core$Random$next,
+			split: _elm_lang$core$Random$split,
+			range: _elm_lang$core$Random$range
+		});
+};
+var _elm_lang$core$Random$init = A2(
+	_elm_lang$core$Task$andThen,
+	function (t) {
+		return _elm_lang$core$Task$succeed(
+			_elm_lang$core$Random$initialSeed(
+				_elm_lang$core$Basics$round(t)));
+	},
+	_elm_lang$core$Time$now);
+var _elm_lang$core$Random$Generate = function (a) {
+	return {ctor: 'Generate', _0: a};
+};
+var _elm_lang$core$Random$generate = F2(
+	function (tagger, generator) {
+		return _elm_lang$core$Random$command(
+			_elm_lang$core$Random$Generate(
+				A2(_elm_lang$core$Random$map, tagger, generator)));
+	});
+var _elm_lang$core$Random$cmdMap = F2(
+	function (func, _p78) {
+		var _p79 = _p78;
+		return _elm_lang$core$Random$Generate(
+			A2(_elm_lang$core$Random$map, func, _p79._0));
+	});
+_elm_lang$core$Native_Platform.effectManagers['Random'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Random$init, onEffects: _elm_lang$core$Random$onEffects, onSelfMsg: _elm_lang$core$Random$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Random$cmdMap};
+
 var _elm_lang$core$Color$fmod = F2(
 	function (f, n) {
 		var integer = _elm_lang$core$Basics$floor(f);
@@ -5685,174 +6064,9 @@ var _elm_lang$core$Color$Linear = F3(
 	});
 var _elm_lang$core$Color$linear = _elm_lang$core$Color$Linear;
 
-var _elm_lang$animation_frame$Native_AnimationFrame = function()
-{
-
-function create()
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		var id = requestAnimationFrame(function() {
-			callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
-		});
-
-		return function() {
-			cancelAnimationFrame(id);
-		};
-	});
-}
-
-return {
-	create: create
-};
-
-}();
-
 var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
-
-var _elm_lang$animation_frame$AnimationFrame$rAF = _elm_lang$animation_frame$Native_AnimationFrame.create(
-	{ctor: '_Tuple0'});
-var _elm_lang$animation_frame$AnimationFrame$subscription = _elm_lang$core$Native_Platform.leaf('AnimationFrame');
-var _elm_lang$animation_frame$AnimationFrame$State = F3(
-	function (a, b, c) {
-		return {subs: a, request: b, oldTime: c};
-	});
-var _elm_lang$animation_frame$AnimationFrame$init = _elm_lang$core$Task$succeed(
-	A3(
-		_elm_lang$animation_frame$AnimationFrame$State,
-		{ctor: '[]'},
-		_elm_lang$core$Maybe$Nothing,
-		0));
-var _elm_lang$animation_frame$AnimationFrame$onEffects = F3(
-	function (router, subs, _p0) {
-		var _p1 = _p0;
-		var _p5 = _p1.request;
-		var _p4 = _p1.oldTime;
-		var _p2 = {ctor: '_Tuple2', _0: _p5, _1: subs};
-		if (_p2._0.ctor === 'Nothing') {
-			if (_p2._1.ctor === '[]') {
-				return _elm_lang$core$Task$succeed(
-					A3(
-						_elm_lang$animation_frame$AnimationFrame$State,
-						{ctor: '[]'},
-						_elm_lang$core$Maybe$Nothing,
-						_p4));
-			} else {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (pid) {
-						return A2(
-							_elm_lang$core$Task$andThen,
-							function (time) {
-								return _elm_lang$core$Task$succeed(
-									A3(
-										_elm_lang$animation_frame$AnimationFrame$State,
-										subs,
-										_elm_lang$core$Maybe$Just(pid),
-										time));
-							},
-							_elm_lang$core$Time$now);
-					},
-					_elm_lang$core$Process$spawn(
-						A2(
-							_elm_lang$core$Task$andThen,
-							_elm_lang$core$Platform$sendToSelf(router),
-							_elm_lang$animation_frame$AnimationFrame$rAF)));
-			}
-		} else {
-			if (_p2._1.ctor === '[]') {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (_p3) {
-						return _elm_lang$core$Task$succeed(
-							A3(
-								_elm_lang$animation_frame$AnimationFrame$State,
-								{ctor: '[]'},
-								_elm_lang$core$Maybe$Nothing,
-								_p4));
-					},
-					_elm_lang$core$Process$kill(_p2._0._0));
-			} else {
-				return _elm_lang$core$Task$succeed(
-					A3(_elm_lang$animation_frame$AnimationFrame$State, subs, _p5, _p4));
-			}
-		}
-	});
-var _elm_lang$animation_frame$AnimationFrame$onSelfMsg = F3(
-	function (router, newTime, _p6) {
-		var _p7 = _p6;
-		var _p10 = _p7.subs;
-		var diff = newTime - _p7.oldTime;
-		var send = function (sub) {
-			var _p8 = sub;
-			if (_p8.ctor === 'Time') {
-				return A2(
-					_elm_lang$core$Platform$sendToApp,
-					router,
-					_p8._0(newTime));
-			} else {
-				return A2(
-					_elm_lang$core$Platform$sendToApp,
-					router,
-					_p8._0(diff));
-			}
-		};
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (pid) {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (_p9) {
-						return _elm_lang$core$Task$succeed(
-							A3(
-								_elm_lang$animation_frame$AnimationFrame$State,
-								_p10,
-								_elm_lang$core$Maybe$Just(pid),
-								newTime));
-					},
-					_elm_lang$core$Task$sequence(
-						A2(_elm_lang$core$List$map, send, _p10)));
-			},
-			_elm_lang$core$Process$spawn(
-				A2(
-					_elm_lang$core$Task$andThen,
-					_elm_lang$core$Platform$sendToSelf(router),
-					_elm_lang$animation_frame$AnimationFrame$rAF)));
-	});
-var _elm_lang$animation_frame$AnimationFrame$Diff = function (a) {
-	return {ctor: 'Diff', _0: a};
-};
-var _elm_lang$animation_frame$AnimationFrame$diffs = function (tagger) {
-	return _elm_lang$animation_frame$AnimationFrame$subscription(
-		_elm_lang$animation_frame$AnimationFrame$Diff(tagger));
-};
-var _elm_lang$animation_frame$AnimationFrame$Time = function (a) {
-	return {ctor: 'Time', _0: a};
-};
-var _elm_lang$animation_frame$AnimationFrame$times = function (tagger) {
-	return _elm_lang$animation_frame$AnimationFrame$subscription(
-		_elm_lang$animation_frame$AnimationFrame$Time(tagger));
-};
-var _elm_lang$animation_frame$AnimationFrame$subMap = F2(
-	function (func, sub) {
-		var _p11 = sub;
-		if (_p11.ctor === 'Time') {
-			return _elm_lang$animation_frame$AnimationFrame$Time(
-				function (_p12) {
-					return func(
-						_p11._0(_p12));
-				});
-		} else {
-			return _elm_lang$animation_frame$AnimationFrame$Diff(
-				function (_p13) {
-					return func(
-						_p11._0(_p13));
-				});
-		}
-	});
-_elm_lang$core$Native_Platform.effectManagers['AnimationFrame'] = {pkg: 'elm-lang/animation-frame', init: _elm_lang$animation_frame$AnimationFrame$init, onEffects: _elm_lang$animation_frame$AnimationFrame$onEffects, onSelfMsg: _elm_lang$animation_frame$AnimationFrame$onSelfMsg, tag: 'sub', subMap: _elm_lang$animation_frame$AnimationFrame$subMap};
 
 //import Maybe, Native.Array, Native.List, Native.Utils, Result //
 
@@ -8892,119 +9106,1587 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
-var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
-var _elm_lang$html$Html_Events$targetChecked = A2(
-	_elm_lang$core$Json_Decode$at,
-	{
-		ctor: '::',
-		_0: 'target',
-		_1: {
-			ctor: '::',
-			_0: 'checked',
-			_1: {ctor: '[]'}
+var _ianmackenzie$elm_float_extra$Float_Extra$interpolateFrom = F3(
+	function (start, end, parameter) {
+		return (_elm_lang$core$Native_Utils.cmp(parameter, 0.5) < 1) ? (start + (parameter * (end - start))) : (end + ((1 - parameter) * (start - end)));
+	});
+var _ianmackenzie$elm_float_extra$Float_Extra$equalWithin = F3(
+	function (tolerance, firstValue, secondValue) {
+		return _elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(secondValue - firstValue),
+			tolerance) < 1;
+	});
+
+var _ianmackenzie$elm_geometry$Geometry_Types$Vector2d = function (a) {
+	return {ctor: 'Vector2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Vector3d = function (a) {
+	return {ctor: 'Vector3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Direction2d = function (a) {
+	return {ctor: 'Direction2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Direction3d = function (a) {
+	return {ctor: 'Direction3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Point2d = function (a) {
+	return {ctor: 'Point2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Point3d = function (a) {
+	return {ctor: 'Point3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Axis2d = function (a) {
+	return {ctor: 'Axis2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Axis3d = function (a) {
+	return {ctor: 'Axis3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Plane3d = function (a) {
+	return {ctor: 'Plane3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Frame2d = function (a) {
+	return {ctor: 'Frame2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Frame3d = function (a) {
+	return {ctor: 'Frame3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$SketchPlane3d = function (a) {
+	return {ctor: 'SketchPlane3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$LineSegment2d = function (a) {
+	return {ctor: 'LineSegment2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$LineSegment3d = function (a) {
+	return {ctor: 'LineSegment3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Triangle2d = function (a) {
+	return {ctor: 'Triangle2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Triangle3d = function (a) {
+	return {ctor: 'Triangle3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$BoundingBox2d = function (a) {
+	return {ctor: 'BoundingBox2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$BoundingBox3d = function (a) {
+	return {ctor: 'BoundingBox3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Rectangle2d = function (a) {
+	return {ctor: 'Rectangle2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Rectangle3d = function (a) {
+	return {ctor: 'Rectangle3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Block3d = function (a) {
+	return {ctor: 'Block3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Polyline2d = function (a) {
+	return {ctor: 'Polyline2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Polyline3d = function (a) {
+	return {ctor: 'Polyline3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Polygon2d = function (a) {
+	return {ctor: 'Polygon2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Circle2d = function (a) {
+	return {ctor: 'Circle2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Circle3d = function (a) {
+	return {ctor: 'Circle3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Ellipse2d = function (a) {
+	return {ctor: 'Ellipse2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Sphere3d = function (a) {
+	return {ctor: 'Sphere3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$LargeNegative = {ctor: 'LargeNegative'};
+var _ianmackenzie$elm_geometry$Geometry_Types$LargePositive = {ctor: 'LargePositive'};
+var _ianmackenzie$elm_geometry$Geometry_Types$SmallNegative = {ctor: 'SmallNegative'};
+var _ianmackenzie$elm_geometry$Geometry_Types$SmallPositive = {ctor: 'SmallPositive'};
+var _ianmackenzie$elm_geometry$Geometry_Types$Arc2d = function (a) {
+	return {ctor: 'Arc2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$Arc3d = function (a) {
+	return {ctor: 'Arc3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$QuadraticSpline2d = function (a) {
+	return {ctor: 'QuadraticSpline2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$QuadraticSpline3d = function (a) {
+	return {ctor: 'QuadraticSpline3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$CubicSpline2d = function (a) {
+	return {ctor: 'CubicSpline2d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$CubicSpline3d = function (a) {
+	return {ctor: 'CubicSpline3d', _0: a};
+};
+var _ianmackenzie$elm_geometry$Geometry_Types$EllipticalArc2d = function (a) {
+	return {ctor: 'EllipticalArc2d', _0: a};
+};
+
+var _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _ianmackenzie$elm_geometry$Bootstrap_Direction2d$unsafe = _ianmackenzie$elm_geometry$Geometry_Types$Direction2d;
+var _ianmackenzie$elm_geometry$Bootstrap_Direction2d$reverse = function (direction) {
+	var _p2 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(direction);
+	var x = _p2._0;
+	var y = _p2._1;
+	return _ianmackenzie$elm_geometry$Bootstrap_Direction2d$unsafe(
+		{ctor: '_Tuple2', _0: 0 - x, _1: 0 - y});
+};
+var _ianmackenzie$elm_geometry$Bootstrap_Direction2d$perpendicularTo = function (direction) {
+	var _p3 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(direction);
+	var x = _p3._0;
+	var y = _p3._1;
+	return _ianmackenzie$elm_geometry$Bootstrap_Direction2d$unsafe(
+		{ctor: '_Tuple2', _0: 0 - y, _1: x});
+};
+
+var _ianmackenzie$elm_geometry$Bootstrap_Axis2d$direction = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0.direction;
+};
+var _ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.originPoint;
+};
+
+var _ianmackenzie$elm_geometry$Bootstrap_Frame2d$yDirection = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0.yDirection;
+};
+var _ianmackenzie$elm_geometry$Bootstrap_Frame2d$xDirection = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.xDirection;
+};
+var _ianmackenzie$elm_geometry$Bootstrap_Frame2d$originPoint = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0.originPoint;
+};
+
+var _ianmackenzie$elm_geometry$Bootstrap_Point2d$coordinates = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _ianmackenzie$elm_geometry$Bootstrap_Point2d$fromCoordinates = _ianmackenzie$elm_geometry$Geometry_Types$Point2d;
+
+var _ianmackenzie$elm_geometry$Vector2d$yComponent = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0._1;
+};
+var _ianmackenzie$elm_geometry$Vector2d$xComponent = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0._0;
+};
+var _ianmackenzie$elm_geometry$Vector2d$components = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _ianmackenzie$elm_geometry$Vector2d$componentIn = F2(
+	function (direction_, vector) {
+		var _p6 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+		var vx = _p6._0;
+		var vy = _p6._1;
+		var _p7 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(direction_);
+		var dx = _p7._0;
+		var dy = _p7._1;
+		return (vx * dx) + (vy * dy);
+	});
+var _ianmackenzie$elm_geometry$Vector2d$polarComponents = function (vector) {
+	return _elm_lang$core$Basics$toPolar(
+		_ianmackenzie$elm_geometry$Vector2d$components(vector));
+};
+var _ianmackenzie$elm_geometry$Vector2d$squaredLength = function (vector) {
+	var _p8 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+	var x = _p8._0;
+	var y = _p8._1;
+	return (x * x) + (y * y);
+};
+var _ianmackenzie$elm_geometry$Vector2d$length = function (vector) {
+	return _elm_lang$core$Basics$sqrt(
+		_ianmackenzie$elm_geometry$Vector2d$squaredLength(vector));
+};
+var _ianmackenzie$elm_geometry$Vector2d$dotProduct = F2(
+	function (firstVector, secondVector) {
+		var _p9 = _ianmackenzie$elm_geometry$Vector2d$components(secondVector);
+		var x2 = _p9._0;
+		var y2 = _p9._1;
+		var _p10 = _ianmackenzie$elm_geometry$Vector2d$components(firstVector);
+		var x1 = _p10._0;
+		var y1 = _p10._1;
+		return (x1 * x2) + (y1 * y2);
+	});
+var _ianmackenzie$elm_geometry$Vector2d$crossProduct = F2(
+	function (firstVector, secondVector) {
+		var _p11 = _ianmackenzie$elm_geometry$Vector2d$components(secondVector);
+		var x2 = _p11._0;
+		var y2 = _p11._1;
+		var _p12 = _ianmackenzie$elm_geometry$Vector2d$components(firstVector);
+		var x1 = _p12._0;
+		var y1 = _p12._1;
+		return (x1 * y2) - (y1 * x2);
+	});
+var _ianmackenzie$elm_geometry$Vector2d$fromComponents = _ianmackenzie$elm_geometry$Geometry_Types$Vector2d;
+var _ianmackenzie$elm_geometry$Vector2d$fromPolarComponents = function (polarComponents_) {
+	return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+		_elm_lang$core$Basics$fromPolar(polarComponents_));
+};
+var _ianmackenzie$elm_geometry$Vector2d$from = F2(
+	function (firstPoint, secondPoint) {
+		var _p13 = _ianmackenzie$elm_geometry$Bootstrap_Point2d$coordinates(secondPoint);
+		var x2 = _p13._0;
+		var y2 = _p13._1;
+		var _p14 = _ianmackenzie$elm_geometry$Bootstrap_Point2d$coordinates(firstPoint);
+		var x1 = _p14._0;
+		var y1 = _p14._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: x2 - x1, _1: y2 - y1});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$withLength = F2(
+	function (length_, direction_) {
+		var _p15 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(direction_);
+		var dx = _p15._0;
+		var dy = _p15._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: length_ * dx, _1: length_ * dy});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$projectionIn = F2(
+	function (direction_, vector) {
+		return A2(
+			_ianmackenzie$elm_geometry$Vector2d$withLength,
+			A2(_ianmackenzie$elm_geometry$Vector2d$componentIn, direction_, vector),
+			direction_);
+	});
+var _ianmackenzie$elm_geometry$Vector2d$projectOnto = F2(
+	function (axis, vector) {
+		return A2(
+			_ianmackenzie$elm_geometry$Vector2d$projectionIn,
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$direction(axis),
+			vector);
+	});
+var _ianmackenzie$elm_geometry$Vector2d$interpolateFrom = F3(
+	function (v1, v2, t) {
+		var _p16 = _ianmackenzie$elm_geometry$Vector2d$components(v2);
+		var x2 = _p16._0;
+		var y2 = _p16._1;
+		var _p17 = _ianmackenzie$elm_geometry$Vector2d$components(v1);
+		var x1 = _p17._0;
+		var y1 = _p17._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{
+				ctor: '_Tuple2',
+				_0: A3(_ianmackenzie$elm_float_extra$Float_Extra$interpolateFrom, x1, x2, t),
+				_1: A3(_ianmackenzie$elm_float_extra$Float_Extra$interpolateFrom, y1, y2, t)
+			});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$sum = F2(
+	function (firstVector, secondVector) {
+		var _p18 = _ianmackenzie$elm_geometry$Vector2d$components(secondVector);
+		var x2 = _p18._0;
+		var y2 = _p18._1;
+		var _p19 = _ianmackenzie$elm_geometry$Vector2d$components(firstVector);
+		var x1 = _p19._0;
+		var y1 = _p19._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: x1 + x2, _1: y1 + y2});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$difference = F2(
+	function (firstVector, secondVector) {
+		var _p20 = _ianmackenzie$elm_geometry$Vector2d$components(secondVector);
+		var x2 = _p20._0;
+		var y2 = _p20._1;
+		var _p21 = _ianmackenzie$elm_geometry$Vector2d$components(firstVector);
+		var x1 = _p21._0;
+		var y1 = _p21._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: x1 - x2, _1: y1 - y2});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$equalWithin = F3(
+	function (tolerance, firstVector, secondVector) {
+		return _elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$Vector2d$squaredLength(
+				A2(_ianmackenzie$elm_geometry$Vector2d$difference, firstVector, secondVector)),
+			tolerance * tolerance) < 1;
+	});
+var _ianmackenzie$elm_geometry$Vector2d$reverse = function (vector) {
+	var _p22 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+	var x = _p22._0;
+	var y = _p22._1;
+	return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+		{ctor: '_Tuple2', _0: 0 - x, _1: 0 - y});
+};
+var _ianmackenzie$elm_geometry$Vector2d$scaleBy = F2(
+	function (scale, vector) {
+		var _p23 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+		var x = _p23._0;
+		var y = _p23._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: x * scale, _1: y * scale});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$lengthAndDirection = function (vector) {
+	var vectorLength = _ianmackenzie$elm_geometry$Vector2d$length(vector);
+	if (_elm_lang$core$Native_Utils.eq(vectorLength, 0.0)) {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		var normalizedVector = A2(_ianmackenzie$elm_geometry$Vector2d$scaleBy, 1 / vectorLength, vector);
+		var vectorDirection = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$unsafe(
+			_ianmackenzie$elm_geometry$Vector2d$components(normalizedVector));
+		return _elm_lang$core$Maybe$Just(
+			{ctor: '_Tuple2', _0: vectorLength, _1: vectorDirection});
+	}
+};
+var _ianmackenzie$elm_geometry$Vector2d$rotateBy = function (angle) {
+	var sine = _elm_lang$core$Basics$sin(angle);
+	var cosine = _elm_lang$core$Basics$cos(angle);
+	return function (vector) {
+		var _p24 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+		var x = _p24._0;
+		var y = _p24._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: (x * cosine) - (y * sine), _1: (y * cosine) + (x * sine)});
+	};
+};
+var _ianmackenzie$elm_geometry$Vector2d$rotateCounterclockwise = function (vector) {
+	var _p25 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+	var x = _p25._0;
+	var y = _p25._1;
+	return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+		{ctor: '_Tuple2', _0: 0 - y, _1: x});
+};
+var _ianmackenzie$elm_geometry$Vector2d$perpendicularTo = function (vector) {
+	return _ianmackenzie$elm_geometry$Vector2d$rotateCounterclockwise(vector);
+};
+var _ianmackenzie$elm_geometry$Vector2d$rotateClockwise = function (vector) {
+	var _p26 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+	var x = _p26._0;
+	var y = _p26._1;
+	return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+		{ctor: '_Tuple2', _0: y, _1: 0 - x});
+};
+var _ianmackenzie$elm_geometry$Vector2d$mirrorAcross = function (axis) {
+	var _p27 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(
+		_ianmackenzie$elm_geometry$Bootstrap_Axis2d$direction(axis));
+	var dx = _p27._0;
+	var dy = _p27._1;
+	var a = 1 - ((2 * dy) * dy);
+	var b = (2 * dx) * dy;
+	var c = 1 - ((2 * dx) * dx);
+	return function (vector) {
+		var _p28 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+		var vx = _p28._0;
+		var vy = _p28._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: (a * vx) + (b * vy), _1: (c * vy) + (b * vx)});
+	};
+};
+var _ianmackenzie$elm_geometry$Vector2d$relativeTo = F2(
+	function (frame, vector) {
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{
+				ctor: '_Tuple2',
+				_0: A2(
+					_ianmackenzie$elm_geometry$Vector2d$componentIn,
+					_ianmackenzie$elm_geometry$Bootstrap_Frame2d$xDirection(frame),
+					vector),
+				_1: A2(
+					_ianmackenzie$elm_geometry$Vector2d$componentIn,
+					_ianmackenzie$elm_geometry$Bootstrap_Frame2d$yDirection(frame),
+					vector)
+			});
+	});
+var _ianmackenzie$elm_geometry$Vector2d$placeIn = function (frame) {
+	var _p29 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(
+		_ianmackenzie$elm_geometry$Bootstrap_Frame2d$yDirection(frame));
+	var x2 = _p29._0;
+	var y2 = _p29._1;
+	var _p30 = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components(
+		_ianmackenzie$elm_geometry$Bootstrap_Frame2d$xDirection(frame));
+	var x1 = _p30._0;
+	var y1 = _p30._1;
+	return function (vector) {
+		var _p31 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+		var x = _p31._0;
+		var y = _p31._1;
+		return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			{ctor: '_Tuple2', _0: (x1 * x) + (x2 * y), _1: (y1 * x) + (y2 * y)});
+	};
+};
+var _ianmackenzie$elm_geometry$Vector2d$zero = _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+	{ctor: '_Tuple2', _0: 0, _1: 0});
+var _ianmackenzie$elm_geometry$Vector2d$direction = function (vector) {
+	if (_elm_lang$core$Native_Utils.eq(vector, _ianmackenzie$elm_geometry$Vector2d$zero)) {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		var normalizedVector = A2(
+			_ianmackenzie$elm_geometry$Vector2d$scaleBy,
+			1 / _ianmackenzie$elm_geometry$Vector2d$length(vector),
+			vector);
+		return _elm_lang$core$Maybe$Just(
+			_ianmackenzie$elm_geometry$Bootstrap_Direction2d$unsafe(
+				_ianmackenzie$elm_geometry$Vector2d$components(normalizedVector)));
+	}
+};
+var _ianmackenzie$elm_geometry$Vector2d$normalize = function (vector) {
+	return _elm_lang$core$Native_Utils.eq(vector, _ianmackenzie$elm_geometry$Vector2d$zero) ? _ianmackenzie$elm_geometry$Vector2d$zero : A2(
+		_ianmackenzie$elm_geometry$Vector2d$scaleBy,
+		1 / _ianmackenzie$elm_geometry$Vector2d$length(vector),
+		vector);
+};
+
+var _ianmackenzie$elm_geometry$Direction2d$reverse = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$reverse;
+var _ianmackenzie$elm_geometry$Direction2d$yComponent = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0._1;
+};
+var _ianmackenzie$elm_geometry$Direction2d$xComponent = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0._0;
+};
+var _ianmackenzie$elm_geometry$Direction2d$components = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$components;
+var _ianmackenzie$elm_geometry$Direction2d$toVector = function (direction) {
+	return _ianmackenzie$elm_geometry$Vector2d$fromComponents(
+		_ianmackenzie$elm_geometry$Direction2d$components(direction));
+};
+var _ianmackenzie$elm_geometry$Direction2d$componentIn = F2(
+	function (firstDirection, secondDirection) {
+		return A2(
+			_ianmackenzie$elm_geometry$Vector2d$componentIn,
+			firstDirection,
+			_ianmackenzie$elm_geometry$Direction2d$toVector(secondDirection));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$angleFrom = F2(
+	function (firstDirection, secondDirection) {
+		var secondVector = _ianmackenzie$elm_geometry$Direction2d$toVector(secondDirection);
+		var firstVector = _ianmackenzie$elm_geometry$Direction2d$toVector(firstDirection);
+		return A2(
+			_elm_lang$core$Basics$atan2,
+			A2(_ianmackenzie$elm_geometry$Vector2d$crossProduct, firstVector, secondVector),
+			A2(_ianmackenzie$elm_geometry$Vector2d$dotProduct, firstVector, secondVector));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$equalWithin = F3(
+	function (angle, firstDirection, secondDirection) {
+		return _elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(
+				A2(_ianmackenzie$elm_geometry$Direction2d$angleFrom, firstDirection, secondDirection)),
+			angle) < 1;
+	});
+var _ianmackenzie$elm_geometry$Direction2d$toAngle = function (direction) {
+	var _p4 = _ianmackenzie$elm_geometry$Direction2d$components(direction);
+	var xComponent_ = _p4._0;
+	var yComponent_ = _p4._1;
+	return A2(_elm_lang$core$Basics$atan2, yComponent_, xComponent_);
+};
+var _ianmackenzie$elm_geometry$Direction2d$perpendicularTo = _ianmackenzie$elm_geometry$Bootstrap_Direction2d$perpendicularTo;
+var _ianmackenzie$elm_geometry$Direction2d$orthonormalize = F2(
+	function (xVector, xyVector) {
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			function (xDirection) {
+				var yDirection = _ianmackenzie$elm_geometry$Direction2d$perpendicularTo(xDirection);
+				var perpendicularComponent = A2(_ianmackenzie$elm_geometry$Vector2d$componentIn, yDirection, xyVector);
+				return (_elm_lang$core$Native_Utils.cmp(perpendicularComponent, 0.0) > 0) ? _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: xDirection, _1: yDirection}) : ((_elm_lang$core$Native_Utils.cmp(perpendicularComponent, 0.0) < 0) ? _elm_lang$core$Maybe$Just(
+					{
+						ctor: '_Tuple2',
+						_0: xDirection,
+						_1: _ianmackenzie$elm_geometry$Direction2d$reverse(yDirection)
+					}) : _elm_lang$core$Maybe$Nothing);
+			},
+			_ianmackenzie$elm_geometry$Vector2d$direction(xVector));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$orthogonalize = F2(
+	function (xDirection, yDirection) {
+		return A2(
+			_ianmackenzie$elm_geometry$Direction2d$orthonormalize,
+			_ianmackenzie$elm_geometry$Direction2d$toVector(xDirection),
+			_ianmackenzie$elm_geometry$Direction2d$toVector(yDirection));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$from = F2(
+	function (firstPoint, secondPoint) {
+		return _ianmackenzie$elm_geometry$Vector2d$direction(
+			A2(_ianmackenzie$elm_geometry$Vector2d$from, firstPoint, secondPoint));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$unsafe = _ianmackenzie$elm_geometry$Geometry_Types$Direction2d;
+var _ianmackenzie$elm_geometry$Direction2d$fromAngle = function (angle) {
+	return _ianmackenzie$elm_geometry$Direction2d$unsafe(
+		{
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$cos(angle),
+			_1: _elm_lang$core$Basics$sin(angle)
+		});
+};
+var _ianmackenzie$elm_geometry$Direction2d$rotateClockwise = function (direction) {
+	var _p5 = _ianmackenzie$elm_geometry$Direction2d$components(direction);
+	var xComponent_ = _p5._0;
+	var yComponent_ = _p5._1;
+	return _ianmackenzie$elm_geometry$Direction2d$unsafe(
+		{ctor: '_Tuple2', _0: yComponent_, _1: 0 - xComponent_});
+};
+var _ianmackenzie$elm_geometry$Direction2d$rotateCounterclockwise = function (direction) {
+	var _p6 = _ianmackenzie$elm_geometry$Direction2d$components(direction);
+	var xComponent_ = _p6._0;
+	var yComponent_ = _p6._1;
+	return _ianmackenzie$elm_geometry$Direction2d$unsafe(
+		{ctor: '_Tuple2', _0: 0 - yComponent_, _1: xComponent_});
+};
+var _ianmackenzie$elm_geometry$Direction2d$negativeY = _ianmackenzie$elm_geometry$Direction2d$unsafe(
+	{ctor: '_Tuple2', _0: 0, _1: -1});
+var _ianmackenzie$elm_geometry$Direction2d$positiveY = _ianmackenzie$elm_geometry$Direction2d$unsafe(
+	{ctor: '_Tuple2', _0: 0, _1: 1});
+var _ianmackenzie$elm_geometry$Direction2d$negativeX = _ianmackenzie$elm_geometry$Direction2d$unsafe(
+	{ctor: '_Tuple2', _0: -1, _1: 0});
+var _ianmackenzie$elm_geometry$Direction2d$positiveX = _ianmackenzie$elm_geometry$Direction2d$unsafe(
+	{ctor: '_Tuple2', _0: 1, _1: 0});
+var _ianmackenzie$elm_geometry$Direction2d$y = _ianmackenzie$elm_geometry$Direction2d$unsafe(
+	{ctor: '_Tuple2', _0: 0, _1: 1});
+var _ianmackenzie$elm_geometry$Direction2d$x = _ianmackenzie$elm_geometry$Direction2d$unsafe(
+	{ctor: '_Tuple2', _0: 1, _1: 0});
+var _ianmackenzie$elm_geometry$Direction2d$toDirection = function (vector) {
+	return _ianmackenzie$elm_geometry$Direction2d$unsafe(
+		_ianmackenzie$elm_geometry$Vector2d$components(vector));
+};
+var _ianmackenzie$elm_geometry$Direction2d$rotateBy = F2(
+	function (angle, direction) {
+		return _ianmackenzie$elm_geometry$Direction2d$toDirection(
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$rotateBy,
+				angle,
+				_ianmackenzie$elm_geometry$Direction2d$toVector(direction)));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$mirrorAcross = F2(
+	function (axis, direction) {
+		return _ianmackenzie$elm_geometry$Direction2d$toDirection(
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$mirrorAcross,
+				axis,
+				_ianmackenzie$elm_geometry$Direction2d$toVector(direction)));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$relativeTo = F2(
+	function (frame, direction) {
+		return _ianmackenzie$elm_geometry$Direction2d$toDirection(
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$relativeTo,
+				frame,
+				_ianmackenzie$elm_geometry$Direction2d$toVector(direction)));
+	});
+var _ianmackenzie$elm_geometry$Direction2d$placeIn = F2(
+	function (frame, direction) {
+		return _ianmackenzie$elm_geometry$Direction2d$toDirection(
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$placeIn,
+				frame,
+				_ianmackenzie$elm_geometry$Direction2d$toVector(direction)));
+	});
+
+var _ianmackenzie$elm_geometry$Point2d$signedDistanceFrom = F2(
+	function (axis, point) {
+		var displacementVector = A2(
+			_ianmackenzie$elm_geometry$Vector2d$from,
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis),
+			point);
+		var directionVector = _ianmackenzie$elm_geometry$Direction2d$toVector(
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$direction(axis));
+		return A2(_ianmackenzie$elm_geometry$Vector2d$crossProduct, directionVector, displacementVector);
+	});
+var _ianmackenzie$elm_geometry$Point2d$signedDistanceAlong = F2(
+	function (axis, point) {
+		return A2(
+			_ianmackenzie$elm_geometry$Vector2d$componentIn,
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$direction(axis),
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$from,
+				_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis),
+				point));
+	});
+var _ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom = F2(
+	function (firstPoint, secondPoint) {
+		return _ianmackenzie$elm_geometry$Vector2d$squaredLength(
+			A2(_ianmackenzie$elm_geometry$Vector2d$from, firstPoint, secondPoint));
+	});
+var _ianmackenzie$elm_geometry$Point2d$distanceFrom = F2(
+	function (firstPoint, secondPoint) {
+		return _elm_lang$core$Basics$sqrt(
+			A2(_ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom, firstPoint, secondPoint));
+	});
+var _ianmackenzie$elm_geometry$Point2d$equalWithin = F3(
+	function (tolerance, firstPoint, secondPoint) {
+		return _elm_lang$core$Native_Utils.cmp(
+			A2(_ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom, firstPoint, secondPoint),
+			tolerance * tolerance) < 1;
+	});
+var _ianmackenzie$elm_geometry$Point2d$yCoordinate = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0._1;
+};
+var _ianmackenzie$elm_geometry$Point2d$xCoordinate = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0._0;
+};
+var _ianmackenzie$elm_geometry$Point2d$coordinates = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _ianmackenzie$elm_geometry$Point2d$polarCoordinates = function (point) {
+	return _elm_lang$core$Basics$toPolar(
+		_ianmackenzie$elm_geometry$Point2d$coordinates(point));
+};
+var _ianmackenzie$elm_geometry$Point2d$fromCoordinates = _ianmackenzie$elm_geometry$Geometry_Types$Point2d;
+var _ianmackenzie$elm_geometry$Point2d$fromPolarCoordinates = function (polarCoordinates_) {
+	return _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+		_elm_lang$core$Basics$fromPolar(polarCoordinates_));
+};
+var _ianmackenzie$elm_geometry$Point2d$interpolateFrom = F3(
+	function (p1, p2, t) {
+		var _p6 = _ianmackenzie$elm_geometry$Point2d$coordinates(p2);
+		var x2 = _p6._0;
+		var y2 = _p6._1;
+		var _p7 = _ianmackenzie$elm_geometry$Point2d$coordinates(p1);
+		var x1 = _p7._0;
+		var y1 = _p7._1;
+		return _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+			{
+				ctor: '_Tuple2',
+				_0: A3(_ianmackenzie$elm_float_extra$Float_Extra$interpolateFrom, x1, x2, t),
+				_1: A3(_ianmackenzie$elm_float_extra$Float_Extra$interpolateFrom, y1, y2, t)
+			});
+	});
+var _ianmackenzie$elm_geometry$Point2d$midpoint = F2(
+	function (firstPoint, secondPoint) {
+		return A3(_ianmackenzie$elm_geometry$Point2d$interpolateFrom, firstPoint, secondPoint, 0.5);
+	});
+var _ianmackenzie$elm_geometry$Point2d$circumcenter = F3(
+	function (p1, p2, p3) {
+		var c2 = A2(_ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom, p3, p1);
+		var b2 = A2(_ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom, p2, p3);
+		var a2 = A2(_ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom, p1, p2);
+		var t1 = a2 * ((b2 + c2) - a2);
+		var t2 = b2 * ((c2 + a2) - b2);
+		var t3 = c2 * ((a2 + b2) - c2);
+		var sum = (t1 + t2) + t3;
+		if (_elm_lang$core$Native_Utils.eq(sum, 0)) {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			var _p8 = _ianmackenzie$elm_geometry$Point2d$coordinates(p3);
+			var x3 = _p8._0;
+			var y3 = _p8._1;
+			var _p9 = _ianmackenzie$elm_geometry$Point2d$coordinates(p2);
+			var x2 = _p9._0;
+			var y2 = _p9._1;
+			var _p10 = _ianmackenzie$elm_geometry$Point2d$coordinates(p1);
+			var x1 = _p10._0;
+			var y1 = _p10._1;
+			var w3 = t3 / sum;
+			var w2 = t2 / sum;
+			var w1 = t1 / sum;
+			return _elm_lang$core$Maybe$Just(
+				_ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+					{ctor: '_Tuple2', _0: ((w1 * x3) + (w2 * x1)) + (w3 * x2), _1: ((w1 * y3) + (w2 * y1)) + (w3 * y2)}));
 		}
-	},
-	_elm_lang$core$Json_Decode$bool);
-var _elm_lang$html$Html_Events$targetValue = A2(
-	_elm_lang$core$Json_Decode$at,
-	{
-		ctor: '::',
-		_0: 'target',
-		_1: {
-			ctor: '::',
-			_0: 'value',
-			_1: {ctor: '[]'}
+	});
+var _ianmackenzie$elm_geometry$Point2d$translateBy = F2(
+	function (vector, point) {
+		var _p11 = _ianmackenzie$elm_geometry$Point2d$coordinates(point);
+		var px = _p11._0;
+		var py = _p11._1;
+		var _p12 = _ianmackenzie$elm_geometry$Vector2d$components(vector);
+		var vx = _p12._0;
+		var vy = _p12._1;
+		return _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+			{ctor: '_Tuple2', _0: px + vx, _1: py + vy});
+	});
+var _ianmackenzie$elm_geometry$Point2d$along = F2(
+	function (axis, distance) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$translateBy,
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$withLength,
+				distance,
+				_ianmackenzie$elm_geometry$Bootstrap_Axis2d$direction(axis)),
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis));
+	});
+var _ianmackenzie$elm_geometry$Point2d$translateIn = F3(
+	function (direction, distance, point) {
+		var _p13 = _ianmackenzie$elm_geometry$Point2d$coordinates(point);
+		var px = _p13._0;
+		var py = _p13._1;
+		var _p14 = _ianmackenzie$elm_geometry$Direction2d$components(direction);
+		var dx = _p14._0;
+		var dy = _p14._1;
+		return _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+			{ctor: '_Tuple2', _0: px + (distance * dx), _1: py + (distance * dy)});
+	});
+var _ianmackenzie$elm_geometry$Point2d$relativeTo = F2(
+	function (frame, point) {
+		return _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+			_ianmackenzie$elm_geometry$Vector2d$components(
+				A2(
+					_ianmackenzie$elm_geometry$Vector2d$relativeTo,
+					frame,
+					A2(
+						_ianmackenzie$elm_geometry$Vector2d$from,
+						_ianmackenzie$elm_geometry$Bootstrap_Frame2d$originPoint(frame),
+						point))));
+	});
+var _ianmackenzie$elm_geometry$Point2d$origin = _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+	{ctor: '_Tuple2', _0: 0, _1: 0});
+var _ianmackenzie$elm_geometry$Point2d$addTo = F2(
+	function (point, vector) {
+		return A2(_ianmackenzie$elm_geometry$Point2d$translateBy, vector, point);
+	});
+var _ianmackenzie$elm_geometry$Point2d$scaleAbout = F3(
+	function (centerPoint, scale, point) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$addTo,
+			centerPoint,
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$scaleBy,
+				scale,
+				A2(_ianmackenzie$elm_geometry$Vector2d$from, centerPoint, point)));
+	});
+var _ianmackenzie$elm_geometry$Point2d$rotateAround = F2(
+	function (centerPoint, angle) {
+		return function (_p15) {
+			return A2(
+				_ianmackenzie$elm_geometry$Point2d$addTo,
+				centerPoint,
+				A2(
+					_ianmackenzie$elm_geometry$Vector2d$rotateBy,
+					angle,
+					A2(_ianmackenzie$elm_geometry$Vector2d$from, centerPoint, _p15)));
+		};
+	});
+var _ianmackenzie$elm_geometry$Point2d$mirrorAcross = function (axis) {
+	return function (_p16) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$addTo,
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis),
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$mirrorAcross,
+				axis,
+				A2(
+					_ianmackenzie$elm_geometry$Vector2d$from,
+					_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis),
+					_p16)));
+	};
+};
+var _ianmackenzie$elm_geometry$Point2d$projectOnto = function (axis) {
+	return function (_p17) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$addTo,
+			_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis),
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$projectOnto,
+				axis,
+				A2(
+					_ianmackenzie$elm_geometry$Vector2d$from,
+					_ianmackenzie$elm_geometry$Bootstrap_Axis2d$originPoint(axis),
+					_p17)));
+	};
+};
+var _ianmackenzie$elm_geometry$Point2d$placeIn = F2(
+	function (frame, point) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$addTo,
+			_ianmackenzie$elm_geometry$Bootstrap_Frame2d$originPoint(frame),
+			A2(
+				_ianmackenzie$elm_geometry$Vector2d$placeIn,
+				frame,
+				_ianmackenzie$elm_geometry$Vector2d$fromComponents(
+					_ianmackenzie$elm_geometry$Point2d$coordinates(point))));
+	});
+var _ianmackenzie$elm_geometry$Point2d$fromCoordinatesIn = F2(
+	function (frame, localCoordinates) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$placeIn,
+			frame,
+			_ianmackenzie$elm_geometry$Point2d$fromCoordinates(localCoordinates));
+	});
+var _ianmackenzie$elm_geometry$Point2d$fromPolarCoordinatesIn = F2(
+	function (frame, polarCoordinates_) {
+		return A2(
+			_ianmackenzie$elm_geometry$Point2d$placeIn,
+			frame,
+			_ianmackenzie$elm_geometry$Point2d$fromPolarCoordinates(polarCoordinates_));
+	});
+
+var _ianmackenzie$elm_geometry$Axis2d$direction = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0.direction;
+};
+var _ianmackenzie$elm_geometry$Axis2d$originPoint = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.originPoint;
+};
+var _ianmackenzie$elm_geometry$Axis2d$withDirection = F2(
+	function (direction_, originPoint_) {
+		return _ianmackenzie$elm_geometry$Geometry_Types$Axis2d(
+			{originPoint: originPoint_, direction: direction_});
+	});
+var _ianmackenzie$elm_geometry$Axis2d$through = F2(
+	function (point, direction_) {
+		return _ianmackenzie$elm_geometry$Geometry_Types$Axis2d(
+			{originPoint: point, direction: direction_});
+	});
+var _ianmackenzie$elm_geometry$Axis2d$reverse = function (_p4) {
+	var _p5 = _p4;
+	var _p6 = _p5._0;
+	return A2(
+		_ianmackenzie$elm_geometry$Axis2d$through,
+		_p6.originPoint,
+		_ianmackenzie$elm_geometry$Direction2d$reverse(_p6.direction));
+};
+var _ianmackenzie$elm_geometry$Axis2d$moveTo = F2(
+	function (newOrigin, _p7) {
+		var _p8 = _p7;
+		return A2(_ianmackenzie$elm_geometry$Axis2d$through, newOrigin, _p8._0.direction);
+	});
+var _ianmackenzie$elm_geometry$Axis2d$rotateAround = F2(
+	function (centerPoint, angle) {
+		var rotateDirection = _ianmackenzie$elm_geometry$Direction2d$rotateBy(angle);
+		var rotatePoint = A2(_ianmackenzie$elm_geometry$Point2d$rotateAround, centerPoint, angle);
+		return function (_p9) {
+			var _p10 = _p9;
+			var _p11 = _p10._0;
+			return A2(
+				_ianmackenzie$elm_geometry$Axis2d$through,
+				rotatePoint(_p11.originPoint),
+				rotateDirection(_p11.direction));
+		};
+	});
+var _ianmackenzie$elm_geometry$Axis2d$translateBy = F2(
+	function (vector, _p12) {
+		var _p13 = _p12;
+		var _p14 = _p13._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Axis2d$through,
+			A2(_ianmackenzie$elm_geometry$Point2d$translateBy, vector, _p14.originPoint),
+			_p14.direction);
+	});
+var _ianmackenzie$elm_geometry$Axis2d$translateIn = F3(
+	function (translationDirection, distance, axis) {
+		return A2(
+			_ianmackenzie$elm_geometry$Axis2d$translateBy,
+			A2(_ianmackenzie$elm_geometry$Vector2d$withLength, distance, translationDirection),
+			axis);
+	});
+var _ianmackenzie$elm_geometry$Axis2d$mirrorAcross = F2(
+	function (otherAxis, _p15) {
+		var _p16 = _p15;
+		var _p17 = _p16._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Axis2d$through,
+			A2(_ianmackenzie$elm_geometry$Point2d$mirrorAcross, otherAxis, _p17.originPoint),
+			A2(_ianmackenzie$elm_geometry$Direction2d$mirrorAcross, otherAxis, _p17.direction));
+	});
+var _ianmackenzie$elm_geometry$Axis2d$relativeTo = F2(
+	function (frame, _p18) {
+		var _p19 = _p18;
+		var _p20 = _p19._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Axis2d$through,
+			A2(_ianmackenzie$elm_geometry$Point2d$relativeTo, frame, _p20.originPoint),
+			A2(_ianmackenzie$elm_geometry$Direction2d$relativeTo, frame, _p20.direction));
+	});
+var _ianmackenzie$elm_geometry$Axis2d$placeIn = F2(
+	function (frame, _p21) {
+		var _p22 = _p21;
+		var _p23 = _p22._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Axis2d$through,
+			A2(_ianmackenzie$elm_geometry$Point2d$placeIn, frame, _p23.originPoint),
+			A2(_ianmackenzie$elm_geometry$Direction2d$placeIn, frame, _p23.direction));
+	});
+var _ianmackenzie$elm_geometry$Axis2d$y = A2(_ianmackenzie$elm_geometry$Axis2d$through, _ianmackenzie$elm_geometry$Point2d$origin, _ianmackenzie$elm_geometry$Direction2d$y);
+var _ianmackenzie$elm_geometry$Axis2d$x = A2(_ianmackenzie$elm_geometry$Axis2d$through, _ianmackenzie$elm_geometry$Point2d$origin, _ianmackenzie$elm_geometry$Direction2d$x);
+
+var _ianmackenzie$elm_geometry$Frame2d$yAxis = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1._0;
+	return A2(_ianmackenzie$elm_geometry$Axis2d$through, _p2.originPoint, _p2.yDirection);
+};
+var _ianmackenzie$elm_geometry$Frame2d$xAxis = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4._0;
+	return A2(_ianmackenzie$elm_geometry$Axis2d$through, _p5.originPoint, _p5.xDirection);
+};
+var _ianmackenzie$elm_geometry$Frame2d$yDirection = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0.yDirection;
+};
+var _ianmackenzie$elm_geometry$Frame2d$xDirection = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0.xDirection;
+};
+var _ianmackenzie$elm_geometry$Frame2d$isRightHanded = function (frame) {
+	var yVector = _ianmackenzie$elm_geometry$Direction2d$toVector(
+		_ianmackenzie$elm_geometry$Frame2d$yDirection(frame));
+	var xVector = _ianmackenzie$elm_geometry$Direction2d$toVector(
+		_ianmackenzie$elm_geometry$Frame2d$xDirection(frame));
+	return _elm_lang$core$Native_Utils.cmp(
+		A2(_ianmackenzie$elm_geometry$Vector2d$crossProduct, xVector, yVector),
+		0) > 0;
+};
+var _ianmackenzie$elm_geometry$Frame2d$originPoint = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0.originPoint;
+};
+var _ianmackenzie$elm_geometry$Frame2d$unsafe = _ianmackenzie$elm_geometry$Geometry_Types$Frame2d;
+var _ianmackenzie$elm_geometry$Frame2d$atPoint = function (point) {
+	return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+		{originPoint: point, xDirection: _ianmackenzie$elm_geometry$Direction2d$x, yDirection: _ianmackenzie$elm_geometry$Direction2d$y});
+};
+var _ianmackenzie$elm_geometry$Frame2d$atCoordinates = function (coordinates) {
+	return _ianmackenzie$elm_geometry$Frame2d$atPoint(
+		_ianmackenzie$elm_geometry$Point2d$fromCoordinates(coordinates));
+};
+var _ianmackenzie$elm_geometry$Frame2d$reverseX = function (frame) {
+	return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+		{
+			originPoint: _ianmackenzie$elm_geometry$Frame2d$originPoint(frame),
+			xDirection: _ianmackenzie$elm_geometry$Direction2d$reverse(
+				_ianmackenzie$elm_geometry$Frame2d$xDirection(frame)),
+			yDirection: _ianmackenzie$elm_geometry$Frame2d$yDirection(frame)
+		});
+};
+var _ianmackenzie$elm_geometry$Frame2d$reverseY = function (frame) {
+	return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+		{
+			originPoint: _ianmackenzie$elm_geometry$Frame2d$originPoint(frame),
+			xDirection: _ianmackenzie$elm_geometry$Frame2d$xDirection(frame),
+			yDirection: _ianmackenzie$elm_geometry$Direction2d$reverse(
+				_ianmackenzie$elm_geometry$Frame2d$yDirection(frame))
+		});
+};
+var _ianmackenzie$elm_geometry$Frame2d$moveTo = F2(
+	function (newOrigin, frame) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: newOrigin,
+				xDirection: _ianmackenzie$elm_geometry$Frame2d$xDirection(frame),
+				yDirection: _ianmackenzie$elm_geometry$Frame2d$yDirection(frame)
+			});
+	});
+var _ianmackenzie$elm_geometry$Frame2d$rotateBy = F2(
+	function (angle, frame) {
+		var rotateDirection = _ianmackenzie$elm_geometry$Direction2d$rotateBy(angle);
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: _ianmackenzie$elm_geometry$Frame2d$originPoint(frame),
+				xDirection: rotateDirection(
+					_ianmackenzie$elm_geometry$Frame2d$xDirection(frame)),
+				yDirection: rotateDirection(
+					_ianmackenzie$elm_geometry$Frame2d$yDirection(frame))
+			});
+	});
+var _ianmackenzie$elm_geometry$Frame2d$rotateAround = F2(
+	function (centerPoint, angle) {
+		var rotateDirection = _ianmackenzie$elm_geometry$Direction2d$rotateBy(angle);
+		var rotatePoint = A2(_ianmackenzie$elm_geometry$Point2d$rotateAround, centerPoint, angle);
+		return function (frame) {
+			return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+				{
+					originPoint: rotatePoint(
+						_ianmackenzie$elm_geometry$Frame2d$originPoint(frame)),
+					xDirection: rotateDirection(
+						_ianmackenzie$elm_geometry$Frame2d$xDirection(frame)),
+					yDirection: rotateDirection(
+						_ianmackenzie$elm_geometry$Frame2d$yDirection(frame))
+				});
+		};
+	});
+var _ianmackenzie$elm_geometry$Frame2d$translateBy = F2(
+	function (vector, frame) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: A2(
+					_ianmackenzie$elm_geometry$Point2d$translateBy,
+					vector,
+					_ianmackenzie$elm_geometry$Frame2d$originPoint(frame)),
+				xDirection: _ianmackenzie$elm_geometry$Frame2d$xDirection(frame),
+				yDirection: _ianmackenzie$elm_geometry$Frame2d$yDirection(frame)
+			});
+	});
+var _ianmackenzie$elm_geometry$Frame2d$translateIn = F3(
+	function (direction, distance, frame) {
+		return A2(
+			_ianmackenzie$elm_geometry$Frame2d$translateBy,
+			A2(_ianmackenzie$elm_geometry$Vector2d$withLength, distance, direction),
+			frame);
+	});
+var _ianmackenzie$elm_geometry$Frame2d$translateAlongOwn = F3(
+	function (axis, distance, frame) {
+		var displacement = A2(
+			_ianmackenzie$elm_geometry$Vector2d$withLength,
+			distance,
+			_ianmackenzie$elm_geometry$Axis2d$direction(
+				axis(frame)));
+		return A2(_ianmackenzie$elm_geometry$Frame2d$translateBy, displacement, frame);
+	});
+var _ianmackenzie$elm_geometry$Frame2d$mirrorAcross = function (axis) {
+	var mirrorDirection = _ianmackenzie$elm_geometry$Direction2d$mirrorAcross(axis);
+	var mirrorPoint = _ianmackenzie$elm_geometry$Point2d$mirrorAcross(axis);
+	return function (frame) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: mirrorPoint(
+					_ianmackenzie$elm_geometry$Frame2d$originPoint(frame)),
+				xDirection: mirrorDirection(
+					_ianmackenzie$elm_geometry$Frame2d$xDirection(frame)),
+				yDirection: mirrorDirection(
+					_ianmackenzie$elm_geometry$Frame2d$yDirection(frame))
+			});
+	};
+};
+var _ianmackenzie$elm_geometry$Frame2d$relativeTo = function (otherFrame) {
+	var relativeDirection = _ianmackenzie$elm_geometry$Direction2d$relativeTo(otherFrame);
+	var relativePoint = _ianmackenzie$elm_geometry$Point2d$relativeTo(otherFrame);
+	return function (frame) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: relativePoint(
+					_ianmackenzie$elm_geometry$Frame2d$originPoint(frame)),
+				xDirection: relativeDirection(
+					_ianmackenzie$elm_geometry$Frame2d$xDirection(frame)),
+				yDirection: relativeDirection(
+					_ianmackenzie$elm_geometry$Frame2d$yDirection(frame))
+			});
+	};
+};
+var _ianmackenzie$elm_geometry$Frame2d$placeIn = function (otherFrame) {
+	var placeDirection = _ianmackenzie$elm_geometry$Direction2d$placeIn(otherFrame);
+	var placePoint = _ianmackenzie$elm_geometry$Point2d$placeIn(otherFrame);
+	return function (frame) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: placePoint(
+					_ianmackenzie$elm_geometry$Frame2d$originPoint(frame)),
+				xDirection: placeDirection(
+					_ianmackenzie$elm_geometry$Frame2d$xDirection(frame)),
+				yDirection: placeDirection(
+					_ianmackenzie$elm_geometry$Frame2d$yDirection(frame))
+			});
+	};
+};
+var _ianmackenzie$elm_geometry$Frame2d$withYDirection = F2(
+	function (yDirection_, originPoint_) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: originPoint_,
+				xDirection: _ianmackenzie$elm_geometry$Direction2d$rotateClockwise(yDirection_),
+				yDirection: yDirection_
+			});
+	});
+var _ianmackenzie$elm_geometry$Frame2d$withXDirection = F2(
+	function (xDirection_, originPoint_) {
+		return _ianmackenzie$elm_geometry$Frame2d$unsafe(
+			{
+				originPoint: originPoint_,
+				xDirection: xDirection_,
+				yDirection: _ianmackenzie$elm_geometry$Direction2d$rotateCounterclockwise(xDirection_)
+			});
+	});
+var _ianmackenzie$elm_geometry$Frame2d$xy = _ianmackenzie$elm_geometry$Frame2d$atPoint(_ianmackenzie$elm_geometry$Point2d$origin);
+
+var _ianmackenzie$elm_geometry$BoundingBox2d$alwaysFalse = F2(
+	function (firstBox, secondBox) {
+		return false;
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$midY = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1._0;
+	return _p2.minY + (0.5 * (_p2.maxY - _p2.minY));
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$midX = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4._0;
+	return _p5.minX + (0.5 * (_p5.maxX - _p5.minX));
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$centroid = function (boundingBox) {
+	return _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+		{
+			ctor: '_Tuple2',
+			_0: _ianmackenzie$elm_geometry$BoundingBox2d$midX(boundingBox),
+			_1: _ianmackenzie$elm_geometry$BoundingBox2d$midY(boundingBox)
+		});
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$maxY = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0.maxY;
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$minY = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0.minY;
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$maxX = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0.maxX;
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$minX = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0.minX;
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$dimensions = function (boundingBox) {
+	return {
+		ctor: '_Tuple2',
+		_0: _ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox) - _ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox),
+		_1: _ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox) - _ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox)
+	};
+};
+var _ianmackenzie$elm_geometry$BoundingBox2d$contains = F2(
+	function (point, boundingBox) {
+		var _p14 = _ianmackenzie$elm_geometry$Point2d$coordinates(point);
+		var x = _p14._0;
+		var y = _p14._1;
+		return ((_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox),
+			x) < 1) && (_elm_lang$core$Native_Utils.cmp(
+			x,
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox)) < 1)) && ((_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox),
+			y) < 1) && (_elm_lang$core$Native_Utils.cmp(
+			y,
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox)) < 1));
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$intersects = F2(
+	function (other, boundingBox) {
+		return (_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(other)) < 1) && ((_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(other)) > -1) && ((_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(other)) < 1) && (_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(other)) > -1)));
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$overlapAmount = F2(
+	function (firstBox, secondBox) {
+		var yOverlap = A2(
+			_elm_lang$core$Basics$min,
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(secondBox)) - A2(
+			_elm_lang$core$Basics$max,
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(secondBox));
+		var xOverlap = A2(
+			_elm_lang$core$Basics$min,
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(secondBox)) - A2(
+			_elm_lang$core$Basics$max,
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(secondBox));
+		return ((_elm_lang$core$Native_Utils.cmp(xOverlap, 0) > -1) && (_elm_lang$core$Native_Utils.cmp(yOverlap, 0) > -1)) ? _elm_lang$core$Maybe$Just(
+			A2(_elm_lang$core$Basics$min, xOverlap, yOverlap)) : _elm_lang$core$Maybe$Nothing;
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$overlappingBy = F2(
+	function (order, tolerance) {
+		var _p15 = order;
+		switch (_p15.ctor) {
+			case 'LT':
+				return (_elm_lang$core$Native_Utils.cmp(tolerance, 0) > 0) ? F2(
+					function (firstBox, secondBox) {
+						var _p16 = A2(_ianmackenzie$elm_geometry$BoundingBox2d$overlapAmount, firstBox, secondBox);
+						if (_p16.ctor === 'Just') {
+							return _elm_lang$core$Native_Utils.cmp(_p16._0, tolerance) < 0;
+						} else {
+							return true;
+						}
+					}) : (_elm_lang$core$Native_Utils.eq(tolerance, 0) ? F2(
+					function (firstBox, secondBox) {
+						return _elm_lang$core$Native_Utils.eq(
+							A2(_ianmackenzie$elm_geometry$BoundingBox2d$overlapAmount, firstBox, secondBox),
+							_elm_lang$core$Maybe$Nothing);
+					}) : _ianmackenzie$elm_geometry$BoundingBox2d$alwaysFalse);
+			case 'GT':
+				return (_elm_lang$core$Native_Utils.cmp(tolerance, 0) > -1) ? F2(
+					function (firstBox, secondBox) {
+						var _p17 = A2(_ianmackenzie$elm_geometry$BoundingBox2d$overlapAmount, firstBox, secondBox);
+						if (_p17.ctor === 'Just') {
+							return _elm_lang$core$Native_Utils.cmp(_p17._0, tolerance) > 0;
+						} else {
+							return false;
+						}
+					}) : F2(
+					function (firstBox, secondBox) {
+						return !_elm_lang$core$Native_Utils.eq(
+							A2(_ianmackenzie$elm_geometry$BoundingBox2d$overlapAmount, firstBox, secondBox),
+							_elm_lang$core$Maybe$Nothing);
+					});
+			default:
+				if (_elm_lang$core$Native_Utils.cmp(tolerance, 0) > -1) {
+					var expected = _elm_lang$core$Maybe$Just(tolerance);
+					return F2(
+						function (firstBox, secondBox) {
+							return _elm_lang$core$Native_Utils.eq(
+								A2(_ianmackenzie$elm_geometry$BoundingBox2d$overlapAmount, firstBox, secondBox),
+								expected);
+						});
+				} else {
+					return _ianmackenzie$elm_geometry$BoundingBox2d$alwaysFalse;
+				}
 		}
-	},
-	_elm_lang$core$Json_Decode$string);
-var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
-var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
-var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
-var _elm_lang$html$Html_Events$onFocus = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'focus',
-		_elm_lang$core$Json_Decode$succeed(msg));
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$squaredSeparationAmount = F2(
+	function (firstBox, secondBox) {
+		var ySeparation = A2(
+			_elm_lang$core$Basics$max,
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(secondBox)) - A2(
+			_elm_lang$core$Basics$min,
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(secondBox));
+		var xSeparation = A2(
+			_elm_lang$core$Basics$max,
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(secondBox)) - A2(
+			_elm_lang$core$Basics$min,
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(firstBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(secondBox));
+		return ((_elm_lang$core$Native_Utils.cmp(xSeparation, 0) > 0) && (_elm_lang$core$Native_Utils.cmp(ySeparation, 0) > 0)) ? _elm_lang$core$Maybe$Just((xSeparation * xSeparation) + (ySeparation * ySeparation)) : ((_elm_lang$core$Native_Utils.cmp(xSeparation, 0) > 0) ? _elm_lang$core$Maybe$Just(xSeparation * xSeparation) : ((_elm_lang$core$Native_Utils.cmp(ySeparation, 0) > 0) ? _elm_lang$core$Maybe$Just(ySeparation * ySeparation) : ((_elm_lang$core$Native_Utils.eq(xSeparation, 0) || _elm_lang$core$Native_Utils.eq(ySeparation, 0)) ? _elm_lang$core$Maybe$Just(0) : _elm_lang$core$Maybe$Nothing)));
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$separatedBy = F2(
+	function (order, tolerance) {
+		var _p18 = order;
+		switch (_p18.ctor) {
+			case 'LT':
+				return (_elm_lang$core$Native_Utils.cmp(tolerance, 0) > 0) ? F2(
+					function (firstBox, secondBox) {
+						var _p19 = A2(_ianmackenzie$elm_geometry$BoundingBox2d$squaredSeparationAmount, firstBox, secondBox);
+						if (_p19.ctor === 'Just') {
+							return _elm_lang$core$Native_Utils.cmp(_p19._0, tolerance * tolerance) < 0;
+						} else {
+							return true;
+						}
+					}) : (_elm_lang$core$Native_Utils.eq(tolerance, 0) ? F2(
+					function (firstBox, secondBox) {
+						return _elm_lang$core$Native_Utils.eq(
+							A2(_ianmackenzie$elm_geometry$BoundingBox2d$squaredSeparationAmount, firstBox, secondBox),
+							_elm_lang$core$Maybe$Nothing);
+					}) : _ianmackenzie$elm_geometry$BoundingBox2d$alwaysFalse);
+			case 'GT':
+				return (_elm_lang$core$Native_Utils.cmp(tolerance, 0) > -1) ? F2(
+					function (firstBox, secondBox) {
+						var _p20 = A2(_ianmackenzie$elm_geometry$BoundingBox2d$squaredSeparationAmount, firstBox, secondBox);
+						if (_p20.ctor === 'Just') {
+							return _elm_lang$core$Native_Utils.cmp(_p20._0, tolerance * tolerance) > 0;
+						} else {
+							return false;
+						}
+					}) : F2(
+					function (firstBox, secondBox) {
+						return !_elm_lang$core$Native_Utils.eq(
+							A2(_ianmackenzie$elm_geometry$BoundingBox2d$squaredSeparationAmount, firstBox, secondBox),
+							_elm_lang$core$Maybe$Nothing);
+					});
+			default:
+				if (_elm_lang$core$Native_Utils.cmp(tolerance, 0) > -1) {
+					var expected = _elm_lang$core$Maybe$Just(tolerance * tolerance);
+					return F2(
+						function (firstBox, secondBox) {
+							return _elm_lang$core$Native_Utils.eq(
+								A2(_ianmackenzie$elm_geometry$BoundingBox2d$squaredSeparationAmount, firstBox, secondBox),
+								expected);
+						});
+				} else {
+					return _ianmackenzie$elm_geometry$BoundingBox2d$alwaysFalse;
+				}
+		}
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$isContainedIn = F2(
+	function (other, boundingBox) {
+		return ((_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(other),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox)) < 1) && (_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxX(other)) < 1)) && ((_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(other),
+			_ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox)) < 1) && (_elm_lang$core$Native_Utils.cmp(
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox),
+			_ianmackenzie$elm_geometry$BoundingBox2d$maxY(other)) < 1));
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$extrema = function (_p21) {
+	var _p22 = _p21;
+	return _p22._0;
 };
-var _elm_lang$html$Html_Events$onBlur = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'blur',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema = function (extrema_) {
+	return ((_elm_lang$core$Native_Utils.cmp(extrema_.minX, extrema_.maxX) < 1) && (_elm_lang$core$Native_Utils.cmp(extrema_.minY, extrema_.maxY) < 1)) ? _ianmackenzie$elm_geometry$Geometry_Types$BoundingBox2d(extrema_) : _ianmackenzie$elm_geometry$Geometry_Types$BoundingBox2d(
+		{
+			minX: A2(_elm_lang$core$Basics$min, extrema_.minX, extrema_.maxX),
+			maxX: A2(_elm_lang$core$Basics$max, extrema_.minX, extrema_.maxX),
+			minY: A2(_elm_lang$core$Basics$min, extrema_.minY, extrema_.maxY),
+			maxY: A2(_elm_lang$core$Basics$max, extrema_.minY, extrema_.maxY)
+		});
 };
-var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
-	_elm_lang$html$Html_Events$defaultOptions,
-	{preventDefault: true});
-var _elm_lang$html$Html_Events$onSubmit = function (msg) {
-	return A3(
-		_elm_lang$html$Html_Events$onWithOptions,
-		'submit',
-		_elm_lang$html$Html_Events$onSubmitOptions,
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$BoundingBox2d$singleton = function (point) {
+	var _p23 = _ianmackenzie$elm_geometry$Point2d$coordinates(point);
+	var x = _p23._0;
+	var y = _p23._1;
+	return _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+		{minX: x, maxX: x, minY: y, maxY: y});
 };
-var _elm_lang$html$Html_Events$onCheck = function (tagger) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'change',
-		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+var _ianmackenzie$elm_geometry$BoundingBox2d$from = F2(
+	function (firstPoint, secondPoint) {
+		var _p24 = _ianmackenzie$elm_geometry$Point2d$coordinates(secondPoint);
+		var x2 = _p24._0;
+		var y2 = _p24._1;
+		var _p25 = _ianmackenzie$elm_geometry$Point2d$coordinates(firstPoint);
+		var x1 = _p25._0;
+		var y1 = _p25._1;
+		return _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+			{
+				minX: A2(_elm_lang$core$Basics$min, x1, x2),
+				maxX: A2(_elm_lang$core$Basics$max, x1, x2),
+				minY: A2(_elm_lang$core$Basics$min, y1, y2),
+				maxY: A2(_elm_lang$core$Basics$max, y1, y2)
+			});
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$hull = F2(
+	function (firstBox, secondBox) {
+		return _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+			{
+				minX: A2(
+					_elm_lang$core$Basics$min,
+					_ianmackenzie$elm_geometry$BoundingBox2d$minX(firstBox),
+					_ianmackenzie$elm_geometry$BoundingBox2d$minX(secondBox)),
+				maxX: A2(
+					_elm_lang$core$Basics$max,
+					_ianmackenzie$elm_geometry$BoundingBox2d$maxX(firstBox),
+					_ianmackenzie$elm_geometry$BoundingBox2d$maxX(secondBox)),
+				minY: A2(
+					_elm_lang$core$Basics$min,
+					_ianmackenzie$elm_geometry$BoundingBox2d$minY(firstBox),
+					_ianmackenzie$elm_geometry$BoundingBox2d$minY(secondBox)),
+				maxY: A2(
+					_elm_lang$core$Basics$max,
+					_ianmackenzie$elm_geometry$BoundingBox2d$maxY(firstBox),
+					_ianmackenzie$elm_geometry$BoundingBox2d$maxY(secondBox))
+			});
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$aggregate = function (boundingBoxes) {
+	var _p26 = boundingBoxes;
+	if (_p26.ctor === '::') {
+		return _elm_lang$core$Maybe$Just(
+			A3(_elm_lang$core$List$foldl, _ianmackenzie$elm_geometry$BoundingBox2d$hull, _p26._0, _p26._1));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
 };
-var _elm_lang$html$Html_Events$onInput = function (tagger) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'input',
-		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+var _ianmackenzie$elm_geometry$BoundingBox2d$containingPoints = function (points) {
+	return _ianmackenzie$elm_geometry$BoundingBox2d$aggregate(
+		A2(_elm_lang$core$List$map, _ianmackenzie$elm_geometry$BoundingBox2d$singleton, points));
 };
-var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'mouseout',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$BoundingBox2d$intersection = F2(
+	function (firstBox, secondBox) {
+		return A2(_ianmackenzie$elm_geometry$BoundingBox2d$intersects, firstBox, secondBox) ? _elm_lang$core$Maybe$Just(
+			_ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+				{
+					minX: A2(
+						_elm_lang$core$Basics$max,
+						_ianmackenzie$elm_geometry$BoundingBox2d$minX(firstBox),
+						_ianmackenzie$elm_geometry$BoundingBox2d$minX(secondBox)),
+					maxX: A2(
+						_elm_lang$core$Basics$min,
+						_ianmackenzie$elm_geometry$BoundingBox2d$maxX(firstBox),
+						_ianmackenzie$elm_geometry$BoundingBox2d$maxX(secondBox)),
+					minY: A2(
+						_elm_lang$core$Basics$max,
+						_ianmackenzie$elm_geometry$BoundingBox2d$minY(firstBox),
+						_ianmackenzie$elm_geometry$BoundingBox2d$minY(secondBox)),
+					maxY: A2(
+						_elm_lang$core$Basics$min,
+						_ianmackenzie$elm_geometry$BoundingBox2d$maxY(firstBox),
+						_ianmackenzie$elm_geometry$BoundingBox2d$maxY(secondBox))
+				})) : _elm_lang$core$Maybe$Nothing;
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$scaleAbout = F3(
+	function (point, scale, boundingBox) {
+		var _p27 = _ianmackenzie$elm_geometry$Point2d$coordinates(point);
+		var x0 = _p27._0;
+		var y0 = _p27._1;
+		return (_elm_lang$core$Native_Utils.cmp(scale, 0) > -1) ? _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+			{
+				minX: x0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox) - x0)),
+				maxX: x0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox) - x0)),
+				minY: y0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox) - y0)),
+				maxY: y0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox) - y0))
+			}) : _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+			{
+				minX: x0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox) - x0)),
+				maxX: x0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox) - x0)),
+				minY: y0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox) - y0)),
+				maxY: y0 + (scale * (_ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox) - y0))
+			});
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$translateBy = F2(
+	function (displacement, boundingBox) {
+		var _p28 = _ianmackenzie$elm_geometry$Vector2d$components(displacement);
+		var dx = _p28._0;
+		var dy = _p28._1;
+		return _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+			{
+				minX: _ianmackenzie$elm_geometry$BoundingBox2d$minX(boundingBox) + dx,
+				maxX: _ianmackenzie$elm_geometry$BoundingBox2d$maxX(boundingBox) + dx,
+				minY: _ianmackenzie$elm_geometry$BoundingBox2d$minY(boundingBox) + dy,
+				maxY: _ianmackenzie$elm_geometry$BoundingBox2d$maxY(boundingBox) + dy
+			});
+	});
+var _ianmackenzie$elm_geometry$BoundingBox2d$translateIn = F3(
+	function (direction, distance, boundingBox) {
+		return A2(
+			_ianmackenzie$elm_geometry$BoundingBox2d$translateBy,
+			A2(_ianmackenzie$elm_geometry$Vector2d$withLength, distance, direction),
+			boundingBox);
+	});
+
+var _ianmackenzie$elm_geometry$Circle2d$toArc = function (_p0) {
+	var _p1 = _p0;
+	var _p3 = _p1._0;
+	var _p2 = _ianmackenzie$elm_geometry$Point2d$coordinates(_p3.centerPoint);
+	var x0 = _p2._0;
+	var y0 = _p2._1;
+	return _ianmackenzie$elm_geometry$Geometry_Types$Arc2d(
+		{
+			startPoint: _ianmackenzie$elm_geometry$Point2d$fromCoordinates(
+				{ctor: '_Tuple2', _0: x0 + _p3.radius, _1: y0}),
+			xDirection: _ianmackenzie$elm_geometry$Direction2d$y,
+			sweptAngle: 2 * _elm_lang$core$Basics$pi,
+			signedLength: (2 * _elm_lang$core$Basics$pi) * _p3.radius
+		});
 };
-var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'mouseover',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$Circle2d$radius = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0.radius;
 };
-var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'mouseleave',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$Circle2d$diameter = function (circle) {
+	return 2 * _ianmackenzie$elm_geometry$Circle2d$radius(circle);
 };
-var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'mouseenter',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$Circle2d$area = function (circle) {
+	var r = _ianmackenzie$elm_geometry$Circle2d$radius(circle);
+	return (_elm_lang$core$Basics$pi * r) * r;
 };
-var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'mouseup',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$Circle2d$circumference = function (circle) {
+	return (2 * _elm_lang$core$Basics$pi) * _ianmackenzie$elm_geometry$Circle2d$radius(circle);
 };
-var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'mousedown',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$Circle2d$centerPoint = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0.centerPoint;
 };
-var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'dblclick',
-		_elm_lang$core$Json_Decode$succeed(msg));
+var _ianmackenzie$elm_geometry$Circle2d$contains = F2(
+	function (point, circle) {
+		var r = _ianmackenzie$elm_geometry$Circle2d$radius(circle);
+		return _elm_lang$core$Native_Utils.cmp(
+			A2(
+				_ianmackenzie$elm_geometry$Point2d$squaredDistanceFrom,
+				_ianmackenzie$elm_geometry$Circle2d$centerPoint(circle),
+				point),
+			r * r) < 1;
+	});
+var _ianmackenzie$elm_geometry$Circle2d$boundingBox = function (circle) {
+	var r = _ianmackenzie$elm_geometry$Circle2d$radius(circle);
+	var _p8 = _ianmackenzie$elm_geometry$Point2d$coordinates(
+		_ianmackenzie$elm_geometry$Circle2d$centerPoint(circle));
+	var x = _p8._0;
+	var y = _p8._1;
+	return _ianmackenzie$elm_geometry$BoundingBox2d$fromExtrema(
+		{minX: x - r, maxX: x + r, minY: y - r, maxY: y + r});
 };
-var _elm_lang$html$Html_Events$onClick = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'click',
-		_elm_lang$core$Json_Decode$succeed(msg));
-};
-var _elm_lang$html$Html_Events$Options = F2(
-	function (a, b) {
-		return {stopPropagation: a, preventDefault: b};
+var _ianmackenzie$elm_geometry$Circle2d$withRadius = F2(
+	function (radius_, centerPoint_) {
+		return _ianmackenzie$elm_geometry$Geometry_Types$Circle2d(
+			{
+				radius: _elm_lang$core$Basics$abs(radius_),
+				centerPoint: centerPoint_
+			});
+	});
+var _ianmackenzie$elm_geometry$Circle2d$unit = A2(_ianmackenzie$elm_geometry$Circle2d$withRadius, 1, _ianmackenzie$elm_geometry$Point2d$origin);
+var _ianmackenzie$elm_geometry$Circle2d$throughPoints = F3(
+	function (p1, p2, p3) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (p0) {
+				var r3 = A2(_ianmackenzie$elm_geometry$Point2d$distanceFrom, p0, p3);
+				var r2 = A2(_ianmackenzie$elm_geometry$Point2d$distanceFrom, p0, p2);
+				var r1 = A2(_ianmackenzie$elm_geometry$Point2d$distanceFrom, p0, p1);
+				var r = ((r1 + r2) + r3) / 3;
+				return A2(_ianmackenzie$elm_geometry$Circle2d$withRadius, r, p0);
+			},
+			A3(_ianmackenzie$elm_geometry$Point2d$circumcenter, p1, p2, p3));
+	});
+var _ianmackenzie$elm_geometry$Circle2d$sweptAround = F2(
+	function (centerPoint_, point) {
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$withRadius,
+			A2(_ianmackenzie$elm_geometry$Point2d$distanceFrom, centerPoint_, point),
+			centerPoint_);
+	});
+var _ianmackenzie$elm_geometry$Circle2d$scaleAbout = F3(
+	function (point, scale, _p9) {
+		var _p10 = _p9;
+		var _p11 = _p10._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$withRadius,
+			_elm_lang$core$Basics$abs(scale) * _p11.radius,
+			A3(_ianmackenzie$elm_geometry$Point2d$scaleAbout, point, scale, _p11.centerPoint));
+	});
+var _ianmackenzie$elm_geometry$Circle2d$rotateAround = F2(
+	function (point, angle) {
+		var rotatePoint = A2(_ianmackenzie$elm_geometry$Point2d$rotateAround, point, angle);
+		return function (_p12) {
+			var _p13 = _p12;
+			var _p14 = _p13._0;
+			return A2(
+				_ianmackenzie$elm_geometry$Circle2d$withRadius,
+				_p14.radius,
+				rotatePoint(_p14.centerPoint));
+		};
+	});
+var _ianmackenzie$elm_geometry$Circle2d$translateBy = F2(
+	function (displacement, _p15) {
+		var _p16 = _p15;
+		var _p17 = _p16._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$withRadius,
+			_p17.radius,
+			A2(_ianmackenzie$elm_geometry$Point2d$translateBy, displacement, _p17.centerPoint));
+	});
+var _ianmackenzie$elm_geometry$Circle2d$translateIn = F3(
+	function (direction, distance, circle) {
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$translateBy,
+			A2(_ianmackenzie$elm_geometry$Vector2d$withLength, distance, direction),
+			circle);
+	});
+var _ianmackenzie$elm_geometry$Circle2d$mirrorAcross = F2(
+	function (axis, _p18) {
+		var _p19 = _p18;
+		var _p20 = _p19._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$withRadius,
+			_p20.radius,
+			A2(_ianmackenzie$elm_geometry$Point2d$mirrorAcross, axis, _p20.centerPoint));
+	});
+var _ianmackenzie$elm_geometry$Circle2d$relativeTo = F2(
+	function (frame, _p21) {
+		var _p22 = _p21;
+		var _p23 = _p22._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$withRadius,
+			_p23.radius,
+			A2(_ianmackenzie$elm_geometry$Point2d$relativeTo, frame, _p23.centerPoint));
+	});
+var _ianmackenzie$elm_geometry$Circle2d$placeIn = F2(
+	function (frame, _p24) {
+		var _p25 = _p24;
+		var _p26 = _p25._0;
+		return A2(
+			_ianmackenzie$elm_geometry$Circle2d$withRadius,
+			_p26.radius,
+			A2(_ianmackenzie$elm_geometry$Point2d$placeIn, frame, _p26.centerPoint));
 	});
 
 var _user$project$Canvas$colorToCSSString = function (color) {
@@ -9911,173 +11593,225 @@ var _user$project$Canvas$fillCircle = F3(
 			});
 	});
 
-var _user$project$Examples_AnimatedGrid$lerp = F3(
-	function (v0, v1, t) {
-		return (v0 * (1 - t)) + (v1 * t);
-	});
-var _user$project$Examples_AnimatedGrid$gridSize = 24;
-var _user$project$Examples_AnimatedGrid$w = 500;
-var _user$project$Examples_AnimatedGrid$padding = _user$project$Examples_AnimatedGrid$w * 0.1;
-var _user$project$Examples_AnimatedGrid$cellSize = (_user$project$Examples_AnimatedGrid$w - (_user$project$Examples_AnimatedGrid$padding * 2)) / _user$project$Examples_AnimatedGrid$gridSize;
-var _user$project$Examples_AnimatedGrid$renderItem = F2(
-	function (time, i) {
-		var thickness = _user$project$Examples_AnimatedGrid$cellSize * 0.1;
-		var length = _user$project$Examples_AnimatedGrid$cellSize * 0.65;
-		var initialRotation = _elm_lang$core$Basics$degrees(90);
-		var t = time / 1000;
-		var row = _elm_lang$core$Basics$toFloat(
-			(i / _elm_lang$core$Basics$floor(_user$project$Examples_AnimatedGrid$gridSize)) | 0);
-		var x = A2(
-			F2(
-				function (x, y) {
-					return x + y;
-				}),
-			_user$project$Examples_AnimatedGrid$padding + (_user$project$Examples_AnimatedGrid$cellSize / 2),
-			row * _user$project$Examples_AnimatedGrid$cellSize);
-		var v = row / (_user$project$Examples_AnimatedGrid$gridSize - 1);
-		var col = _elm_lang$core$Basics$toFloat(
-			A2(
-				_elm_lang$core$Basics_ops['%'],
-				i,
-				_elm_lang$core$Basics$floor(_user$project$Examples_AnimatedGrid$gridSize)));
-		var y = A2(
-			F2(
-				function (x, y) {
-					return x + y;
-				}),
-			_user$project$Examples_AnimatedGrid$padding + (_user$project$Examples_AnimatedGrid$cellSize / 2),
-			col * _user$project$Examples_AnimatedGrid$cellSize);
-		var u = col / (_user$project$Examples_AnimatedGrid$gridSize - 1);
-		var offset = (u * 0.4) + (v * 0.2);
-		var mod = Math.pow(
-			_elm_lang$core$Basics$sin(t + offset),
-			3);
-		var rotation = initialRotation + (mod * _elm_lang$core$Basics$pi);
-		return _user$project$Canvas$batch(
-			{
-				ctor: '::',
-				_0: _user$project$Canvas$save,
-				_1: {
-					ctor: '::',
-					_0: _user$project$Canvas$fillStyle(
-						A3(_elm_lang$core$Color$rgb, 0, 0, 0)),
-					_1: {
-						ctor: '::',
-						_0: A2(_user$project$Canvas$translate, x, y),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Canvas$rotate(rotation),
-							_1: {
-								ctor: '::',
-								_0: A2(_user$project$Canvas$translate, 0 - x, 0 - y),
-								_1: {
-									ctor: '::',
-									_0: A4(_user$project$Canvas$fillRect, x - (length / 2), y - (thickness / 2), length, thickness),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Canvas$restore,
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Examples_AnimatedGrid$h = 500;
-var _user$project$Examples_AnimatedGrid$clearScreen = _user$project$Canvas$batch(
-	{
-		ctor: '::',
-		_0: A4(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_AnimatedGrid$w, _user$project$Examples_AnimatedGrid$h),
-		_1: {
+var _user$project$Examples_CirclePacking$viewCircle = function (circle) {
+	var center = _ianmackenzie$elm_geometry$Circle2d$centerPoint(circle);
+	var _p0 = _ianmackenzie$elm_geometry$Point2d$coordinates(center);
+	var x = _p0._0;
+	var y = _p0._1;
+	return _user$project$Canvas$batch(
+		{
 			ctor: '::',
-			_0: _user$project$Canvas$fillStyle(
-				A3(_elm_lang$core$Color$rgb, 255, 255, 255)),
+			_0: A3(
+				_user$project$Canvas$fillCircle,
+				x,
+				y,
+				_ianmackenzie$elm_geometry$Circle2d$radius(circle)),
 			_1: {
 				ctor: '::',
-				_0: A4(_user$project$Canvas$fillRect, 0, 0, _user$project$Examples_AnimatedGrid$w, _user$project$Examples_AnimatedGrid$h),
+				_0: _user$project$Canvas$stroke,
 				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Examples_CirclePacking$grow = function (circle) {
+	return A2(
+		_ianmackenzie$elm_geometry$Circle2d$withRadius,
+		_ianmackenzie$elm_geometry$Circle2d$radius(circle) + 1,
+		_ianmackenzie$elm_geometry$Circle2d$centerPoint(circle));
+};
+var _user$project$Examples_CirclePacking$randomCoord = function (max) {
+	return A2(_elm_lang$core$Random$float, 0, max);
+};
+var _user$project$Examples_CirclePacking$createCircleAttempts = 500;
+var _user$project$Examples_CirclePacking$totalCircles = 500;
+var _user$project$Examples_CirclePacking$maxRadius = 100;
+var _user$project$Examples_CirclePacking$minRadius = 2;
+var _user$project$Examples_CirclePacking$newCircle = function (pos) {
+	return A2(
+		_ianmackenzie$elm_geometry$Circle2d$withRadius,
+		_user$project$Examples_CirclePacking$minRadius,
+		_ianmackenzie$elm_geometry$Point2d$fromCoordinates(pos));
+};
+var _user$project$Examples_CirclePacking$padding = 20;
+var _user$project$Examples_CirclePacking$w = 500;
+var _user$project$Examples_CirclePacking$h = 500;
+var _user$project$Examples_CirclePacking$randomPosition = A2(
+	_elm_lang$core$Random$map,
+	function (_p1) {
+		var _p2 = _p1;
+		return {ctor: '_Tuple2', _0: _p2._0 + _user$project$Examples_CirclePacking$padding, _1: _p2._1 + _user$project$Examples_CirclePacking$padding};
+	},
+	A2(
+		_elm_lang$core$Random$pair,
+		_user$project$Examples_CirclePacking$randomCoord(_user$project$Examples_CirclePacking$w - (_user$project$Examples_CirclePacking$padding * 2)),
+		_user$project$Examples_CirclePacking$randomCoord(_user$project$Examples_CirclePacking$h - (_user$project$Examples_CirclePacking$padding * 2))));
+var _user$project$Examples_CirclePacking$randomCircle = A2(_elm_lang$core$Random$map, _user$project$Examples_CirclePacking$newCircle, _user$project$Examples_CirclePacking$randomPosition);
+var _user$project$Examples_CirclePacking$collidesWithAny = F2(
+	function (circle, circles) {
+		collidesWithAny:
+		while (true) {
+			var _p3 = _ianmackenzie$elm_geometry$Point2d$coordinates(
+				_ianmackenzie$elm_geometry$Circle2d$centerPoint(circle));
+			var x1 = _p3._0;
+			var y1 = _p3._1;
+			var r1 = _ianmackenzie$elm_geometry$Circle2d$radius(circle);
+			var _p4 = circles;
+			if (_p4.ctor === '[]') {
+				return ((_elm_lang$core$Native_Utils.cmp(x1 + r1, _user$project$Examples_CirclePacking$w - _user$project$Examples_CirclePacking$padding) > -1) || (_elm_lang$core$Native_Utils.cmp(x1 - r1, _user$project$Examples_CirclePacking$padding) < 1)) ? true : (((_elm_lang$core$Native_Utils.cmp(y1 + r1, _user$project$Examples_CirclePacking$h - _user$project$Examples_CirclePacking$padding) > -1) || (_elm_lang$core$Native_Utils.cmp(y1 - r1, _user$project$Examples_CirclePacking$padding) < 1)) ? true : false);
+			} else {
+				var _p7 = _p4._0;
+				var _p5 = _ianmackenzie$elm_geometry$Point2d$coordinates(
+					_ianmackenzie$elm_geometry$Circle2d$centerPoint(_p7));
+				var x2 = _p5._0;
+				var y2 = _p5._1;
+				var _p6 = {ctor: '_Tuple2', _0: x1 - x2, _1: y1 - y2};
+				var x = _p6._0;
+				var y = _p6._1;
+				var r2 = _ianmackenzie$elm_geometry$Circle2d$radius(_p7);
+				var a = r1 + r2;
+				var collides = _elm_lang$core$Native_Utils.cmp(
+					a,
+					_elm_lang$core$Basics$sqrt((x * x) + (y * y))) > -1;
+				if (collides) {
+					return true;
+				} else {
+					var _v2 = circle,
+						_v3 = _p4._1;
+					circle = _v2;
+					circles = _v3;
+					continue collidesWithAny;
+				}
 			}
 		}
 	});
-var _user$project$Examples_AnimatedGrid$update = F2(
-	function (msg, _p0) {
-		var _p1 = _p0;
-		var _p3 = _p1._0;
-		var _p2 = msg;
-		if (_p2.ctor === 'AnimationFrame') {
-			return {
-				ctor: '_Tuple2',
-				_0: {
-					ctor: '_Tuple2',
-					_0: _p3,
-					_1: _elm_lang$core$Time$inMilliseconds(_p2._0)
-				},
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: {ctor: '_Tuple2', _0: !_p3, _1: _p1._1},
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
-	});
-var _user$project$Examples_AnimatedGrid$init = {
-	ctor: '_Tuple2',
-	_0: {ctor: '_Tuple2', _0: true, _1: 0 * _elm_lang$core$Time$millisecond},
-	_1: _elm_lang$core$Platform_Cmd$none
-};
-var _user$project$Examples_AnimatedGrid$ToggleRunning = {ctor: 'ToggleRunning'};
-var _user$project$Examples_AnimatedGrid$view = function (_p4) {
-	var _p5 = _p4;
+var _user$project$Examples_CirclePacking$view = function (model) {
 	return A4(
 		_user$project$Canvas$element,
-		_elm_lang$core$Basics$round(_user$project$Examples_AnimatedGrid$w),
-		_elm_lang$core$Basics$round(_user$project$Examples_AnimatedGrid$h),
+		_user$project$Examples_CirclePacking$w,
+		_user$project$Examples_CirclePacking$h,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(_user$project$Examples_AnimatedGrid$ToggleRunning),
+			_0: _elm_lang$html$Html_Attributes$style(
+				{ctor: '[]'}),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
-			_0: _user$project$Examples_AnimatedGrid$clearScreen,
+			_0: A4(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_CirclePacking$w, _user$project$Examples_CirclePacking$h),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Canvas$fillStyle(
-					A4(_elm_lang$core$Color$rgba, 0, 0, 0, 1)),
+				_0: _user$project$Canvas$lineWidth(2),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Canvas$batch(
-						A2(
-							_elm_lang$core$List$map,
-							_user$project$Examples_AnimatedGrid$renderItem(_p5._1),
-							A2(
-								_elm_lang$core$List$range,
-								0,
-								_elm_lang$core$Basics$floor(_user$project$Examples_AnimatedGrid$gridSize * _user$project$Examples_AnimatedGrid$gridSize) - 1))),
-					_1: {ctor: '[]'}
+					_0: _user$project$Canvas$fillStyle(
+						A4(_elm_lang$core$Color$rgba, 0, 0, 0, 0.1)),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Canvas$strokeStyle(
+							A3(_elm_lang$core$Color$rgb, 0, 0, 0)),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Canvas$batch(
+								A2(_elm_lang$core$List$map, _user$project$Examples_CirclePacking$viewCircle, model.circles)),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
 		});
 };
-var _user$project$Examples_AnimatedGrid$AnimationFrame = function (a) {
-	return {ctor: 'AnimationFrame', _0: a};
+var _user$project$Examples_CirclePacking$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Examples_AnimatedGrid$subscriptions = function (_p6) {
-	var _p7 = _p6;
-	return _p7._0 ? _elm_lang$animation_frame$AnimationFrame$times(_user$project$Examples_AnimatedGrid$AnimationFrame) : _elm_lang$core$Platform_Sub$none;
+var _user$project$Examples_CirclePacking$Model = F2(
+	function (a, b) {
+		return {circles: a, attempts: b};
+	});
+var _user$project$Examples_CirclePacking$GrowCircle = function (a) {
+	return {ctor: 'GrowCircle', _0: a};
 };
-var _user$project$Examples_AnimatedGrid$main = _elm_lang$html$Html$program(
-	{init: _user$project$Examples_AnimatedGrid$init, update: _user$project$Examples_AnimatedGrid$update, subscriptions: _user$project$Examples_AnimatedGrid$subscriptions, view: _user$project$Examples_AnimatedGrid$view})();
+var _user$project$Examples_CirclePacking$growCircle = A2(
+	_elm_lang$core$Task$perform,
+	_user$project$Examples_CirclePacking$GrowCircle,
+	_elm_lang$core$Process$sleep(4 * _elm_lang$core$Time$millisecond));
+var _user$project$Examples_CirclePacking$TryNewCircle = function (a) {
+	return {ctor: 'TryNewCircle', _0: a};
+};
+var _user$project$Examples_CirclePacking$tryNewCircle = A2(
+	_elm_lang$core$Task$perform,
+	_user$project$Examples_CirclePacking$TryNewCircle,
+	_elm_lang$core$Task$succeed(
+		{ctor: '_Tuple0'}));
+var _user$project$Examples_CirclePacking$NewCircle = function (a) {
+	return {ctor: 'NewCircle', _0: a};
+};
+var _user$project$Examples_CirclePacking$init = {
+	ctor: '_Tuple2',
+	_0: {
+		circles: {ctor: '[]'},
+		attempts: 0
+	},
+	_1: A2(_elm_lang$core$Random$generate, _user$project$Examples_CirclePacking$NewCircle, _user$project$Examples_CirclePacking$randomCircle)
+};
+var _user$project$Examples_CirclePacking$update = F2(
+	function (msg, model) {
+		var _p8 = msg;
+		switch (_p8.ctor) {
+			case 'NewCircle':
+				var _p9 = _p8._0;
+				return A2(_user$project$Examples_CirclePacking$collidesWithAny, _p9, model.circles) ? (_elm_lang$core$Native_Utils.eq(model.attempts, _user$project$Examples_CirclePacking$createCircleAttempts) ? {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none} : {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{attempts: model.attempts + 1}),
+					_1: _user$project$Examples_CirclePacking$tryNewCircle
+				}) : {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							circles: {ctor: '::', _0: _p9, _1: model.circles},
+							attempts: 0
+						}),
+					_1: _user$project$Examples_CirclePacking$growCircle
+				};
+			case 'GrowCircle':
+				var _p10 = model.circles;
+				if (_p10.ctor === '[]') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p11 = _p10._1;
+					var newCircle = _user$project$Examples_CirclePacking$grow(_p10._0);
+					var collides = A2(_user$project$Examples_CirclePacking$collidesWithAny, newCircle, _p11);
+					var tooBig = _elm_lang$core$Native_Utils.cmp(
+						_ianmackenzie$elm_geometry$Circle2d$radius(newCircle),
+						_user$project$Examples_CirclePacking$maxRadius) > 0;
+					return (collides || tooBig) ? {ctor: '_Tuple2', _0: model, _1: _user$project$Examples_CirclePacking$tryNewCircle} : {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								circles: {ctor: '::', _0: newCircle, _1: _p11}
+							}),
+						_1: _user$project$Examples_CirclePacking$growCircle
+					};
+				}
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(_elm_lang$core$Random$generate, _user$project$Examples_CirclePacking$NewCircle, _user$project$Examples_CirclePacking$randomCircle)
+				};
+		}
+	});
+var _user$project$Examples_CirclePacking$main = _elm_lang$html$Html$program(
+	{init: _user$project$Examples_CirclePacking$init, update: _user$project$Examples_CirclePacking$update, subscriptions: _user$project$Examples_CirclePacking$subscriptions, view: _user$project$Examples_CirclePacking$view})();
 
 var Elm = {};
 Elm['Examples'] = Elm['Examples'] || {};
-Elm['Examples']['AnimatedGrid'] = Elm['Examples']['AnimatedGrid'] || {};
-if (typeof _user$project$Examples_AnimatedGrid$main !== 'undefined') {
-    _user$project$Examples_AnimatedGrid$main(Elm['Examples']['AnimatedGrid'], 'Examples.AnimatedGrid', undefined);
+Elm['Examples']['CirclePacking'] = Elm['Examples']['CirclePacking'] || {};
+if (typeof _user$project$Examples_CirclePacking$main !== 'undefined') {
+    _user$project$Examples_CirclePacking$main(Elm['Examples']['CirclePacking'], 'Examples.CirclePacking', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
