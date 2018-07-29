@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp ./elm-canvas/elm-canvas.js ./public/
