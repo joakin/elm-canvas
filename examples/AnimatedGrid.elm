@@ -89,8 +89,8 @@ clearScreen =
 view : Model -> Html Msg
 view ( isRunning, time ) =
     element
-        (round h)
         (round w)
+        (round h)
         [ onClick ToggleRunning ]
         [ clearScreen
         , fillStyle (Color.rgba 0 0 0 1)

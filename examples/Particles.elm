@@ -114,8 +114,8 @@ update msg model =
 view : Model -> Html Msg
 view model =
     Canvas.element
-        (round h)
         (round w)
+        (round h)
         [ style [] ]
         (List.concat
             [ [ Canvas.clearRect 0 0 w h
