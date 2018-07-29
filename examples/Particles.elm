@@ -3,7 +3,6 @@ module Examples.Particles exposing (main)
 import AnimationFrame exposing (times)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Json.Encode as Encode exposing (..)
 import Time exposing (Time)
 import Canvas
 import Color exposing (Color)
@@ -127,6 +126,6 @@ view model =
         )
 
 
-drawPoint : Point -> Value
+drawPoint : Point -> Canvas.Command
 drawPoint { x, y, size } =
     Canvas.fillCircle (x - size / 2) (y - size / 2) (size / 2)

@@ -6,10 +6,15 @@ import Json.Encode as Encode exposing (..)
 import Color exposing (Color)
 
 
+type alias Command =
+    Encode.Value
+
+
+
 -- HTML
 
 
-element : Int -> Int -> List (Attribute msg) -> List Value -> Html msg
+element : Int -> Int -> List (Attribute msg) -> List Command -> Html msg
 element w h attrs cmds =
     Html.node "elm-canvas"
         [ commands cmds ]
@@ -21,7 +26,7 @@ element w h attrs cmds =
 -- Properties
 
 
-fillStyle : Color -> Value
+fillStyle : Color -> Command
 fillStyle color =
     color
         |> colorToCSSString
@@ -29,12 +34,12 @@ fillStyle color =
         |> field "fillStyle"
 
 
-font : String -> Value
+font : String -> Command
 font f =
     field "font" (string f)
 
 
-globalAlpha : Float -> Value
+globalAlpha : Float -> Command
 globalAlpha alpha =
     field "globalAlpha" (float alpha)
 
@@ -68,7 +73,7 @@ type GlobalCompositeOperationMode
     | Luminosity
 
 
-globalCompositeOperation : GlobalCompositeOperationMode -> Value
+globalCompositeOperation : GlobalCompositeOperationMode -> Command
 globalCompositeOperation mode =
     let
         stringMode =
@@ -162,7 +167,7 @@ type LineCap
     | SquareCap
 
 
-lineCap : LineCap -> Value
+lineCap : LineCap -> Command
 lineCap cap =
     field "lineCap"
         (string
@@ -179,7 +184,7 @@ lineCap cap =
         )
 
 
-lineDashOffset : Float -> Value
+lineDashOffset : Float -> Command
 lineDashOffset value =
     field "lineDashOffset" (float value)
 
@@ -190,7 +195,7 @@ type LineJoin
     | MiterJoin
 
 
-lineJoin : LineJoin -> Value
+lineJoin : LineJoin -> Command
 lineJoin join =
     field "lineJoin"
         (string
@@ -207,22 +212,22 @@ lineJoin join =
         )
 
 
-lineWidth : Float -> Value
+lineWidth : Float -> Command
 lineWidth value =
     field "lineWidth" (float value)
 
 
-miterLimit : Float -> Value
+miterLimit : Float -> Command
 miterLimit value =
     field "miterLimit" (float value)
 
 
-shadowBlur : Float -> Value
+shadowBlur : Float -> Command
 shadowBlur value =
     field "shadowBlur" (float value)
 
 
-shadowColor : Color -> Value
+shadowColor : Color -> Command
 shadowColor color =
     color
         |> colorToCSSString
@@ -230,17 +235,17 @@ shadowColor color =
         |> field "shadowColor"
 
 
-shadowOffsetX : Float -> Value
+shadowOffsetX : Float -> Command
 shadowOffsetX value =
     field "shadowOffsetX" (float value)
 
 
-shadowOffsetY : Float -> Value
+shadowOffsetY : Float -> Command
 shadowOffsetY value =
     field "shadowOffsetY" (float value)
 
 
-strokeStyle : Color -> Value
+strokeStyle : Color -> Command
 strokeStyle color =
     {- TODO: support CanvasGradient and CanvasPattern -}
     color
@@ -257,7 +262,7 @@ type TextAlign
     | End
 
 
-textAlign : TextAlign -> Value
+textAlign : TextAlign -> Command
 textAlign align =
     field "textAlign"
         (string
@@ -289,7 +294,7 @@ type TextBaseLine
     | Bottom
 
 
-textBaseline : TextBaseLine -> Value
+textBaseline : TextBaseLine -> Command
 textBaseline baseline =
     field "textBaseline"
         (string
@@ -319,27 +324,27 @@ textBaseline baseline =
 -- Methods
 
 
-arc : Float -> Float -> Float -> Float -> Float -> Bool -> Value
+arc : Float -> Float -> Float -> Float -> Float -> Bool -> Command
 arc x y radius startAngle endAngle anticlockwise =
     fn "arc" [ float x, float y, float radius, float 0, float (2 * pi), bool anticlockwise ]
 
 
-arcTo : Float -> Float -> Float -> Float -> Float -> Value
+arcTo : Float -> Float -> Float -> Float -> Float -> Command
 arcTo x1 y1 x2 y2 radius =
     fn "arc" [ float x1, float y1, float x2, float y2, float radius ]
 
 
-beginPath : Value
+beginPath : Command
 beginPath =
     fn "beginPath" []
 
 
-bezierCurveTo : Float -> Float -> Float -> Float -> Float -> Float -> Value
+bezierCurveTo : Float -> Float -> Float -> Float -> Float -> Float -> Command
 bezierCurveTo cp1x cp1y cp2x cp2y x y =
     fn "bezierCurveTo" [ float cp1x, float cp1y, float cp2x, float cp2y, float x, float y ]
 
 
-clearRect : Float -> Float -> Float -> Float -> Value
+clearRect : Float -> Float -> Float -> Float -> Command
 clearRect x y width height =
     fn "clearRect" [ float x, float y, float width, float height ]
 
@@ -359,24 +364,24 @@ fillRuleToString fillRule =
             "evenodd"
 
 
-clip : FillRule -> Value
+clip : FillRule -> Command
 clip fillRule =
     fn "clip"
         [ string (fillRuleToString fillRule) ]
 
 
-closePath : Value
+closePath : Command
 closePath =
     fn "closePath" []
 
 
-fill : FillRule -> Value
+fill : FillRule -> Command
 fill fillRule =
     fn "fill"
         [ string (fillRuleToString fillRule) ]
 
 
-fillCircle : Float -> Float -> Float -> Value
+fillCircle : Float -> Float -> Float -> Command
 fillCircle x y r =
     batch
         [ beginPath
@@ -385,12 +390,12 @@ fillCircle x y r =
         ]
 
 
-fillRect : Float -> Float -> Float -> Float -> Value
+fillRect : Float -> Float -> Float -> Float -> Command
 fillRect x y w h =
     fn "fillRect" [ float x, float y, float w, float h ]
 
 
-fillText : String -> Float -> Float -> Maybe Float -> Value
+fillText : String -> Float -> Float -> Maybe Float -> Command
 fillText text x y maxWidth =
     case maxWidth of
         Nothing ->
@@ -400,67 +405,67 @@ fillText text x y maxWidth =
             fn "fillText" [ string text, float x, float y, float maxWidth ]
 
 
-lineTo : Float -> Float -> Value
+lineTo : Float -> Float -> Command
 lineTo x y =
     fn "lineTo" [ float x, float y ]
 
 
-moveTo : Float -> Float -> Value
+moveTo : Float -> Float -> Command
 moveTo x y =
     fn "moveTo" [ float x, float y ]
 
 
-quadraticCurveTo : Float -> Float -> Float -> Float -> Value
+quadraticCurveTo : Float -> Float -> Float -> Float -> Command
 quadraticCurveTo cpx cpy x y =
     fn "quadraticCurveTo" [ float cpx, float cpy, float x, float y ]
 
 
-rect : Float -> Float -> Float -> Float -> Value
+rect : Float -> Float -> Float -> Float -> Command
 rect x y w h =
     fn "rect" [ float x, float y, float w, float h ]
 
 
-restore : Value
+restore : Command
 restore =
     fn "restore" []
 
 
-rotate : Float -> Value
+rotate : Float -> Command
 rotate angle =
     fn "rotate" [ float angle ]
 
 
-save : Value
+save : Command
 save =
     fn "save" []
 
 
-scale : Float -> Float -> Value
+scale : Float -> Float -> Command
 scale x y =
     fn "scale" [ float x, float y ]
 
 
-setLineDash : List Float -> Value
+setLineDash : List Float -> Command
 setLineDash segments =
     fn "setLineDash" [ Encode.list (List.map float segments) ]
 
 
-setTransform : Float -> Float -> Float -> Float -> Float -> Float -> Value
+setTransform : Float -> Float -> Float -> Float -> Float -> Float -> Command
 setTransform a b c d e f =
     fn "setTransform" [ float a, float b, float c, float d, float e, float f ]
 
 
-stroke : Value
+stroke : Command
 stroke =
     fn "stroke" []
 
 
-strokeRect : Float -> Float -> Float -> Float -> Value
+strokeRect : Float -> Float -> Float -> Float -> Command
 strokeRect x y w h =
     fn "strokeRect" [ float x, float y, float w, float h ]
 
 
-strokeText : String -> Float -> Float -> Maybe Float -> Value
+strokeText : String -> Float -> Float -> Maybe Float -> Command
 strokeText text x y maxWidth =
     case maxWidth of
         Nothing ->
@@ -470,12 +475,12 @@ strokeText text x y maxWidth =
             fn "strokeText" [ string text, float x, float y, float maxWidth ]
 
 
-transform : Float -> Float -> Float -> Float -> Float -> Float -> Value
+transform : Float -> Float -> Float -> Float -> Float -> Float -> Command
 transform a b c d e f =
     fn "transform" [ float a, float b, float c, float d, float e, float f ]
 
 
-translate : Float -> Float -> Value
+translate : Float -> Float -> Command
 translate x y =
     fn "translate" [ float x, float y ]
 
@@ -503,22 +508,22 @@ translate x y =
 -- Lowest level
 
 
-commands : List Value -> Attribute msg
+commands : List Command -> Attribute msg
 commands list =
     property "cmds" (Encode.list list)
 
 
-field : String -> Encode.Value -> Encode.Value
+field : String -> Command -> Command
 field name value =
     Encode.object [ ( "type", string "field" ), ( "name", string name ), ( "value", value ) ]
 
 
-fn : String -> List Encode.Value -> Encode.Value
+fn : String -> List Command -> Command
 fn name args =
     Encode.object [ ( "type", string "function" ), ( "name", string name ), ( "args", Encode.list args ) ]
 
 
-batch : List Encode.Value -> Encode.Value
+batch : List Command -> Command
 batch values =
     Encode.object [ ( "type", string "batch" ), ( "values", Encode.list values ) ]
 

@@ -11,7 +11,6 @@ import Html.Events exposing (onClick)
 import Time exposing (Time)
 import Canvas exposing (..)
 import Color exposing (Color)
-import Json.Encode as Encode
 
 
 type alias Model =
@@ -78,7 +77,7 @@ padding =
     w * 0.1
 
 
-clearScreen : Encode.Value
+clearScreen : Command
 clearScreen =
     batch
         [ clearRect 0 0 w h
@@ -101,7 +100,7 @@ view ( isRunning, time ) =
         ]
 
 
-renderItem : Float -> Int -> Encode.Value
+renderItem : Float -> Int -> Command
 renderItem time i =
     let
         col =

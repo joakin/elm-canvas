@@ -208,7 +208,7 @@ view model =
                 ]
 
 
-viewParticle : Particle -> Value
+viewParticle : Particle -> Canvas.Command
 viewParticle { cx, cy, r, color } =
     Canvas.batch
         [ Canvas.fillStyle color
