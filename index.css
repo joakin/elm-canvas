@@ -1,5 +1,7 @@
 body {
   background-color: rgba(0, 0, 0, 0.03);
+  font-family: "Source Code Pro", "Roboto Mono", "Consolas", "Courier Prime",
+    "Courier", monospace;
 }
 
 main {
@@ -7,6 +9,18 @@ main {
   align-items: center;
   justify-content: center;
   min-height: 100%;
+  flex-direction: column;
+}
+
+a,
+a:visited {
+  color: #0070d6;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 112, 214, 0.2);
+}
+
+ul > li {
+  margin-bottom: 0.4em;
 }
 
 elm-canvas {
