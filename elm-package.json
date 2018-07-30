@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "summary": "Canvas API with custom elements for low level drawing primitives",
-  "repository": "https://github.com/user/project.git",
+  "repository": "https://github.com/joakin/elm-canvas.git",
   "license": "BSD3",
   "source-directories": ["src"],
   "exposed-modules": ["Canvas"],
