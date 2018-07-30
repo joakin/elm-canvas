@@ -11407,7 +11407,7 @@ var _user$project$Canvas$arcTo = F5(
 	function (x1, y1, x2, y2, radius) {
 		return A2(
 			_user$project$Canvas$fn,
-			'arc',
+			'arcTo',
 			{
 				ctor: '::',
 				_0: _elm_lang$core$Json_Encode$float(x1),
@@ -11457,6 +11457,23 @@ var _user$project$Canvas$arc = F6(
 								}
 							}
 						}
+					}
+				}
+			});
+	});
+var _user$project$Canvas$strokeCircle = F3(
+	function (x, y, r) {
+		return _user$project$Canvas$batch(
+			{
+				ctor: '::',
+				_0: _user$project$Canvas$beginPath,
+				_1: {
+					ctor: '::',
+					_0: A6(_user$project$Canvas$arc, x, y, r, 0, 2 * _elm_lang$core$Basics$pi, false),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Canvas$stroke,
+						_1: {ctor: '[]'}
 					}
 				}
 			});
