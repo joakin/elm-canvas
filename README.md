@@ -8,11 +8,11 @@ be used with Elm in a declarative way.
 </p>
 
 <p align="center">
-  <img width="200" src="./public/particles.png" />
-  <img width="200" src="./public/animated-grid.png" />
-  <img width="200" src="./public/dynamic-particles.png" />
-  <img width="200" src="./public/circle-packing.png" />
-  <img width="200" src="./public/trees.png" />
+  <img width="200" src="https://joakin.github.io/elm-canvas/particles.png" />
+  <img width="200" src="https://joakin.github.io/elm-canvas/animated-grid.png" />
+  <img width="200" src="https://joakin.github.io/elm-canvas/dynamic-particles.png" />
+  <img width="200" src="https://joakin.github.io/elm-canvas/circle-packing.png" />
+  <img width="200" src="https://joakin.github.io/elm-canvas/trees.png" />
 </p>
 
 ---
