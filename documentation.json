@@ -1,7 +1,7 @@
 [
   {
     "name": "Canvas",
-    "comment": " This library exposes a low level API that mirrors most of the DOM canvas\nAPI.\n\nTo use it, remember to include the `elm-canvas` custom element script in your\npage before you initialize your Elm application.\n\n  - <http://unpkg.com/elm-canvas/elm-canvas.js>\n  - <http://npmjs.com/package/elm-canvas>\n\nWARNING: This library is intended as a very low-level API that mirrors the DOM\nAPI almost exactly, while providing a bit of extra type safety where it makes\nsense. The DOM API is highly stateful and side-effectful, so be careful. To\nunderstand how to use this library properly, please read the MDN docs:\n<https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D> and\nall the nested pages\n\n\n# Usage in HTML\n\n@docs element\n\n\n# Composing Commands\n\n@docs Command, batch\n\n\n# Colors\n\n@docs fillStyle, strokeStyle\n\n\n# Text\n\n@docs font, TextAlign, textAlign, TextBaseLine, textBaseline, fillText, strokeText\n\n\n# Shapes\n\n@docs clearRect, fillCircle, fillRect, strokeRect\n\n\n# Paths\n\n@docs beginPath, closePath, FillRule, fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect\n\n\n# Line settings\n\n@docs LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit, setLineDash\n\n\n# Shadows\n\n@docs shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY\n\n\n# Global Canvas settings\n\n@docs globalAlpha, GlobalCompositeOperationMode, globalCompositeOperation, save, restore\n\n\n# Global Canvas transforms\n\n@docs rotate, scale, translate, transform, setTransform\n\n",
+    "comment": " This library exposes a low level API that mirrors most of the DOM canvas\nAPI.\n\nTo use it, remember to include the `elm-canvas` custom element script in your\npage before you initialize your Elm application.\n\n  - <http://unpkg.com/elm-canvas/elm-canvas.js>\n  - <http://npmjs.com/package/elm-canvas>\n\nWARNING: This library is intended as a very low-level API that mirrors the DOM\nAPI almost exactly, while providing a bit of extra type safety where it makes\nsense. The DOM API is highly stateful and side-effectful, so be careful. To\nunderstand how to use this library properly, please read the MDN docs:\n<https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D> and\nall the nested pages\n\n\n# Usage in HTML\n\n@docs element\n\n\n# Composing Commands\n\n@docs Command, batch\n\n\n# Colors\n\n@docs fillStyle, strokeStyle\n\n\n# Text\n\n@docs font, TextAlign, textAlign, TextBaseLine, textBaseline, fillText, strokeText\n\n\n# Shapes\n\n@docs fillRect, strokeRect, clearRect, fillCircle, strokeCircle\n\n\n# Paths\n\n@docs beginPath, closePath, FillRule, fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect\n\n\n# Line settings\n\n@docs LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit, setLineDash\n\n\n# Shadows\n\n@docs shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY\n\n\n# Global Canvas settings\n\n@docs globalAlpha, GlobalCompositeOperationMode, globalCompositeOperation, save, restore\n\n\n# Global Canvas transforms\n\n@docs rotate, scale, translate, transform, setTransform\n\n",
     "aliases": [
       {
         "name": "Command",
@@ -139,7 +139,7 @@
       },
       {
         "name": "LineCap",
-        "comment": " Type of end points for line drawn.\n\n  - ButtCap\n      - The ends of lines are squared off at the endpoints.\n  - RoundCap\n      - The ends of lines are rounded.\n  - SquareCap\n      - The ends of lines are squared off by adding a box with an equal width\n        and half the height of the line's thickness.\n\n",
+        "comment": " Type of end points for line drawn.\n\n  - `ButtCap`\n      - The ends of lines are squared off at the endpoints.\n  - `RoundCap`\n      - The ends of lines are rounded.\n  - `SquareCap`\n      - The ends of lines are squared off by adding a box with an equal width\n        and half the height of the line's thickness.\n\n",
         "args": [],
         "cases": [
           [
@@ -158,7 +158,7 @@
       },
       {
         "name": "LineJoin",
-        "comment": " Determines how two connecting segments with non-zero lengths in a shape are\njoined together. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)\n\n  - Round\n      - Rounds off the corners of a shape by filling an additional sector of disc\n        centered at the common endpoint of connected segments. The radius for these\n        rounded corners is equal to the line width.\n  - Bevel\n      - Fills an additional triangular area between the common endpoint of\n        connected segments, and the separate outside rectangular corners of each segment.\n  - Miter\n      - Connected segments are joined by extending their outside edges to connect\n        at a single point, with the effect of filling an additional lozenge-shaped\n        area. This setting is affected by the miterLimit property.\n\n",
+        "comment": " Determines how two connecting segments with non-zero lengths in a shape are\njoined together. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)\n\n  - `Round`\n      - Rounds off the corners of a shape by filling an additional sector of disc\n        centered at the common endpoint of connected segments. The radius for these\n        rounded corners is equal to the line width.\n  - `Bevel`\n      - Fills an additional triangular area between the common endpoint of\n        connected segments, and the separate outside rectangular corners of each segment.\n  - `Miter`\n      - Connected segments are joined by extending their outside edges to connect\n        at a single point, with the effect of filling an additional lozenge-shaped\n        area. This setting is affected by the miterLimit property.\n\n",
         "args": [],
         "cases": [
           [
@@ -177,7 +177,7 @@
       },
       {
         "name": "TextAlign",
-        "comment": " Type of text alignment\n\n  - Left\n      - The text is left-aligned.\n  - Right\n      - The text is right-aligned.\n  - Center\n      - The text is centered.\n  - Start\n      - The text is aligned at the normal start of the line (left-aligned for\n        left-to-right locales, right-aligned for right-to-left locales).\n  - End\n      - The text is aligned at the normal end of the line (right-aligned for\n        left-to-right locales, left-aligned for right-to-left locales).\n\n",
+        "comment": " Type of text alignment\n\n  - `Left`\n      - The text is left-aligned.\n  - `Right`\n      - The text is right-aligned.\n  - `Center`\n      - The text is centered.\n  - `Start`\n      - The text is aligned at the normal start of the line (left-aligned for\n        left-to-right locales, right-aligned for right-to-left locales).\n  - `End`\n      - The text is aligned at the normal end of the line (right-aligned for\n        left-to-right locales, left-aligned for right-to-left locales).\n\n",
         "args": [],
         "cases": [
           [
@@ -204,7 +204,7 @@
       },
       {
         "name": "TextBaseLine",
-        "comment": " Type of text baseline.\n\n  - Top\n      - The text baseline is the top of the em square.\n  - Hanging\n      - The text baseline is the hanging baseline. (Used by Tibetan and other Indic scripts.)\n  - Middle\n      - The text baseline is the middle of the em square.\n  - Alphabetic\n      - The text baseline is the normal alphabetic baseline.\n  - Ideographic\n      - The text baseline is the ideographic baseline; this is the bottom of the body of the characters, if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese and Korean scripts.)\n  - Bottom\n      - The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.\n\n",
+        "comment": " Type of text baseline.\n\n  - `Top`\n      - The text baseline is the top of the em square.\n  - `Hanging`\n      - The text baseline is the hanging baseline. (Used by Tibetan and other Indic scripts.)\n  - `Middle`\n      - The text baseline is the middle of the em square.\n  - `Alphabetic`\n      - The text baseline is the normal alphabetic baseline.\n  - `Ideographic`\n      - The text baseline is the ideographic baseline; this is the bottom of the body of the characters, if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese and Korean scripts.)\n  - `Bottom`\n      - The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.\n\n",
         "args": [],
         "cases": [
           [
@@ -287,7 +287,7 @@
       },
       {
         "name": "fillCircle",
-        "comment": " This is a helper non-standard method to create a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `fill`. This is\na convenience function to easily fill a circle that mirrors `fillRect`.\n\n    fillCircle x y radius\n\n",
+        "comment": " This is a helper non-standard method to fill a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `fill`. This is\na convenience function to easily fill a circle that mirrors `fillRect`.\n\n    fillCircle x y radius\n\n",
         "type": "Float -> Float -> Float -> Canvas.Command"
       },
       {
@@ -382,7 +382,7 @@
       },
       {
         "name": "scale",
-        "comment": " Adds a scaling transformation to the canvas units by x horizontally and by\ny vertically.\n\nBy default, one unit on the canvas is exactly one pixel. If we apply, for\ninstance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels\nand so shapes would be drawn at half size. In a similar way setting the scaling\nfactor to 2.0 would increase the unit size and one unit now becomes two pixels.\nThis results in shapes being drawn twice as large.\n\n    scale x y\n\n  - x\n      - Scaling factor in the horizontal direction.\n  - y\n      - Scaling factor in the vertical direction.\n\nNote: You can use `scale -1 1` to flip the context horizontally and `scale 1\n-1` to flip it vertically.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)\n\n",
+        "comment": " Adds a scaling transformation to the canvas units by x horizontally and by\ny vertically.\n\nBy default, one unit on the canvas is exactly one pixel. If we apply, for\ninstance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels\nand so shapes would be drawn at half size. In a similar way setting the scaling\nfactor to 2.0 would increase the unit size and one unit now becomes two pixels.\nThis results in shapes being drawn twice as large.\n\n    scale x y\n\n  - `x`\n      - Scaling factor in the horizontal direction.\n  - `y`\n      - Scaling factor in the vertical direction.\n\nNote: You can use `scale -1 1` to flip the context horizontally and `scale 1\n-1` to flip it vertically.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)\n\n",
         "type": "Float -> Float -> Canvas.Command"
       },
       {
@@ -421,6 +421,11 @@
         "type": "Canvas.Command"
       },
       {
+        "name": "strokeCircle",
+        "comment": " This is a helper non-standard method to stroke a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `stroke`. This\nis a convenience function to easily fill a circle that mirrors `strokeRect`.\n\n    strokeCircle x y radius\n\n",
+        "type": "Float -> Float -> Float -> Canvas.Command"
+      },
+      {
         "name": "strokeRect",
         "comment": " Paints a rectangle which has a starting point at (`x`, `y`) and has a `width`\nand an `height` onto the canvas, using the current stroke style. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect)\n\n    strokeRect x y width height\n\n",
         "type": "Float -> Float -> Float -> Float -> Canvas.Command"
@@ -432,7 +437,7 @@
       },
       {
         "name": "strokeText",
-        "comment": " Strokes — that is, draws the outlines of — the characters of a specified\ntext string at the given (`x`, `y`) position. If the optional fourth parameter\nfor a maximum width is provided, the text is scaled to fit that width.\n\nSee the `fillText` method to draw the text with the characters filled with\ncolor rather than having just their outlines drawn.\n\n    strokeText text x y maxWidth\n\n[MDNn docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)\n\n    strokeText \"Hello world\" 40 50 (Just 100)\n\n",
+        "comment": " Strokes — that is, draws the outlines of — the characters of a specified\ntext string at the given (`x`, `y`) position. If the optional fourth parameter\nfor a maximum width is provided, the text is scaled to fit that width.\n\nSee the `fillText` method to draw the text with the characters filled with\ncolor rather than having just their outlines drawn.\n\n    strokeText text x y maxWidth\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)\n\n    strokeText \"Hello world\" 40 50 (Just 100)\n\n",
         "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Command"
       },
       {
@@ -442,7 +447,7 @@
       },
       {
         "name": "textBaseline",
-        "comment": " Specifies the current text baseline being used when drawing text.\n\nThe default value is `Alphabetic`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)\n\nSee [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)\nfor examples and rendering of the different modes.\n\n",
+        "comment": " Specifies the current text baseline being used when drawing text.\n\nThe default value is `Alphabetic`.\n\nSee [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)\nfor examples and rendering of the different modes.\n\n",
         "type": "Canvas.TextBaseLine -> Canvas.Command"
       },
       {

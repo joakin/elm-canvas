@@ -14,6 +14,7 @@ module Canvas
         , strokeText
         , clearRect
         , fillCircle
+        , strokeCircle
         , fillRect
         , strokeRect
         , beginPath
@@ -92,7 +93,7 @@ all the nested pages
 
 # Shapes
 
-@docs clearRect, fillCircle, fillRect, strokeRect
+@docs fillRect, strokeRect, clearRect, fillCircle, strokeCircle
 
 
 # Paths
@@ -361,11 +362,11 @@ globalCompositeOperation mode =
 
 {-| Type of end points for line drawn.
 
-  - ButtCap
+  - `ButtCap`
       - The ends of lines are squared off at the endpoints.
-  - RoundCap
+  - `RoundCap`
       - The ends of lines are rounded.
-  - SquareCap
+  - `SquareCap`
       - The ends of lines are squared off by adding a box with an equal width
         and half the height of the line's thickness.
 
@@ -425,14 +426,14 @@ lineDashOffset value =
 {-| Determines how two connecting segments with non-zero lengths in a shape are
 joined together. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
 
-  - Round
+  - `Round`
       - Rounds off the corners of a shape by filling an additional sector of disc
         centered at the common endpoint of connected segments. The radius for these
         rounded corners is equal to the line width.
-  - Bevel
+  - `Bevel`
       - Fills an additional triangular area between the common endpoint of
         connected segments, and the separate outside rectangular corners of each segment.
-  - Miter
+  - `Miter`
       - Connected segments are joined by extending their outside edges to connect
         at a single point, with the effect of filling an additional lozenge-shaped
         area. This setting is affected by the miterLimit property.
@@ -604,16 +605,16 @@ strokeStyle color =
 
 {-| Type of text alignment
 
-  - Left
+  - `Left`
       - The text is left-aligned.
-  - Right
+  - `Right`
       - The text is right-aligned.
-  - Center
+  - `Center`
       - The text is centered.
-  - Start
+  - `Start`
       - The text is aligned at the normal start of the line (left-aligned for
         left-to-right locales, right-aligned for right-to-left locales).
-  - End
+  - `End`
       - The text is aligned at the normal end of the line (right-aligned for
         left-to-right locales, left-aligned for right-to-left locales).
 
@@ -663,17 +664,17 @@ textAlign align =
 
 {-| Type of text baseline.
 
-  - Top
+  - `Top`
       - The text baseline is the top of the em square.
-  - Hanging
+  - `Hanging`
       - The text baseline is the hanging baseline. (Used by Tibetan and other Indic scripts.)
-  - Middle
+  - `Middle`
       - The text baseline is the middle of the em square.
-  - Alphabetic
+  - `Alphabetic`
       - The text baseline is the normal alphabetic baseline.
-  - Ideographic
+  - `Ideographic`
       - The text baseline is the ideographic baseline; this is the bottom of the body of the characters, if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese and Korean scripts.)
-  - Bottom
+  - `Bottom`
       - The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.
 
 -}
@@ -688,7 +689,7 @@ type TextBaseLine
 
 {-| Specifies the current text baseline being used when drawing text.
 
-The default value is `Alphabetic`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)
+The default value is `Alphabetic`.
 
 See [MDN
 docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)
@@ -884,7 +885,7 @@ fill fillRule =
     fn "fill" [ string (fillRuleToString fillRule) ]
 
 
-{-| This is a helper non-standard method to create a circle. Normally, you'd
+{-| This is a helper non-standard method to fill a circle. Normally, you'd
 need to call `beginPath`, `arc` with the correct arguments, and `fill`. This is
 a convenience function to easily fill a circle that mirrors `fillRect`.
 
@@ -897,6 +898,22 @@ fillCircle x y r =
         [ beginPath
         , arc x y r 0 (2 * pi) False
         , fill NonZero
+        ]
+
+
+{-| This is a helper non-standard method to stroke a circle. Normally, you'd
+need to call `beginPath`, `arc` with the correct arguments, and `stroke`. This
+is a convenience function to easily fill a circle that mirrors `strokeRect`.
+
+    strokeCircle x y radius
+
+-}
+strokeCircle : Float -> Float -> Float -> Command
+strokeCircle x y r =
+    batch
+        [ beginPath
+        , arc x y r 0 (2 * pi) False
+        , stroke
         ]
 
 
@@ -1051,9 +1068,9 @@ This results in shapes being drawn twice as large.
 
     scale x y
 
-  - x
+  - `x`
       - Scaling factor in the horizontal direction.
-  - y
+  - `y`
       - Scaling factor in the vertical direction.
 
 Note: You can use `scale -1 1` to flip the context horizontally and `scale 1
@@ -1147,7 +1164,7 @@ color rather than having just their outlines drawn.
 
     strokeText text x y maxWidth
 
-[MDNn docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)
+[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)
 
     strokeText "Hello world" 40 50 (Just 100)
 
