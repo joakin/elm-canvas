@@ -1,0 +1,7 @@
+#!/bin/bash
+
+FILE=$1
+echo "building $FILE"
+pushd examples/ || exit
+elm make "$FILE" --output "../public/$(basename "$FILE" .elm).js"
+popd || exit

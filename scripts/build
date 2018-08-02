@@ -1,7 +1,5 @@
 #!/bin/bash
 
-pushd examples/ || exit
-for f in *.elm; do
-  elm make "$f" --output "../public/$(basename "$f" .elm).js"
+for f in examples/*.elm; do
+  ./scripts/build-example "$(basename "$f")"
 done
-popd || exit

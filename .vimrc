@@ -5,5 +5,5 @@ augroup LOCAL_SETUP
   " autocmd BufRead,BufNewFile *.php set noexpandtab| set tabstop=4 | set sw=4
   " autocmd FileType php setlocal noexpandtab| setlocal tabstop=4 | setlocal sw=4
 
-  autocmd FileType elm nnoremap <leader><cr> :split term://./scripts/build<cr>
+  autocmd! FileType elm nnoremap <leader><cr> :exe 'split term://./scripts/build-example ' . expand('%:t')<cr>
 augroup end
