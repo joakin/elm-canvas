@@ -10205,37 +10205,42 @@ var _user$project$Examples_TiledLines$drawLine = function (_p0) {
 	};
 };
 var _user$project$Examples_TiledLines$horizontalLine = F5(
-	function (bool, x, y, width, height) {
-		return bool ? {
-			ctor: '_Tuple2',
-			_0: {ctor: '_Tuple2', _0: x + (width / 2), _1: y},
-			_1: {ctor: '_Tuple2', _0: x + (width / 2), _1: y + height}
-		} : {
-			ctor: '_Tuple2',
-			_0: {ctor: '_Tuple2', _0: x, _1: y + (height / 2)},
-			_1: {ctor: '_Tuple2', _0: x + width, _1: y + (height / 2)}
-		};
-	});
-var _user$project$Examples_TiledLines$diagonalLine = F5(
-	function (bool, x, y, width, height) {
-		return bool ? {
-			ctor: '_Tuple2',
-			_0: {ctor: '_Tuple2', _0: x, _1: y},
-			_1: {ctor: '_Tuple2', _0: x + width, _1: y + height}
-		} : {
-			ctor: '_Tuple2',
-			_0: {ctor: '_Tuple2', _0: x + width, _1: y},
-			_1: {ctor: '_Tuple2', _0: x, _1: y + height}
-		};
-	});
-var _user$project$Examples_TiledLines$randomLine = F5(
 	function (seed, x, y, width, height) {
 		return A2(
 			_elm_lang$core$Tuple$mapFirst,
-			function (leftToRight) {
-				return A5(_user$project$Examples_TiledLines$diagonalLine, leftToRight, x, y, width, height);
+			function (bool) {
+				return bool ? {
+					ctor: '_Tuple2',
+					_0: {ctor: '_Tuple2', _0: x + (width / 2), _1: y},
+					_1: {ctor: '_Tuple2', _0: x + (width / 2), _1: y + height}
+				} : {
+					ctor: '_Tuple2',
+					_0: {ctor: '_Tuple2', _0: x, _1: y + (height / 2)},
+					_1: {ctor: '_Tuple2', _0: x + width, _1: y + (height / 2)}
+				};
 			},
 			A2(_elm_lang$core$Random$step, _elm_lang$core$Random$bool, seed));
+	});
+var _user$project$Examples_TiledLines$diagonalLine = F5(
+	function (seed, x, y, width, height) {
+		return A2(
+			_elm_lang$core$Tuple$mapFirst,
+			function (bool) {
+				return bool ? {
+					ctor: '_Tuple2',
+					_0: {ctor: '_Tuple2', _0: x, _1: y},
+					_1: {ctor: '_Tuple2', _0: x + width, _1: y + height}
+				} : {
+					ctor: '_Tuple2',
+					_0: {ctor: '_Tuple2', _0: x + width, _1: y},
+					_1: {ctor: '_Tuple2', _0: x, _1: y + height}
+				};
+			},
+			A2(_elm_lang$core$Random$step, _elm_lang$core$Random$bool, seed));
+	});
+var _user$project$Examples_TiledLines$randomLine = F5(
+	function (seed, x, y, width, height) {
+		return A5(_user$project$Examples_TiledLines$diagonalLine, seed, x, y, width, height);
 	});
 var _user$project$Examples_TiledLines$step = 5;
 var _user$project$Examples_TiledLines$padding = 20;

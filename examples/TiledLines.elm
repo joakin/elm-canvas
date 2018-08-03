@@ -120,25 +120,30 @@ drawLines seed i cmds =
 
 
 randomLine seed x y width height =
+    -- horizontalLine seed x y width height
+    diagonalLine seed x y width height
+
+
+diagonalLine seed x y width height =
     Random.step Random.bool seed
         |> Tuple.mapFirst
-            (\leftToRight ->
-                diagonalLine leftToRight x y width height
+            (\bool ->
+                if bool then
+                    ( ( x, y ), ( x + width, y + height ) )
+                else
+                    ( ( x + width, y ), ( x, y + height ) )
             )
 
 
-diagonalLine bool x y width height =
-    if bool then
-        ( ( x, y ), ( x + width, y + height ) )
-    else
-        ( ( x + width, y ), ( x, y + height ) )
-
-
-horizontalLine bool x y width height =
-    if bool then
-        ( ( x + width / 2, y ), ( x + width / 2, y + height ) )
-    else
-        ( ( x, y + height / 2 ), ( x + width, y + height / 2 ) )
+horizontalLine seed x y width height =
+    Random.step Random.bool seed
+        |> Tuple.mapFirst
+            (\bool ->
+                if bool then
+                    ( ( x + width / 2, y ), ( x + width / 2, y + height ) )
+                else
+                    ( ( x, y + height / 2 ), ( x + width, y + height / 2 ) )
+            )
 
 
 drawLine ( ( startX, startY ), ( endX, endY ) ) =
