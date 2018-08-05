@@ -1,5 +1,5 @@
 {
-    "version": "1.0.1",
+    "version": "2.0.0",
     "summary": "Canvas API with custom elements for low level drawing primitives",
     "repository": "https://github.com/joakin/elm-canvas.git",
     "license": "BSD3",
