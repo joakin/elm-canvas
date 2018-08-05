@@ -31,12 +31,14 @@ better defaults as time goes by, and make specific tutorials with Elm.
 To use it, remember to include the `elm-canvas` custom element script in your
 page before you initialize your Elm application.
 
+- [Ellie basic example](https://ellie-app.com/Y5WSbjS85qa1)
+  - Good starting point to play with the library.
 - <http://unpkg.com/elm-canvas/elm-canvas.js>
   - CDN link. Visit it and copy the redirected URL with the version number into
     your HTML.
 - <http://npmjs.com/package/elm-canvas>
-  - See docs for version compatibility, in general, latest npm package should
-    work fine with the latest elm package.
+  - See npm docs for version compatibility, in general, latest npm package
+    should work fine with the latest elm package.
 
 Then, you can add your HTML element like this:
 
