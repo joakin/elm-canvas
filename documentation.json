@@ -1,16 +1,15 @@
 [
   {
     "name": "Canvas",
-    "comment": " This library exposes a low level API that mirrors most of the DOM canvas\nAPI.\n\nTo use it, remember to include the `elm-canvas` custom element script in your\npage before you initialize your Elm application.\n\n  - <http://unpkg.com/elm-canvas/elm-canvas.js>\n  - <http://npmjs.com/package/elm-canvas>\n\nWARNING: This library is intended as a very low-level API that mirrors the DOM\nAPI almost exactly, while providing a bit of extra type safety where it makes\nsense. The DOM API is highly stateful and side-effectful, so be careful. To\nunderstand how to use this library properly, please read the MDN docs:\n<https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D> and\nall the nested pages\n\n\n# Usage in HTML\n\n@docs element\n\n\n# Composing Commands\n\n@docs Command, batch\n\n\n# Colors\n\n@docs fillStyle, strokeStyle\n\n\n# Text\n\n@docs font, TextAlign, textAlign, TextBaseLine, textBaseline, fillText, strokeText\n\n\n# Shapes\n\n@docs fillRect, strokeRect, clearRect, fillCircle, strokeCircle\n\n\n# Paths\n\n@docs beginPath, closePath, FillRule, fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect\n\n\n# Line settings\n\n@docs LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit, setLineDash\n\n\n# Shadows\n\n@docs shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY\n\n\n# Global Canvas settings\n\n@docs globalAlpha, GlobalCompositeOperationMode, globalCompositeOperation, save, restore\n\n\n# Global Canvas transforms\n\n@docs rotate, scale, translate, transform, setTransform\n\n",
-    "aliases": [
-      {
-        "name": "Command",
-        "comment": " Represents a command to execute on the DOM canvas. You build commands with\nthe helper functions the library exposes, which mirror the canvas API.\n\nThen, you pass the commands to the `element` you render on the view, and they\nwill be run!\n\n",
-        "args": [],
-        "type": "Json.Encode.Value"
-      }
-    ],
+    "comment": " This module exposes a low level drawing API to work with the DOM canvas.\n\nSee instructions in the main page of the package for installation, as it\nrequires a web component.\n\n**WARNING**: This library is in development and right now it only exposes a\nlow-level API that mirrors the DOM API, providing a bit of extra type safety\nwhere it makes sense. The DOM API is highly stateful and side-effectful, so be\ncareful. To understand how to use this library for now, please familiarize\nyourself with the\n[MDN Canvas Tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial).\nWe will be iterating on the design of the library to make it nicer and provide\nbetter defaults as time goes by, and make specific tutorials with Elm.\n\n\n# Usage in HTML\n\n@docs element\n\n\n# Composing Commands\n\n@docs Commands, empty\n\n\n# Colors\n\n@docs fillStyle, strokeStyle\n\n\n# Text\n\n@docs font, TextAlign, textAlign, TextBaseLine, textBaseline, fillText, strokeText\n\n\n# Shapes\n\n@docs fillRect, strokeRect, clearRect, fillCircle, strokeCircle\n\n\n# Paths\n\n@docs beginPath, closePath, FillRule, fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect\n\n\n# Line settings\n\n@docs LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit, setLineDash\n\n\n# Shadows\n\n@docs shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY\n\n\n# Global Canvas settings\n\n@docs globalAlpha, GlobalCompositeOperationMode, globalCompositeOperation, save, restore\n\n\n# Global Canvas transforms\n\n@docs rotate, scale, translate, transform, setTransform\n\n",
+    "aliases": [],
     "types": [
+      {
+        "name": "Commands",
+        "comment": " Represents commands to execute on the DOM canvas. You build commands with\nthe helper functions the library exposes, which mirror the canvas API.\n\nThen, you pass the commands to the `element` you render on the view, and they\nwill be run!\n\n",
+        "args": [],
+        "cases": []
+      },
       {
         "name": "FillRule",
         "comment": " Type that represents the algorithm by which to determine if a point is\ninside a path or outside a path. If you are not sure, use `NonZero` as it is\nthe default in the DOM API.\n\n  - `NonZero`: The [non-zero winding rule](http://en.wikipedia.org/wiki/Nonzero-rule).\n  - `EvenOdd`: The [even-odd winding rule](http://en.wikipedia.org/wiki/Even%E2%80%93odd_rule).\n\n",
@@ -237,228 +236,228 @@
     "values": [
       {
         "name": "arc",
-        "comment": " Adds an arc to the path which is centered at (`x`, `y`) position with\n`radius` starting at `startAngle` and ending at `endAngle` going in the given\ndirection by `anticlockwise` (`False` is clockwise). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc)\n\n    [ beginPath\n    , arc x y radius startAngle endAngle anticlockwise\n    , stroke\n    ]\n\n",
-        "type": "Float -> Float -> Float -> Float -> Float -> Bool -> Canvas.Command"
+        "comment": " Adds an arc to the path which is centered at (`x`, `y`) position with\n`radius` starting at `startAngle` and ending at `endAngle` going in the given\ndirection by `anticlockwise` (`False` is clockwise). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc)\n\n    empty\n    |> beginPath\n    |> arc x y radius startAngle endAngle anticlockwise\n    |> stroke\n\n",
+        "type": "Float -> Float -> Float -> Float -> Float -> Bool -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "arcTo",
-        "comment": " Adds an arc to the path with the given control points and radius.\n\nThe arc drawn will be a part of a circle, never elliptical. Typical use could be\nmaking a rounded corner.\n\nOne way to think about the arc drawn is to imagine two straight segments, from\nthe starting point (latest point in current path) to the first control point,\nand then from the first control point to the second control point. These two\nsegments form a sharp corner with the first control point being in the corner.\nUsing `arcTo`, the corner will instead be an arc with the given radius.\n\nThe arc is tangential to both segments, which can sometimes produce surprising\nresults, e.g. if the radius given is larger than the distance between the\nstarting point and the first control point.\n\nIf the radius specified doesn't make the arc meet the starting point (latest\npoint in the current path), the starting point is connected to the arc with\na straight line segment.\n\n    arcTo x1 y1 x2 y2 radius\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arcTo)\n\n",
-        "type": "Float -> Float -> Float -> Float -> Float -> Canvas.Command"
-      },
-      {
-        "name": "batch",
-        "comment": " Batch a list of Commands into a single Command. Useful to compose functions\nthat generate lists of commands without having to do List manipulations all the time.\n\n    clearScreen : Command\n    clearScreen =\n        batch\n            [ clearRect 0 0 400 400\n            , fillStyle (Color.rgb 0 0 0)\n            ]\n\n",
-        "type": "List Canvas.Command -> Canvas.Command"
+        "comment": " Adds an arc to the path with the given control points and radius.\n\nThe arc drawn will be a part of a circle, never elliptical. Typical use could be\nmaking a rounded corner.\n\nOne way to think about the arc drawn is to imagine two straight segments, from\nthe starting point (latest point in current path) to the first control point,\nand then from the first control point to the second control point. These two\nsegments form a sharp corner with the first control point being in the corner.\nUsing `arcTo`, the corner will instead be an arc with the given radius.\n\nThe arc is tangential to both segments, which can sometimes produce surprising\nresults, e.g. if the radius given is larger than the distance between the\nstarting point and the first control point.\n\nIf the radius specified doesn't make the arc meet the starting point (latest\npoint in the current path), the starting point is connected to the arc with\na straight line segment.\n\n    empty |> arcTo x1 y1 x2 y2 radius\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arcTo)\n\n",
+        "type": "Float -> Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "beginPath",
         "comment": " Starts a new path by emptying the list of sub-paths. Call this method when\nyou want to create a new path. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/beginPath)\n",
-        "type": "Canvas.Command"
+        "type": "Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "bezierCurveTo",
         "comment": " Adds a cubic Bézier curve to the path. It requires three points. The first\ntwo points are control points and the third one is the end point. The starting\npoint is the last point in the current path, which can be changed using `moveTo`\nbefore creating the Bézier curve. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/bezierCurveTo)\n\n    bezierCurveTo cp1x cp1y cp2x cp2y x y\n\n  - `cp1x`\n      - The x axis of the coordinate for the first control point.\n  - `cp1y`\n      - The y axis of the coordinate for the first control point.\n  - `cp2x`\n      - The x axis of the coordinate for the second control point.\n  - `cp2y`\n      - The y axis of the coordinate for the second control point.\n  - `x`\n      - The x axis of the coordinate for the end point.\n  - `y`\n      - The y axis of the coordinate for the end point.\n\n",
-        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "clearRect",
-        "comment": " Sets all pixels in the rectangle defined by starting point (`x`, `y`) and\nsize (`width`, `height`) to transparent black, erasing any previously drawn\ncontent. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect)\n\n    clearRect x y width height\n\nA common problem with `clearRect` is that it may appear it does not work when\nnot using paths properly. Don't forget to call `beginPath` before starting to\ndraw the new frame after calling `clearRect`.\n\n",
-        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Sets all pixels in the rectangle defined by starting point (`x`, `y`) and\nsize (`width`, `height`) to transparent black, erasing any previously drawn\ncontent. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect)\n\n    empty |> clearRect x y width height\n\nA common problem with `clearRect` is that it may appear it does not work when\nnot using paths properly. Don't forget to call `beginPath` before starting to\ndraw the new frame after calling `clearRect`.\n\n",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "clip",
         "comment": " Turns the path currently being built into the current clipping path.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clip)\n\nNote: Be aware that `clip` only works with shapes added to the path; it doesn't\nwork with shape primitives such as rectangles created with `fillRect`. In this\ncase you'd have to use `rect` to draw a rectangular path shape to be clipped.\n\n",
-        "type": "Canvas.FillRule -> Canvas.Command"
+        "type": "Canvas.FillRule -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "closePath",
-        "comment": " Causes the point of the pen to move back to the start of the current\nsub-path. It tries to add a straight line (but does not actually draw it) from\nthe current point to the start. If the shape has already been closed or has\nonly one point, this function does nothing.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath)\n\n    [ beginPath\n    , moveTo 20 20\n    , lineTo 200 20\n    , lineTo 120 120\n    , closePath -- draws last line of the triangle\n    , stroke\n    ]\n\n",
-        "type": "Canvas.Command"
+        "comment": " Causes the point of the pen to move back to the start of the current\nsub-path. It tries to add a straight line (but does not actually draw it) from\nthe current point to the start. If the shape has already been closed or has\nonly one point, this function does nothing.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath)\n\n    empty\n    |> beginPath\n    |> moveTo 20 20\n    |> lineTo 200 20\n    |> lineTo 120 120\n    |> closePath -- draws last line of the triangle\n    |> stroke\n\n",
+        "type": "Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "element",
-        "comment": " Create a Html element that you can use in your view.\n\n    view : Model -> Html Msg\n    view { isRunning, time } =\n        Canvas.element\n            width\n            height\n            [ onClick ToggleRunning ]\n            [ Canvas.clearScreen\n            , Canvas.fillStyle (Color.rgba 0 0 0 1)\n            , List.range 0 100\n                |> List.map (renderItem time)\n                |> Canvas.batch\n            ]\n\n",
-        "type": "Int -> Int -> List (Html.Attribute msg) -> List Canvas.Command -> Html.Html msg"
+        "comment": " Create a Html element that you can use in your view.\n\n    view : Model -> Html Msg\n    view { isRunning, time } =\n        Canvas.element\n            width\n            height\n            [ onClick ToggleRunning ]\n            (Canvas.empty\n                |> Canvas.clearScreen\n                |> Canvas.fillStyle (Color.rgba 0 0 0 1)\n                |> Canvas.fillRect 0 0 40 50\n            )\n\n",
+        "type": "Int -> Int -> List (Html.Attribute msg) -> Canvas.Commands -> Html.Html msg"
+      },
+      {
+        "name": "empty",
+        "comment": " Create an empty set of commands to start working with.\n\n    Canvas.empty\n        |> Canvas.clearScreen\n        |> Canvas.fillStyle (Color.rgba 0 0 0 1)\n        |> Canvas.fillRect 0 0 40 50\n\n",
+        "type": "Canvas.Commands"
       },
       {
         "name": "fill",
         "comment": " Fills the current or given path with the current fill style using the\nnon-zero or even-odd winding rule. See type `FillRule`.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill)\n",
-        "type": "Canvas.FillRule -> Canvas.Command"
+        "type": "Canvas.FillRule -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "fillCircle",
-        "comment": " This is a helper non-standard method to fill a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `fill`. This is\na convenience function to easily fill a circle that mirrors `fillRect`.\n\n    fillCircle x y radius\n\n",
-        "type": "Float -> Float -> Float -> Canvas.Command"
+        "comment": " This is a helper non-standard method to fill a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `fill`. This is\na convenience function to easily fill a circle that mirrors `fillRect`.\n\n    empty |> fillCircle x y radius\n\n",
+        "type": "Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "fillRect",
-        "comment": " Draws a filled rectangle whose starting point is at the coordinates (`x`, `y`)\nwith the specified `width` and `height` and whose style is determined by the\nfillStyle attribute. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect)\n\n    fillRect x y width height\n\n",
-        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Draws a filled rectangle whose starting point is at the coordinates (`x`, `y`)\nwith the specified `width` and `height` and whose style is determined by the\nfillStyle attribute. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect)\n\n    empty |> fillRect x y width height\n\n",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "fillStyle",
-        "comment": " Specifies the color or style to use inside shapes. The default is #000\n(black). [MDN Docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle)\n\n    fillStyle (Color.rgba 125 200 255 0.6)\n\n",
-        "type": "Color.Color -> Canvas.Command"
+        "comment": " Specifies the color or style to use inside shapes. The default is #000\n(black). [MDN Docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle)\n\n    empty |> fillStyle (Color.rgba 125 200 255 0.6)\n\n",
+        "type": "Color.Color -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "fillText",
-        "comment": " Draws a text string at the specified coordinates, filling the string's\ncharacters with the current foreground color. An optional parameter allows\nspecifying a maximum width for the rendered text, which the user agent will\nachieve by condensing the text or by using a lower font size.\n\nThe text is rendered using the font and text layout configuration as defined by\nthe `font`, `textAlign`, `textBaseline`, and `direction` properties.\n\nTo draw the outlines of the characters in a string, call the context's\n`strokeText` method.\n\n    fillText text x y maxWidth\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText)\n\n    [ font \"48px serif\"\n    , fillText \"Hello world\" 50 100 Nothing\n    ]\n\n",
-        "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Command"
+        "comment": " Draws a text string at the specified coordinates, filling the string's\ncharacters with the current foreground color. An optional parameter allows\nspecifying a maximum width for the rendered text, which the user agent will\nachieve by condensing the text or by using a lower font size.\n\nThe text is rendered using the font and text layout configuration as defined by\nthe `font`, `textAlign`, `textBaseline`, and `direction` properties.\n\nTo draw the outlines of the characters in a string, call the context's\n`strokeText` method.\n\n    empty |> fillText text x y maxWidth\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText)\n\n    empty\n    |> font \"48px serif\"\n    |> fillText \"Hello world\" 50 100 Nothing\n\n",
+        "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "font",
-        "comment": " Specifies the current text style being used when drawing text. This string\nuses the same syntax as the [CSS\nfont](https://developer.mozilla.org/en-US/docs/Web/CSS/font) specifier. The\ndefault font is 10px sans-serif. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font)\n\n    [ font \"48px serif\"\n    , strokeText \"Hello world\" 50 100\n    ]\n\n",
-        "type": "String -> Canvas.Command"
+        "comment": " Specifies the current text style being used when drawing text. This string\nuses the same syntax as the [CSS\nfont](https://developer.mozilla.org/en-US/docs/Web/CSS/font) specifier. The\ndefault font is 10px sans-serif. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font)\n\n    empty\n    |> font \"48px serif\"\n    |> strokeText \"Hello world\" 50 100\n\n",
+        "type": "String -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "globalAlpha",
-        "comment": " Specifies the alpha value that is applied to shapes and images before they are\ndrawn onto the canvas. The value is in the range from 0.0 (fully transparent) to\n1.0 (fully opaque). The default value is 1.0. Values outside the range,\nincluding `Infinity` and `NaN` will not be set and globalAlpha will retain its\nprevious value.\n\nSee also the chapter [Applying styles and color](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalAlpha)\n\n    -- Drawing two transparent rectangles\n    [ globalAlpha 0.5\n    , fillStyle (Color.rgb 0 0 255)\n    , fillRect 10 10 100 100\n    , fillStyle (Color.rgb 255 0 0)\n    , fillRect 50 50 100 100\n    ]\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Specifies the alpha value that is applied to shapes and images before they are\ndrawn onto the canvas. The value is in the range from 0.0 (fully transparent) to\n1.0 (fully opaque). The default value is 1.0. Values outside the range,\nincluding `Infinity` and `NaN` will not be set and globalAlpha will retain its\nprevious value.\n\nSee also the chapter [Applying styles and color](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalAlpha)\n\n    -- Drawing two transparent rectangles\n    empty\n    |> globalAlpha 0.5\n    |> fillStyle (Color.rgb 0 0 255)\n    |> fillRect 10 10 100 100\n    |> fillStyle (Color.rgb 255 0 0)\n    |> fillRect 50 50 100 100\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "globalCompositeOperation",
-        "comment": " Sets the type of compositing operation to apply when drawing new shapes,\nwhere type is a `GlobalCompositeOperationMode` identifying which of the\ncompositing or blending mode operations to use.\n\nSee the chapter\n[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)\nfrom the Canvas Tutorial, or visit the [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)\nfor more information and pictures of what each mode does.\n\n    globalCompositeOperation Screen\n\n",
-        "type": "Canvas.GlobalCompositeOperationMode -> Canvas.Command"
+        "comment": " Sets the type of compositing operation to apply when drawing new shapes,\nwhere type is a `GlobalCompositeOperationMode` identifying which of the\ncompositing or blending mode operations to use.\n\nSee the chapter\n[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)\nfrom the Canvas Tutorial, or visit the [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)\nfor more information and pictures of what each mode does.\n\n    empty |> globalCompositeOperation Screen\n\n",
+        "type": "Canvas.GlobalCompositeOperationMode -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "lineCap",
-        "comment": " Determines how the end points of every line are drawn. See `LineCap` for the\npossible types. By default this property is set to `ButtCap`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)\n\n    [ beginPath\n    , moveTo 0 0\n    , lineWidth 15\n    , lineCap RoundCap\n    , lineTo 100 100\n    , stroke\n    ]\n\n",
-        "type": "Canvas.LineCap -> Canvas.Command"
+        "comment": " Determines how the end points of every line are drawn. See `LineCap` for the\npossible types. By default this property is set to `ButtCap`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)\n\n    empty\n    |> beginPath\n    |> moveTo 0 0\n    |> lineWidth 15\n    |> lineCap RoundCap\n    |> lineTo 100 100\n    |> stroke\n\n",
+        "type": "Canvas.LineCap -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "lineDashOffset",
-        "comment": " Sets the line dash pattern offset or \"phase\". [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)\n\n    [ setLineDash [4, 16]\n    , lineDashOffset 2\n    , beginPath\n    , moveTo 0 100\n    , lineTo 400 100\n    , stroke\n    ]\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Sets the line dash pattern offset or \"phase\". [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)\n\n    empty\n    |> setLineDash [4, 16]\n    |> lineDashOffset 2\n    |> beginPath\n    |> moveTo 0 100\n    |> lineTo 400 100\n    |> stroke\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "lineJoin",
-        "comment": " Sets how two connecting segments (of lines, arcs or curves) with\nnon-zero lengths in a shape are joined together (degenerate segments with zero\nlengths, whose specified endpoints and control points are exactly at the same\nposition, are skipped). See the type `LineJoin`.\n\nBy default this property is set to `MiterJoin`. Note that the lineJoin setting\nhas no effect if the two connected segments have the same direction, because no\njoining area will be added in this case.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)\n\n    [ lineWidth 10\n    , lineJoin RoundJoin\n    , beginPath\n    , moveTo 0 0\n    , lineTo 200 100\n    , lineTo 300 0\n    , stroke\n    ]\n\n",
-        "type": "Canvas.LineJoin -> Canvas.Command"
+        "comment": " Sets how two connecting segments (of lines, arcs or curves) with\nnon-zero lengths in a shape are joined together (degenerate segments with zero\nlengths, whose specified endpoints and control points are exactly at the same\nposition, are skipped). See the type `LineJoin`.\n\nBy default this property is set to `MiterJoin`. Note that the lineJoin setting\nhas no effect if the two connected segments have the same direction, because no\njoining area will be added in this case.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)\n\n    empty\n    |> lineWidth 10\n    |> lineJoin RoundJoin\n    |> beginPath\n    |> moveTo 0 0\n    |> lineTo 200 100\n    |> lineTo 300 0\n    |> stroke\n\n",
+        "type": "Canvas.LineJoin -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "lineTo",
-        "comment": " Connects the last point in the sub-path to the x, y coordinates with a\nstraight line (but does not actually draw it). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineTo)\n\n    lineTo x y\n\n",
-        "type": "Float -> Float -> Canvas.Command"
+        "comment": " Connects the last point in the sub-path to the x, y coordinates with a\nstraight line (but does not actually draw it). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineTo)\n\n    empty |> lineTo x y\n\n",
+        "type": "Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "lineWidth",
-        "comment": " Sets the thickness of lines in space units. When setting, zero, negative,\nInfinity and NaN values are ignored; otherwise the current value is set to the\nnew value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)\n\n    [ beginPath\n    , moveTo 0 0\n    , lineWidth 15\n    , lineTo 100 100\n    , stroke\n    ]\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Sets the thickness of lines in space units. When setting, zero, negative,\nInfinity and NaN values are ignored; otherwise the current value is set to the\nnew value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)\n\n    empty\n    |> beginPath\n    |> moveTo 0 0\n    |> lineWidth 15\n    |> lineTo 100 100\n    |> stroke\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "miterLimit",
         "comment": " Sets the miter limit ratio in space units. When setting, zero, negative,\nInfinity and NaN values are ignored; otherwise the current value is set to the\nnew value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)\n",
-        "type": "Float -> Canvas.Command"
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "moveTo",
-        "comment": " Moves the starting point of a new sub-path to the (x, y) coordinates.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/moveTo)\n\n    moveTo x y\n\n",
-        "type": "Float -> Float -> Canvas.Command"
+        "comment": " Moves the starting point of a new sub-path to the (x, y) coordinates.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/moveTo)\n\n    empty |> moveTo x y\n\n",
+        "type": "Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "quadraticCurveTo",
-        "comment": " Adds a quadratic Bézier curve to the path. It requires two points. The\nfirst point is a control point and the second one is the end point. The\nstarting point is the last point in the current path, which can be changed\nusing `moveTo` before creating the quadratic Bézier curve. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo)\n\n    quadraticCurveTo cpx cpy x y\n\n  - `cpx`\n      - The x axis of the coordinate for the control point.\n  - `cpy`\n      - The y axis of the coordinate for the control point.\n  - `x`\n      - The x axis of the coordinate for the end point.\n  - `y`\n      - The y axis of the coordinate for the end point.\n\n",
-        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Adds a quadratic Bézier curve to the path. It requires two points. The\nfirst point is a control point and the second one is the end point. The\nstarting point is the last point in the current path, which can be changed\nusing `moveTo` before creating the quadratic Bézier curve. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo)\n\n    empty |> quadraticCurveTo cpx cpy x y\n\n  - `cpx`\n      - The x axis of the coordinate for the control point.\n  - `cpy`\n      - The y axis of the coordinate for the control point.\n  - `x`\n      - The x axis of the coordinate for the end point.\n  - `y`\n      - The y axis of the coordinate for the end point.\n\n",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "rect",
-        "comment": " Creates a path for a rectangle at position (`x`, `y`) with a size that is\ndetermined by `width` and `height`. Those four points are connected by straight\nlines and the sub-path is marked as closed, so that you can `fill` or `stroke`\nthis rectangle. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rect)\n\n    rect x y width height\n\n",
-        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Creates a path for a rectangle at position (`x`, `y`) with a size that is\ndetermined by `width` and `height`. Those four points are connected by straight\nlines and the sub-path is marked as closed, so that you can `fill` or `stroke`\nthis rectangle. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rect)\n\n    empty |> rect x y width height\n\n",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "restore",
         "comment": " Restores the most recently saved canvas state by popping the top entry in\nthe drawing state stack. If there is no saved state, this method does nothing.\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/restore)\n",
-        "type": "Canvas.Command"
+        "type": "Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "rotate",
-        "comment": " Adds a rotation to the transformation matrix. The `angle` argument\nrepresents a clockwise rotation angle and is expressed in radians.\n\n    rotate (degrees 90)\n\nThe rotation center point is always the canvas origin. To change the center\npoint, we will need to move the canvas by using the `translate` method.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate)\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Adds a rotation to the transformation matrix. The `angle` argument\nrepresents a clockwise rotation angle and is expressed in radians.\n\n    empty |> rotate (degrees 90)\n\nThe rotation center point is always the canvas origin. To change the center\npoint, we will need to move the canvas by using the `translate` method.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate)\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "save",
         "comment": " Saves the entire state of the canvas by pushing the current state onto\na stack. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/save)\n\nThe drawing state that gets saved onto a stack consists of:\n\n  - The current transformation matrix.\n  - The current clipping region.\n  - The current dash list.\n  - The current values of the following attributes: strokeStyle, fillStyle, globalAlpha, lineWidth, lineCap, lineJoin, miterLimit, lineDashOffset, shadowOffsetX, shadowOffsetY, shadowBlur, shadowColor, globalCompositeOperation, font, textAlign, textBaseline, direction, imageSmoothingEnabled.\n\n",
-        "type": "Canvas.Command"
+        "type": "Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "scale",
-        "comment": " Adds a scaling transformation to the canvas units by x horizontally and by\ny vertically.\n\nBy default, one unit on the canvas is exactly one pixel. If we apply, for\ninstance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels\nand so shapes would be drawn at half size. In a similar way setting the scaling\nfactor to 2.0 would increase the unit size and one unit now becomes two pixels.\nThis results in shapes being drawn twice as large.\n\n    scale x y\n\n  - `x`\n      - Scaling factor in the horizontal direction.\n  - `y`\n      - Scaling factor in the vertical direction.\n\nNote: You can use `scale -1 1` to flip the context horizontally and `scale 1\n-1` to flip it vertically.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)\n\n",
-        "type": "Float -> Float -> Canvas.Command"
+        "comment": " Adds a scaling transformation to the canvas units by x horizontally and by\ny vertically.\n\nBy default, one unit on the canvas is exactly one pixel. If we apply, for\ninstance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels\nand so shapes would be drawn at half size. In a similar way setting the scaling\nfactor to 2.0 would increase the unit size and one unit now becomes two pixels.\nThis results in shapes being drawn twice as large.\n\n    empty |> scale x y\n\n  - `x`\n      - Scaling factor in the horizontal direction.\n  - `y`\n      - Scaling factor in the vertical direction.\n\nNote: You can use `scale -1 1` to flip the context horizontally and `scale 1\n-1` to flip it vertically.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)\n\n",
+        "type": "Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "setLineDash",
-        "comment": " Sets the line dash pattern used when stroking lines, using an array of\nvalues which specify alternating lengths of lines and gaps which describe the\npattern.\n\nTo return to using solid lines, set the line dash list to an empty array.\n\n    setLineDash segments\n\n  - `segments`\n      - An Array of numbers which specify distances to alternately draw a line\n        and a gap (in coordinate space units). If the number of elements in the array\n        is odd, the elements of the array get copied and concatenated. For example, `[5,\n        15, 25]` will become `[5, 15, 25, 5, 15, 25]`. If the array is empty, the line\n        dash list is cleared and line strokes return to being solid.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)\n\n",
-        "type": "List Float -> Canvas.Command"
+        "comment": " Sets the line dash pattern used when stroking lines, using an array of\nvalues which specify alternating lengths of lines and gaps which describe the\npattern.\n\nTo return to using solid lines, set the line dash list to an empty array.\n\n    empty |> setLineDash segments\n\n  - `segments`\n      - An Array of numbers which specify distances to alternately draw a line\n        and a gap (in coordinate space units). If the number of elements in the array\n        is odd, the elements of the array get copied and concatenated. For example, `[5,\n        15, 25]` will become `[5, 15, 25, 5, 15, 25]`. If the array is empty, the line\n        dash list is cleared and line strokes return to being solid.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)\n\n",
+        "type": "List Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "setTransform",
-        "comment": " Resets (overrides) the current transformation to the identity matrix and\nthen invokes a transformation described by the arguments of this method.\n\nSee also the `transform` method, which does not override the current transform\nmatrix and multiplies it with a given one.\n\n    setTransform a b c d e f\n\n  - `a` (m11)\n      - Horizontal scaling.\n  - `b` (m12)\n      - Horizontal skewing.\n  - `c` (m21)\n      - Vertical skewing.\n  - `d` (m22)\n      - Vertical scaling.\n  - `e` (dx)\n      - Horizontal moving.\n  - `f` (dy)\n      - Vertical moving.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform)\n\n",
-        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Resets (overrides) the current transformation to the identity matrix and\nthen invokes a transformation described by the arguments of this method.\n\nSee also the `transform` method, which does not override the current transform\nmatrix and multiplies it with a given one.\n\n    empty |> setTransform a b c d e f\n\n  - `a` (m11)\n      - Horizontal scaling.\n  - `b` (m12)\n      - Horizontal skewing.\n  - `c` (m21)\n      - Vertical skewing.\n  - `d` (m22)\n      - Vertical scaling.\n  - `e` (dx)\n      - Horizontal moving.\n  - `f` (dy)\n      - Vertical moving.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform)\n\n",
+        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "shadowBlur",
-        "comment": " Specifies the level of the blurring effect; this value doesn't correspond to\na number of pixels and is not affected by the current transformation matrix. The\ndefault value is 0. Negative, Infinity or NaN values are ignored. Note that\nshadows are only drawn, if the `shadowColor` property is set to\na non-transparent value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowBlur)\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowBlur 10\n    , fillStyle (Color.rgb 255 255 255)\n    , fillRect 10 10 100 100\n    ]\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Specifies the level of the blurring effect; this value doesn't correspond to\na number of pixels and is not affected by the current transformation matrix. The\ndefault value is 0. Negative, Infinity or NaN values are ignored. Note that\nshadows are only drawn, if the `shadowColor` property is set to\na non-transparent value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowBlur)\n\n    empty\n    |> shadowColor (Color.rgb 0 0 0)\n    |> shadowBlur 10\n    |> fillStyle (Color.rgb 255 255 255)\n    |> fillRect 10 10 100 100\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "shadowColor",
-        "comment": " Specifies the color of the shadow. [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowColor)\n\nNote that shadows are only drawn, if the shadowColor property is set\n(non-transparent) and either the shadowBlur, the shadowOffsetX, or the\nshadowOffsetY property are non-zero.\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowOffsetY 10\n    , shadowOffsetX 10\n    , fillStyle (Color.rgb 0 255 0)\n    , fillRect 10 10 100 100\n    ]\n\n",
-        "type": "Color.Color -> Canvas.Command"
+        "comment": " Specifies the color of the shadow. [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowColor)\n\nNote that shadows are only drawn, if the shadowColor property is set\n(non-transparent) and either the shadowBlur, the shadowOffsetX, or the\nshadowOffsetY property are non-zero.\n\n    empty\n    |> shadowColor (Color.rgb 0 0 0)\n    |> shadowOffsetY 10\n    |> shadowOffsetX 10\n    |> fillStyle (Color.rgb 0 255 0)\n    |> fillRect 10 10 100 100\n\n",
+        "type": "Color.Color -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "shadowOffsetX",
-        "comment": " Specifies the distance that the shadow will be offset in horizontal\ndistance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX)\n\nThe default value is 0. Infinity or NaN values are ignored.\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowOffsetY 10\n    , shadowOffsetX 10\n    , fillStyle (Color.rgb 0 255 0)\n    , fillRect 10 10 100 100\n    ]\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Specifies the distance that the shadow will be offset in horizontal\ndistance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX)\n\nThe default value is 0. Infinity or NaN values are ignored.\n\n    empty\n    |> shadowColor (Color.rgb 0 0 0)\n    |> shadowOffsetY 10\n    |> shadowOffsetX 10\n    |> fillStyle (Color.rgb 0 255 0)\n    |> fillRect 10 10 100 100\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "shadowOffsetY",
-        "comment": " Specifies the distance that the shadow will be offset in vertical\ndistance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetY)\n\nThe default value is 0. Infinity or NaN values are ignored.\n\n    [ shadowColor (Color.rgb 0 0 0)\n    , shadowOffsetY 10\n    , shadowOffsetX 10\n    , fillStyle (Color.rgb 0 255 0)\n    , fillRect 10 10 100 100\n    ]\n\n",
-        "type": "Float -> Canvas.Command"
+        "comment": " Specifies the distance that the shadow will be offset in vertical\ndistance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetY)\n\nThe default value is 0. Infinity or NaN values are ignored.\n\n    empty\n    |> shadowColor (Color.rgb 0 0 0)\n    |> shadowOffsetY 10\n    |> shadowOffsetX 10\n    |> fillStyle (Color.rgb 0 255 0)\n    |> fillRect 10 10 100 100\n\n",
+        "type": "Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "stroke",
         "comment": " Strokes the current or given path with the current stroke style using the\nnon-zero winding rule. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke)\n",
-        "type": "Canvas.Command"
+        "type": "Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "strokeCircle",
-        "comment": " This is a helper non-standard method to stroke a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `stroke`. This\nis a convenience function to easily fill a circle that mirrors `strokeRect`.\n\n    strokeCircle x y radius\n\n",
-        "type": "Float -> Float -> Float -> Canvas.Command"
+        "comment": " This is a helper non-standard method to stroke a circle. Normally, you'd\nneed to call `beginPath`, `arc` with the correct arguments, and `stroke`. This\nis a convenience function to easily fill a circle that mirrors `strokeRect`.\n\n    empty |> strokeCircle x y radius\n\n",
+        "type": "Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "strokeRect",
-        "comment": " Paints a rectangle which has a starting point at (`x`, `y`) and has a `width`\nand an `height` onto the canvas, using the current stroke style. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect)\n\n    strokeRect x y width height\n\n",
-        "type": "Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Paints a rectangle which has a starting point at (`x`, `y`) and has a `width`\nand an `height` onto the canvas, using the current stroke style. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect)\n\n    empty |> strokeRect x y width height\n\n",
+        "type": "Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "strokeStyle",
-        "comment": " Specifies the color or style to use for the lines around shapes. The default\nis #000 (black). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle)\n\n    [ strokeStyle (Color.rgb 0 0 255)\n    , strokeRect 10 10 100 100\n    ]\n\n",
-        "type": "Color.Color -> Canvas.Command"
+        "comment": " Specifies the color or style to use for the lines around shapes. The default\nis #000 (black). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle)\n\n    empty\n    |> strokeStyle (Color.rgb 0 0 255)\n    |> strokeRect 10 10 100 100\n\n",
+        "type": "Color.Color -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "strokeText",
-        "comment": " Strokes — that is, draws the outlines of — the characters of a specified\ntext string at the given (`x`, `y`) position. If the optional fourth parameter\nfor a maximum width is provided, the text is scaled to fit that width.\n\nSee the `fillText` method to draw the text with the characters filled with\ncolor rather than having just their outlines drawn.\n\n    strokeText text x y maxWidth\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)\n\n    strokeText \"Hello world\" 40 50 (Just 100)\n\n",
-        "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Command"
+        "comment": " Strokes — that is, draws the outlines of — the characters of a specified\ntext string at the given (`x`, `y`) position. If the optional fourth parameter\nfor a maximum width is provided, the text is scaled to fit that width.\n\nSee the `fillText` method to draw the text with the characters filled with\ncolor rather than having just their outlines drawn.\n\n    empty |> strokeText text x y maxWidth\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)\n\n    empty |> strokeText \"Hello world\" 40 50 (Just 100)\n\n",
+        "type": "String -> Float -> Float -> Maybe.Maybe Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "textAlign",
-        "comment": " Specifies the current text alignment being used when drawing text. Beware\nthat the alignment is based on the x value of the `fillText` command. So if\n`textAlign` is `Center`, then the text would be drawn at `x - (width / 2)`.\n\nThe default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)\n\n    [ font \"48px serif\"\n    , textAlign Left\n    , strokeText \"Hello world\" 0 100\n    ]\n\n",
-        "type": "Canvas.TextAlign -> Canvas.Command"
+        "comment": " Specifies the current text alignment being used when drawing text. Beware\nthat the alignment is based on the x value of the `fillText` command. So if\n`textAlign` is `Center`, then the text would be drawn at `x - (width / 2)`.\n\nThe default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)\n\n    empty\n    |> font \"48px serif\"\n    |> textAlign Left\n    |> strokeText \"Hello world\" 0 100\n\n",
+        "type": "Canvas.TextAlign -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "textBaseline",
         "comment": " Specifies the current text baseline being used when drawing text.\n\nThe default value is `Alphabetic`.\n\nSee [MDN\ndocs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)\nfor examples and rendering of the different modes.\n\n",
-        "type": "Canvas.TextBaseLine -> Canvas.Command"
+        "type": "Canvas.TextBaseLine -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "transform",
-        "comment": " Multiplies the current transformation with the matrix described by the\narguments of this method. You are able to scale, rotate, move and skew the\ncontext.\n\nSee also the `setTransform` method which resets the current transform to the\nidentity matrix and then invokes `transform`.\n\n    transform a b c d e f\n\n  - `a` (m11)\n      - Horizontal scaling.\n  - `b` (m12)\n      - Horizontal skewing.\n  - `c` (m21)\n      - Vertical skewing.\n  - `d` (m22)\n      - Vertical scaling.\n  - `e` (dx)\n      - Horizontal moving.\n  - `f` (dy)\n      - Vertical moving.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/transform)\n\n",
-        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Command"
+        "comment": " Multiplies the current transformation with the matrix described by the\narguments of this method. You are able to scale, rotate, move and skew the\ncontext.\n\nSee also the `setTransform` method which resets the current transform to the\nidentity matrix and then invokes `transform`.\n\n    empty |> transform a b c d e f\n\n  - `a` (m11)\n      - Horizontal scaling.\n  - `b` (m12)\n      - Horizontal skewing.\n  - `c` (m21)\n      - Vertical skewing.\n  - `d` (m22)\n      - Vertical scaling.\n  - `e` (dx)\n      - Horizontal moving.\n  - `f` (dy)\n      - Vertical moving.\n\n[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/transform)\n\n",
+        "type": "Float -> Float -> Float -> Float -> Float -> Float -> Canvas.Commands -> Canvas.Commands"
       },
       {
         "name": "translate",
-        "comment": " Adds a translation transformation by moving the canvas and its origin `x`\nhorizontally and `y` vertically on the grid. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate)\n\n    translate x y\n\n",
-        "type": "Float -> Float -> Canvas.Command"
+        "comment": " Adds a translation transformation by moving the canvas and its origin `x`\nhorizontally and `y` vertically on the grid. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate)\n\n    empty |> translate x y\n\n",
+        "type": "Float -> Float -> Canvas.Commands -> Canvas.Commands"
       }
     ],
     "generated-with-elm-version": "0.18.0"

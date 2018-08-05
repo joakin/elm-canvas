@@ -46,7 +46,6 @@ type alias Line =
 
 type alias Model =
     { seed : Random.Seed
-    , draw : Command
     }
 
 
@@ -56,20 +55,15 @@ type Msg
 
 init : Float -> ( Model, Cmd Msg )
 init floatSeed =
-    { seed = Random.initialSeed (floor (floatSeed * 10000))
-    , draw = batch []
-    }
-        ! [ Task.perform AnimationFrame (Task.succeed 0) ]
+    { seed = Random.initialSeed (floor (floatSeed * 10000)) }
+        ! []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AnimationFrame delta ->
-            { model
-                | draw = batch <| drawLines model.seed 0 []
-            }
-                ! []
+            model ! []
 
 
 view : Model -> Html Msg
@@ -78,12 +72,13 @@ view model =
         w
         h
         [ style [] ]
-        [ clearRect 0 0 w h
-        , lineWidth 2
-        , beginPath
-        , model.draw
-        , stroke
-        ]
+        (empty
+            |> clearRect 0 0 w h
+            |> lineWidth 2
+            |> beginPath
+            |> drawLines model.seed 0
+            |> stroke
+        )
 
 
 step =
@@ -98,7 +93,7 @@ rows =
     h // step
 
 
-drawLines : Random.Seed -> Int -> List Command -> List Command
+drawLines : Random.Seed -> Int -> Commands -> Commands
 drawLines seed i cmds =
     if i > cols * rows then
         cmds
@@ -114,9 +109,9 @@ drawLines seed i cmds =
                 randomLine seed (toFloat x * step) (toFloat y * step) step step
 
             lineCmds =
-                drawLine line
+                drawLine line cmds
         in
-            drawLines seed2 (i + 1) (List.concat [ lineCmds, cmds ])
+            drawLines seed2 (i + 1) lineCmds
 
 
 randomLine seed x y width height =
@@ -146,7 +141,7 @@ horizontalLine seed x y width height =
             )
 
 
-drawLine ( ( startX, startY ), ( endX, endY ) ) =
-    [ moveTo startX startY
-    , lineTo endX endY
-    ]
+drawLine ( ( startX, startY ), ( endX, endY ) ) cmds =
+    cmds
+        |> moveTo startX startY
+        |> lineTo endX endY

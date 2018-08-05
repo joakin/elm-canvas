@@ -8924,26 +8924,6 @@ var _user$project$Canvas$colorToCSSString = function (color) {
 									_elm_lang$core$Basics$toString(alpha),
 									')'))))))));
 };
-var _user$project$Canvas$batch = function (values) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'type',
-				_1: _elm_lang$core$Json_Encode$string('batch')
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'values',
-					_1: _elm_lang$core$Json_Encode$list(values)
-				},
-				_1: {ctor: '[]'}
-			}
-		});
-};
 var _user$project$Canvas$fn = F2(
 	function (name, args) {
 		return _elm_lang$core$Json_Encode$object(
@@ -8998,349 +8978,13 @@ var _user$project$Canvas$field = F2(
 				}
 			});
 	});
-var _user$project$Canvas$commands = function (list) {
+var _user$project$Canvas$commands = function (_p1) {
+	var _p2 = _p1;
 	return A2(
 		_elm_lang$html$Html_Attributes$property,
 		'cmds',
-		_elm_lang$core$Json_Encode$list(list));
+		_elm_lang$core$Json_Encode$list(_p2._0));
 };
-var _user$project$Canvas$translate = F2(
-	function (x, y) {
-		return A2(
-			_user$project$Canvas$fn,
-			'translate',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Canvas$transform = F6(
-	function (a, b, c, d, e, f) {
-		return A2(
-			_user$project$Canvas$fn,
-			'transform',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(a),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(b),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(c),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(d),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(e),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Json_Encode$float(f),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$strokeText = F4(
-	function (text, x, y, maxWidth) {
-		var _p1 = maxWidth;
-		if (_p1.ctor === 'Nothing') {
-			return A2(
-				_user$project$Canvas$fn,
-				'strokeText',
-				{
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$string(text),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(x),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(y),
-							_1: {ctor: '[]'}
-						}
-					}
-				});
-		} else {
-			return A2(
-				_user$project$Canvas$fn,
-				'strokeText',
-				{
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$string(text),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(x),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(y),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(_p1._0),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				});
-		}
-	});
-var _user$project$Canvas$strokeRect = F4(
-	function (x, y, w, h) {
-		return A2(
-			_user$project$Canvas$fn,
-			'strokeRect',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(w),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(h),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$stroke = A2(
-	_user$project$Canvas$fn,
-	'stroke',
-	{ctor: '[]'});
-var _user$project$Canvas$setTransform = F6(
-	function (a, b, c, d, e, f) {
-		return A2(
-			_user$project$Canvas$fn,
-			'setTransform',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(a),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(b),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(c),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(d),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(e),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Json_Encode$float(f),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$setLineDash = function (segments) {
-	return A2(
-		_user$project$Canvas$fn,
-		'setLineDash',
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Encode$list(
-				A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$float, segments)),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Canvas$scale = F2(
-	function (x, y) {
-		return A2(
-			_user$project$Canvas$fn,
-			'scale',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Canvas$save = A2(
-	_user$project$Canvas$fn,
-	'save',
-	{ctor: '[]'});
-var _user$project$Canvas$rotate = function (angle) {
-	return A2(
-		_user$project$Canvas$fn,
-		'rotate',
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Encode$float(angle),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Canvas$restore = A2(
-	_user$project$Canvas$fn,
-	'restore',
-	{ctor: '[]'});
-var _user$project$Canvas$rect = F4(
-	function (x, y, w, h) {
-		return A2(
-			_user$project$Canvas$fn,
-			'rect',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(w),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(h),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$quadraticCurveTo = F4(
-	function (cpx, cpy, x, y) {
-		return A2(
-			_user$project$Canvas$fn,
-			'quadraticCurveTo',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(cpx),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(cpy),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(x),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(y),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$moveTo = F2(
-	function (x, y) {
-		return A2(
-			_user$project$Canvas$fn,
-			'moveTo',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Canvas$lineTo = F2(
-	function (x, y) {
-		return A2(
-			_user$project$Canvas$fn,
-			'lineTo',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Canvas$fillText = F4(
-	function (text, x, y, maxWidth) {
-		var _p2 = maxWidth;
-		if (_p2.ctor === 'Nothing') {
-			return A2(
-				_user$project$Canvas$fn,
-				'fillText',
-				{
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$string(text),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(x),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(y),
-							_1: {ctor: '[]'}
-						}
-					}
-				});
-		} else {
-			return A2(
-				_user$project$Canvas$fn,
-				'fillText',
-				{
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$string(text),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(x),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(y),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(_p2._0),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				});
-		}
-	});
-var _user$project$Canvas$fillRect = F4(
-	function (x, y, w, h) {
-		return A2(
-			_user$project$Canvas$fn,
-			'fillRect',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(w),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(h),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$closePath = A2(
-	_user$project$Canvas$fn,
-	'closePath',
-	{ctor: '[]'});
 var _user$project$Canvas$fillRuleToString = function (fillRule) {
 	var _p3 = fillRule;
 	if (_p3.ctor === 'NonZero') {
@@ -9348,371 +8992,6 @@ var _user$project$Canvas$fillRuleToString = function (fillRule) {
 	} else {
 		return 'evenodd';
 	}
-};
-var _user$project$Canvas$clip = function (fillRule) {
-	return A2(
-		_user$project$Canvas$fn,
-		'clip',
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Encode$string(
-				_user$project$Canvas$fillRuleToString(fillRule)),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Canvas$fill = function (fillRule) {
-	return A2(
-		_user$project$Canvas$fn,
-		'fill',
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Encode$string(
-				_user$project$Canvas$fillRuleToString(fillRule)),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Canvas$clearRect = F4(
-	function (x, y, width, height) {
-		return A2(
-			_user$project$Canvas$fn,
-			'clearRect',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(width),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(height),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$bezierCurveTo = F6(
-	function (cp1x, cp1y, cp2x, cp2y, x, y) {
-		return A2(
-			_user$project$Canvas$fn,
-			'bezierCurveTo',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(cp1x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(cp1y),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(cp2x),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(cp2y),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(x),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Json_Encode$float(y),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$beginPath = A2(
-	_user$project$Canvas$fn,
-	'beginPath',
-	{ctor: '[]'});
-var _user$project$Canvas$arcTo = F5(
-	function (x1, y1, x2, y2, radius) {
-		return A2(
-			_user$project$Canvas$fn,
-			'arcTo',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x1),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y1),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(x2),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(y2),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(radius),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$arc = F6(
-	function (x, y, radius, startAngle, endAngle, anticlockwise) {
-		return A2(
-			_user$project$Canvas$fn,
-			'arc',
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Json_Encode$float(x),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Json_Encode$float(y),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Json_Encode$float(radius),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Json_Encode$float(0),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Json_Encode$float(2 * _elm_lang$core$Basics$pi),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Json_Encode$bool(anticlockwise),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$strokeCircle = F3(
-	function (x, y, r) {
-		return _user$project$Canvas$batch(
-			{
-				ctor: '::',
-				_0: _user$project$Canvas$beginPath,
-				_1: {
-					ctor: '::',
-					_0: A6(_user$project$Canvas$arc, x, y, r, 0, 2 * _elm_lang$core$Basics$pi, false),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Canvas$stroke,
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-var _user$project$Canvas$textBaseline = function (baseline) {
-	return A2(
-		_user$project$Canvas$field,
-		'textBaseline',
-		_elm_lang$core$Json_Encode$string(
-			function () {
-				var _p4 = baseline;
-				switch (_p4.ctor) {
-					case 'Top':
-						return 'top';
-					case 'Hanging':
-						return 'hanging';
-					case 'Middle':
-						return 'middle';
-					case 'Alphabetic':
-						return 'alphabetic';
-					case 'Ideographic':
-						return 'ideographic';
-					default:
-						return 'bottom';
-				}
-			}()));
-};
-var _user$project$Canvas$textAlign = function (align) {
-	return A2(
-		_user$project$Canvas$field,
-		'textAlign',
-		_elm_lang$core$Json_Encode$string(
-			function () {
-				var _p5 = align;
-				switch (_p5.ctor) {
-					case 'Left':
-						return 'left';
-					case 'Right':
-						return 'right';
-					case 'Center':
-						return 'center';
-					case 'Start':
-						return 'start';
-					default:
-						return 'end';
-				}
-			}()));
-};
-var _user$project$Canvas$strokeStyle = function (color) {
-	return A2(
-		_user$project$Canvas$field,
-		'strokeStyle',
-		_elm_lang$core$Json_Encode$string(
-			_user$project$Canvas$colorToCSSString(color)));
-};
-var _user$project$Canvas$shadowOffsetY = function (value) {
-	return A2(
-		_user$project$Canvas$field,
-		'shadowOffsetY',
-		_elm_lang$core$Json_Encode$float(value));
-};
-var _user$project$Canvas$shadowOffsetX = function (value) {
-	return A2(
-		_user$project$Canvas$field,
-		'shadowOffsetX',
-		_elm_lang$core$Json_Encode$float(value));
-};
-var _user$project$Canvas$shadowColor = function (color) {
-	return A2(
-		_user$project$Canvas$field,
-		'shadowColor',
-		_elm_lang$core$Json_Encode$string(
-			_user$project$Canvas$colorToCSSString(color)));
-};
-var _user$project$Canvas$shadowBlur = function (value) {
-	return A2(
-		_user$project$Canvas$field,
-		'shadowBlur',
-		_elm_lang$core$Json_Encode$float(value));
-};
-var _user$project$Canvas$miterLimit = function (value) {
-	return A2(
-		_user$project$Canvas$field,
-		'miterLimit',
-		_elm_lang$core$Json_Encode$float(value));
-};
-var _user$project$Canvas$lineWidth = function (value) {
-	return A2(
-		_user$project$Canvas$field,
-		'lineWidth',
-		_elm_lang$core$Json_Encode$float(value));
-};
-var _user$project$Canvas$lineJoin = function (join) {
-	return A2(
-		_user$project$Canvas$field,
-		'lineJoin',
-		_elm_lang$core$Json_Encode$string(
-			function () {
-				var _p6 = join;
-				switch (_p6.ctor) {
-					case 'BevelJoin':
-						return 'bevel';
-					case 'RoundJoin':
-						return 'round';
-					default:
-						return 'miter';
-				}
-			}()));
-};
-var _user$project$Canvas$lineDashOffset = function (value) {
-	return A2(
-		_user$project$Canvas$field,
-		'lineDashOffset',
-		_elm_lang$core$Json_Encode$float(value));
-};
-var _user$project$Canvas$lineCap = function (cap) {
-	return A2(
-		_user$project$Canvas$field,
-		'lineCap',
-		_elm_lang$core$Json_Encode$string(
-			function () {
-				var _p7 = cap;
-				switch (_p7.ctor) {
-					case 'ButtCap':
-						return 'butt';
-					case 'RoundCap':
-						return 'round';
-					default:
-						return 'square';
-				}
-			}()));
-};
-var _user$project$Canvas$globalCompositeOperation = function (mode) {
-	var stringMode = function () {
-		var _p8 = mode;
-		switch (_p8.ctor) {
-			case 'SourceOver':
-				return 'source-over';
-			case 'SourceIn':
-				return 'source-in';
-			case 'SourceOut':
-				return 'source-out';
-			case 'SourceAtop':
-				return 'source-atop';
-			case 'DestinationOver':
-				return 'destination-over';
-			case 'DestinationIn':
-				return 'destination-in';
-			case 'DestinationOut':
-				return 'destination-out';
-			case 'DestinationAtop':
-				return 'destination-atop';
-			case 'Lighter':
-				return 'lighter';
-			case 'Copy':
-				return 'copy';
-			case 'Xor':
-				return 'xor';
-			case 'Multiply':
-				return 'multiply';
-			case 'Screen':
-				return 'screen';
-			case 'Overlay':
-				return 'overlay';
-			case 'Darken':
-				return 'darken';
-			case 'Lighten':
-				return 'lighten';
-			case 'ColorDodge':
-				return 'color-dodge';
-			case 'ColorBurn':
-				return 'color-burn';
-			case 'HardLight':
-				return 'hard-light';
-			case 'SoftLight':
-				return 'soft-light';
-			case 'Difference':
-				return 'difference';
-			case 'Exclusion':
-				return 'exclusion';
-			case 'Hue':
-				return 'hue';
-			case 'Saturation':
-				return 'saturation';
-			case 'Color':
-				return 'color';
-			default:
-				return 'luminosity';
-		}
-	}();
-	return A2(
-		_user$project$Canvas$field,
-		'globalCompositeOperation',
-		_elm_lang$core$Json_Encode$string(stringMode));
-};
-var _user$project$Canvas$globalAlpha = function (alpha) {
-	return A2(
-		_user$project$Canvas$field,
-		'globalAlpha',
-		_elm_lang$core$Json_Encode$float(alpha));
-};
-var _user$project$Canvas$font = function (f) {
-	return A2(
-		_user$project$Canvas$field,
-		'font',
-		_elm_lang$core$Json_Encode$string(f));
-};
-var _user$project$Canvas$fillStyle = function (color) {
-	return A2(
-		_user$project$Canvas$field,
-		'fillStyle',
-		_elm_lang$core$Json_Encode$string(
-			_user$project$Canvas$colorToCSSString(color)));
 };
 var _user$project$Canvas$element = F4(
 	function (w, h, attrs, cmds) {
@@ -9749,6 +9028,888 @@ var _user$project$Canvas$element = F4(
 					{ctor: '[]'}),
 				_1: {ctor: '[]'}
 			});
+	});
+var _user$project$Canvas$Commands = function (a) {
+	return {ctor: 'Commands', _0: a};
+};
+var _user$project$Canvas$empty = _user$project$Canvas$Commands(
+	{ctor: '[]'});
+var _user$project$Canvas$addTo = F2(
+	function (_p4, cmd) {
+		var _p5 = _p4;
+		return _user$project$Canvas$Commands(
+			{ctor: '::', _0: cmd, _1: _p5._0});
+	});
+var _user$project$Canvas$fillStyle = F2(
+	function (color, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'fillStyle',
+				_elm_lang$core$Json_Encode$string(
+					_user$project$Canvas$colorToCSSString(color))));
+	});
+var _user$project$Canvas$font = F2(
+	function (f, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'font',
+				_elm_lang$core$Json_Encode$string(f)));
+	});
+var _user$project$Canvas$globalAlpha = F2(
+	function (alpha, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'globalAlpha',
+				_elm_lang$core$Json_Encode$float(alpha)));
+	});
+var _user$project$Canvas$globalCompositeOperation = F2(
+	function (mode, cmds) {
+		var stringMode = function () {
+			var _p6 = mode;
+			switch (_p6.ctor) {
+				case 'SourceOver':
+					return 'source-over';
+				case 'SourceIn':
+					return 'source-in';
+				case 'SourceOut':
+					return 'source-out';
+				case 'SourceAtop':
+					return 'source-atop';
+				case 'DestinationOver':
+					return 'destination-over';
+				case 'DestinationIn':
+					return 'destination-in';
+				case 'DestinationOut':
+					return 'destination-out';
+				case 'DestinationAtop':
+					return 'destination-atop';
+				case 'Lighter':
+					return 'lighter';
+				case 'Copy':
+					return 'copy';
+				case 'Xor':
+					return 'xor';
+				case 'Multiply':
+					return 'multiply';
+				case 'Screen':
+					return 'screen';
+				case 'Overlay':
+					return 'overlay';
+				case 'Darken':
+					return 'darken';
+				case 'Lighten':
+					return 'lighten';
+				case 'ColorDodge':
+					return 'color-dodge';
+				case 'ColorBurn':
+					return 'color-burn';
+				case 'HardLight':
+					return 'hard-light';
+				case 'SoftLight':
+					return 'soft-light';
+				case 'Difference':
+					return 'difference';
+				case 'Exclusion':
+					return 'exclusion';
+				case 'Hue':
+					return 'hue';
+				case 'Saturation':
+					return 'saturation';
+				case 'Color':
+					return 'color';
+				default:
+					return 'luminosity';
+			}
+		}();
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'globalCompositeOperation',
+				_elm_lang$core$Json_Encode$string(stringMode)));
+	});
+var _user$project$Canvas$lineCap = F2(
+	function (cap, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'lineCap',
+				_elm_lang$core$Json_Encode$string(
+					function () {
+						var _p7 = cap;
+						switch (_p7.ctor) {
+							case 'ButtCap':
+								return 'butt';
+							case 'RoundCap':
+								return 'round';
+							default:
+								return 'square';
+						}
+					}())));
+	});
+var _user$project$Canvas$lineDashOffset = F2(
+	function (value, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'lineDashOffset',
+				_elm_lang$core$Json_Encode$float(value)));
+	});
+var _user$project$Canvas$lineJoin = F2(
+	function (join, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'lineJoin',
+				_elm_lang$core$Json_Encode$string(
+					function () {
+						var _p8 = join;
+						switch (_p8.ctor) {
+							case 'BevelJoin':
+								return 'bevel';
+							case 'RoundJoin':
+								return 'round';
+							default:
+								return 'miter';
+						}
+					}())));
+	});
+var _user$project$Canvas$lineWidth = F2(
+	function (value, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'lineWidth',
+				_elm_lang$core$Json_Encode$float(value)));
+	});
+var _user$project$Canvas$miterLimit = F2(
+	function (value, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'miterLimit',
+				_elm_lang$core$Json_Encode$float(value)));
+	});
+var _user$project$Canvas$shadowBlur = F2(
+	function (value, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'shadowBlur',
+				_elm_lang$core$Json_Encode$float(value)));
+	});
+var _user$project$Canvas$shadowColor = F2(
+	function (color, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'shadowColor',
+				_elm_lang$core$Json_Encode$string(
+					_user$project$Canvas$colorToCSSString(color))));
+	});
+var _user$project$Canvas$shadowOffsetX = F2(
+	function (value, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'shadowOffsetX',
+				_elm_lang$core$Json_Encode$float(value)));
+	});
+var _user$project$Canvas$shadowOffsetY = F2(
+	function (value, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'shadowOffsetY',
+				_elm_lang$core$Json_Encode$float(value)));
+	});
+var _user$project$Canvas$strokeStyle = F2(
+	function (color, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'strokeStyle',
+				_elm_lang$core$Json_Encode$string(
+					_user$project$Canvas$colorToCSSString(color))));
+	});
+var _user$project$Canvas$textAlign = F2(
+	function (align, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'textAlign',
+				_elm_lang$core$Json_Encode$string(
+					function () {
+						var _p9 = align;
+						switch (_p9.ctor) {
+							case 'Left':
+								return 'left';
+							case 'Right':
+								return 'right';
+							case 'Center':
+								return 'center';
+							case 'Start':
+								return 'start';
+							default:
+								return 'end';
+						}
+					}())));
+	});
+var _user$project$Canvas$textBaseline = F2(
+	function (baseline, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$field,
+				'textBaseline',
+				_elm_lang$core$Json_Encode$string(
+					function () {
+						var _p10 = baseline;
+						switch (_p10.ctor) {
+							case 'Top':
+								return 'top';
+							case 'Hanging':
+								return 'hanging';
+							case 'Middle':
+								return 'middle';
+							case 'Alphabetic':
+								return 'alphabetic';
+							case 'Ideographic':
+								return 'ideographic';
+							default:
+								return 'bottom';
+						}
+					}())));
+	});
+var _user$project$Canvas$arc = F7(
+	function (x, y, radius, startAngle, endAngle, anticlockwise, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'arc',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(radius),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(0),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(2 * _elm_lang$core$Basics$pi),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Json_Encode$bool(anticlockwise),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$arcTo = F6(
+	function (x1, y1, x2, y2, radius, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'arcTo',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x1),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y1),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(x2),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(y2),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(radius),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$beginPath = function (cmds) {
+	return A2(
+		_user$project$Canvas$addTo,
+		cmds,
+		A2(
+			_user$project$Canvas$fn,
+			'beginPath',
+			{ctor: '[]'}));
+};
+var _user$project$Canvas$bezierCurveTo = F7(
+	function (cp1x, cp1y, cp2x, cp2y, x, y, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'bezierCurveTo',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(cp1x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(cp1y),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(cp2x),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(cp2y),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(x),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Json_Encode$float(y),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$clearRect = F5(
+	function (x, y, width, height, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'clearRect',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(width),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(height),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$clip = F2(
+	function (fillRule, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'clip',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$string(
+						_user$project$Canvas$fillRuleToString(fillRule)),
+					_1: {ctor: '[]'}
+				}));
+	});
+var _user$project$Canvas$closePath = function (cmds) {
+	return A2(
+		_user$project$Canvas$addTo,
+		cmds,
+		A2(
+			_user$project$Canvas$fn,
+			'closePath',
+			{ctor: '[]'}));
+};
+var _user$project$Canvas$fill = F2(
+	function (fillRule, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'fill',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$string(
+						_user$project$Canvas$fillRuleToString(fillRule)),
+					_1: {ctor: '[]'}
+				}));
+	});
+var _user$project$Canvas$fillRect = F5(
+	function (x, y, w, h, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'fillRect',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(w),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(h),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$fillText = F5(
+	function (text, x, y, maxWidth, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			function () {
+				var _p11 = maxWidth;
+				if (_p11.ctor === 'Nothing') {
+					return A2(
+						_user$project$Canvas$fn,
+						'fillText',
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$string(text),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(x),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(y),
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+				} else {
+					return A2(
+						_user$project$Canvas$fn,
+						'fillText',
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$string(text),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(x),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(y),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Json_Encode$float(_p11._0),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						});
+				}
+			}());
+	});
+var _user$project$Canvas$lineTo = F3(
+	function (x, y, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'lineTo',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {ctor: '[]'}
+					}
+				}));
+	});
+var _user$project$Canvas$moveTo = F3(
+	function (x, y, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'moveTo',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {ctor: '[]'}
+					}
+				}));
+	});
+var _user$project$Canvas$quadraticCurveTo = F5(
+	function (cpx, cpy, x, y, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'quadraticCurveTo',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(cpx),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(cpy),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(x),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(y),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$rect = F5(
+	function (x, y, w, h, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'rect',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(w),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(h),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$restore = function (cmds) {
+	return A2(
+		_user$project$Canvas$addTo,
+		cmds,
+		A2(
+			_user$project$Canvas$fn,
+			'restore',
+			{ctor: '[]'}));
+};
+var _user$project$Canvas$rotate = F2(
+	function (angle, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'rotate',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(angle),
+					_1: {ctor: '[]'}
+				}));
+	});
+var _user$project$Canvas$save = function (cmds) {
+	return A2(
+		_user$project$Canvas$addTo,
+		cmds,
+		A2(
+			_user$project$Canvas$fn,
+			'save',
+			{ctor: '[]'}));
+};
+var _user$project$Canvas$scale = F3(
+	function (x, y, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'scale',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {ctor: '[]'}
+					}
+				}));
+	});
+var _user$project$Canvas$setLineDash = F2(
+	function (segments, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'setLineDash',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$list(
+						A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$float, segments)),
+					_1: {ctor: '[]'}
+				}));
+	});
+var _user$project$Canvas$setTransform = F7(
+	function (a, b, c, d, e, f, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'setTransform',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(a),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(b),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(c),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(d),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(e),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Json_Encode$float(f),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$stroke = function (cmds) {
+	return A2(
+		_user$project$Canvas$addTo,
+		cmds,
+		A2(
+			_user$project$Canvas$fn,
+			'stroke',
+			{ctor: '[]'}));
+};
+var _user$project$Canvas$strokeCircle = F4(
+	function (x, y, r, cmds) {
+		return _user$project$Canvas$stroke(
+			A7(
+				_user$project$Canvas$arc,
+				x,
+				y,
+				r,
+				0,
+				2 * _elm_lang$core$Basics$pi,
+				false,
+				_user$project$Canvas$beginPath(cmds)));
+	});
+var _user$project$Canvas$strokeRect = F5(
+	function (x, y, w, h, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'strokeRect',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(w),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(h),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$strokeText = F5(
+	function (text, x, y, maxWidth, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			function () {
+				var _p12 = maxWidth;
+				if (_p12.ctor === 'Nothing') {
+					return A2(
+						_user$project$Canvas$fn,
+						'strokeText',
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$string(text),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(x),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(y),
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+				} else {
+					return A2(
+						_user$project$Canvas$fn,
+						'strokeText',
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$string(text),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(x),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(y),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Json_Encode$float(_p12._0),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						});
+				}
+			}());
+	});
+var _user$project$Canvas$transform = F7(
+	function (a, b, c, d, e, f, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'transform',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(a),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(b),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Json_Encode$float(c),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Json_Encode$float(d),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Json_Encode$float(e),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Json_Encode$float(f),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				}));
+	});
+var _user$project$Canvas$translate = F3(
+	function (x, y, cmds) {
+		return A2(
+			_user$project$Canvas$addTo,
+			cmds,
+			A2(
+				_user$project$Canvas$fn,
+				'translate',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$float(x),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Encode$float(y),
+						_1: {ctor: '[]'}
+					}
+				}));
+	});
+var _user$project$Canvas$batch = F2(
+	function (_p14, _p13) {
+		var _p15 = _p14;
+		var _p16 = _p13;
+		return _user$project$Canvas$Commands(
+			_elm_lang$core$List$concat(
+				{
+					ctor: '::',
+					_0: _p15._0,
+					_1: {
+						ctor: '::',
+						_0: _p16._0,
+						_1: {ctor: '[]'}
+					}
+				}));
 	});
 var _user$project$Canvas$Luminosity = {ctor: 'Luminosity'};
 var _user$project$Canvas$Color = {ctor: 'Color'};
@@ -9795,29 +9956,28 @@ var _user$project$Canvas$Hanging = {ctor: 'Hanging'};
 var _user$project$Canvas$Top = {ctor: 'Top'};
 var _user$project$Canvas$EvenOdd = {ctor: 'EvenOdd'};
 var _user$project$Canvas$NonZero = {ctor: 'NonZero'};
-var _user$project$Canvas$fillCircle = F3(
-	function (x, y, r) {
-		return _user$project$Canvas$batch(
-			{
-				ctor: '::',
-				_0: _user$project$Canvas$beginPath,
-				_1: {
-					ctor: '::',
-					_0: A6(_user$project$Canvas$arc, x, y, r, 0, 2 * _elm_lang$core$Basics$pi, false),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Canvas$fill(_user$project$Canvas$NonZero),
-						_1: {ctor: '[]'}
-					}
-				}
-			});
+var _user$project$Canvas$fillCircle = F4(
+	function (x, y, r, cmds) {
+		return A2(
+			_user$project$Canvas$fill,
+			_user$project$Canvas$NonZero,
+			A7(
+				_user$project$Canvas$arc,
+				x,
+				y,
+				r,
+				0,
+				2 * _elm_lang$core$Basics$pi,
+				false,
+				_user$project$Canvas$beginPath(cmds)));
 	});
 
-var _user$project$Examples_Particles$drawPoint = function (_p0) {
-	var _p1 = _p0;
-	var _p2 = _p1.size;
-	return A3(_user$project$Canvas$fillCircle, _p1.x - (_p2 / 2), _p1.y - (_p2 / 2), _p2 / 2);
-};
+var _user$project$Examples_Particles$drawPoint = F2(
+	function (_p0, cmds) {
+		var _p1 = _p0;
+		var _p2 = _p1.size;
+		return A4(_user$project$Canvas$fillCircle, _p1.x - (_p2 / 2), _p1.y - (_p2 / 2), _p2 / 2, cmds);
+	});
 var _user$project$Examples_Particles$numParticles = 1000;
 var _user$project$Examples_Particles$particleColor = A4(_elm_lang$core$Color$rgba, 0, 0, 0, 0.1);
 var _user$project$Examples_Particles$w = 500;
@@ -9877,24 +10037,13 @@ var _user$project$Examples_Particles$view = function (model) {
 				{ctor: '[]'}),
 			_1: {ctor: '[]'}
 		},
-		_elm_lang$core$List$concat(
-			{
-				ctor: '::',
-				_0: {
-					ctor: '::',
-					_0: A4(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_Particles$w, _user$project$Examples_Particles$h),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Canvas$fillStyle(_user$project$Examples_Particles$particleColor),
-						_1: {ctor: '[]'}
-					}
-				},
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$List$map, _user$project$Examples_Particles$drawPoint, model),
-					_1: {ctor: '[]'}
-				}
-			}));
+		function (cmds) {
+			return A3(_elm_lang$core$List$foldl, _user$project$Examples_Particles$drawPoint, cmds, model);
+		}(
+			A2(
+				_user$project$Canvas$fillStyle,
+				_user$project$Examples_Particles$particleColor,
+				A5(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_Particles$w, _user$project$Examples_Particles$h, _user$project$Canvas$empty))));
 };
 var _user$project$Examples_Particles$Point = F5(
 	function (a, b, c, d, e) {

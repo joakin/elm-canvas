@@ -203,17 +203,17 @@ view model =
                 canvas.width
                 canvas.height
                 [ Attributes.style [] ]
-                [ Canvas.clearRect 0 0 (toFloat canvas.width) (toFloat canvas.height)
-                , Canvas.batch (List.map viewParticle particles)
-                ]
+                (Canvas.empty
+                    |> Canvas.clearRect 0 0 (toFloat canvas.width) (toFloat canvas.height)
+                    |> (\cmds -> List.foldl viewParticle cmds particles)
+                )
 
 
-viewParticle : Particle -> Canvas.Command
-viewParticle { cx, cy, r, color } =
-    Canvas.batch
-        [ Canvas.fillStyle color
-        , Canvas.fillCircle cx cy r
-        ]
+viewParticle : Particle -> Canvas.Commands -> Canvas.Commands
+viewParticle { cx, cy, r, color } cmds =
+    cmds
+        |> Canvas.fillStyle color
+        |> Canvas.fillCircle cx cy r
 
 
 

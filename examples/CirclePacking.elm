@@ -216,16 +216,17 @@ view model =
         w
         h
         [ style [] ]
-        [ Canvas.clearRect 0 0 w h
-        , Canvas.lineWidth 2
-        , Canvas.fillStyle (Color.rgba 0 0 0 0.1)
-        , Canvas.strokeStyle (Color.rgb 0 0 0)
-        , Canvas.batch <| List.map viewCircle model.circles
-        ]
+        (Canvas.empty
+            |> Canvas.clearRect 0 0 w h
+            |> Canvas.lineWidth 2
+            |> Canvas.fillStyle (Color.rgba 0 0 0 0.1)
+            |> Canvas.strokeStyle (Color.rgb 0 0 0)
+            |> (\cmds -> List.foldl viewCircle cmds model.circles)
+        )
 
 
-viewCircle : Circle2d -> Canvas.Command
-viewCircle circle =
+viewCircle : Circle2d -> Canvas.Commands -> Canvas.Commands
+viewCircle circle cmds =
     let
         center =
             Circle2d.centerPoint circle
@@ -233,7 +234,6 @@ viewCircle circle =
         ( x, y ) =
             Point2d.coordinates center
     in
-        Canvas.batch
-            [ Canvas.fillCircle x y (Circle2d.radius circle)
-            , Canvas.stroke
-            ]
+        cmds
+            |> Canvas.fillCircle x y (Circle2d.radius circle)
+            |> Canvas.stroke

@@ -200,28 +200,26 @@ view model =
         [ style [] ]
     <|
         if List.isEmpty model.brushes then
-            [ fillStyle (Color.rgba 255 255 255 0.05)
-            , fillRect 0 0 w h
-            ]
+            empty
+                |> fillStyle (Color.rgba 255 255 255 0.05)
+                |> fillRect 0 0 w h
         else
-            [ strokeStyle (Color.rgb 0 0 0)
-            , fillStyle (Color.rgba 255 255 255 0.008)
-            , fillRect 0 0 w h
+            empty
+                |> strokeStyle (Color.rgb 0 0 0)
+                |> fillStyle (Color.rgba 255 255 255 0.008)
+                |> fillRect 0 0 w h
+                -- |> lineCap RoundCap
+                |> (\cmds -> List.foldl paint cmds model.brushes)
 
-            -- , lineCap RoundCap
-            , batch <| List.map paint model.brushes
-            ]
 
-
-paint { line, life } =
+paint { line, life } cmds =
     let
         ( start, end ) =
             LineSegment2d.endpoints line
     in
-        batch
-            [ lineWidth (30 * (toFloat life) / h)
-            , beginPath
-            , moveTo (Point2d.xCoordinate start) (Point2d.yCoordinate start)
-            , lineTo (Point2d.xCoordinate end) (Point2d.yCoordinate end)
-            , stroke
-            ]
+        cmds
+            |> lineWidth (30 * (toFloat life) / h)
+            |> beginPath
+            |> moveTo (Point2d.xCoordinate start) (Point2d.yCoordinate start)
+            |> lineTo (Point2d.xCoordinate end) (Point2d.yCoordinate end)
+            |> stroke

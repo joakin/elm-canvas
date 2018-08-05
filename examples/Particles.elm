@@ -117,15 +117,14 @@ view model =
         (round w)
         (round h)
         [ style [] ]
-        (List.concat
-            [ [ Canvas.clearRect 0 0 w h
-              , Canvas.fillStyle particleColor
-              ]
-            , (List.map drawPoint model)
-            ]
+        (Canvas.empty
+            |> Canvas.clearRect 0 0 w h
+            |> Canvas.fillStyle particleColor
+            |> (\cmds -> List.foldl drawPoint cmds model)
         )
 
 
-drawPoint : Point -> Canvas.Command
-drawPoint { x, y, size } =
-    Canvas.fillCircle (x - size / 2) (y - size / 2) (size / 2)
+drawPoint : Point -> Canvas.Commands -> Canvas.Commands
+drawPoint { x, y, size } cmds =
+    cmds
+        |> Canvas.fillCircle (x - size / 2) (y - size / 2) (size / 2)

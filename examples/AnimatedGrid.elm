@@ -77,13 +77,12 @@ padding =
     w * 0.1
 
 
-clearScreen : Command
-clearScreen =
-    batch
-        [ clearRect 0 0 w h
-        , fillStyle (Color.rgb 255 255 255)
-        , fillRect 0 0 w h
-        ]
+clearScreen : Commands -> Commands
+clearScreen cmds =
+    cmds
+        |> clearRect 0 0 w h
+        |> fillStyle (Color.rgb 255 255 255)
+        |> fillRect 0 0 w h
 
 
 view : Model -> Html Msg
@@ -92,16 +91,21 @@ view ( isRunning, time ) =
         (round w)
         (round h)
         [ onClick ToggleRunning ]
-        [ clearScreen
-        , fillStyle (Color.rgba 0 0 0 1)
-        , List.range 0 (floor (gridSize * gridSize) - 1)
-            |> List.map (renderItem time)
-            |> batch
-        ]
+        (empty
+            |> clearScreen
+            |> fillStyle (Color.rgba 0 0 0 1)
+            |> renderItems time
+        )
 
 
-renderItem : Float -> Int -> Command
-renderItem time i =
+renderItems : Float -> Commands -> Commands
+renderItems time cmds =
+    List.range 0 (floor (gridSize * gridSize) - 1)
+        |> List.foldl (renderItem time) cmds
+
+
+renderItem : Float -> Int -> Commands -> Commands
+renderItem time i cmds =
     let
         col =
             toFloat (i % (floor gridSize))
@@ -145,15 +149,14 @@ renderItem time i =
         thickness =
             cellSize * 0.1
     in
-        batch
-            [ save
-            , fillStyle (Color.rgb 0 0 0)
-            , translate x y
-            , rotate rotation
-            , translate -x -y
-            , fillRect (x - length / 2) (y - thickness / 2) length thickness
-            , restore
-            ]
+        cmds
+            |> save
+            |> fillStyle (Color.rgb 0 0 0)
+            |> translate x y
+            |> rotate rotation
+            |> translate -x -y
+            |> fillRect (x - length / 2) (y - thickness / 2) length thickness
+            |> restore
 
 
 lerp : Float -> Float -> Float -> Float

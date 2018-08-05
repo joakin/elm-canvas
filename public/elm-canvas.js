@@ -8,7 +8,7 @@ customElements.define(
     }
 
     set cmds(values) {
-      values.forEach(value => this.commands.push(value));
+      this.commands = values;
       this.render();
     }
 
@@ -23,7 +23,11 @@ customElements.define(
 
     render() {
       if (!this.mounted) return;
-      this.commands.forEach(value => this.execCommand(value));
+      // Iterate over the commands in reverse order as that's how the Elm side
+      // builds them as with the linked lists
+      for (let i = this.commands.length - 1; i >= 0; i--) {
+        this.execCommand(this.commands[i]);
+      }
       this.commands = [];
     }
 
@@ -32,8 +36,6 @@ customElements.define(
         this.context[cmd.name](...cmd.args);
       } else if (cmd.type === "field") {
         this.context[cmd.name] = cmd.value;
-      } else if (cmd.type === "batch") {
-        cmd.values.forEach(cmd => this.execCommand(cmd));
       }
     }
   }

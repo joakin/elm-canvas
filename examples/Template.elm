@@ -60,9 +60,10 @@ view model =
         w
         h
         [ style [] ]
-        [ clearRect 0 0 w h
-        , font "48px sans-serif"
-        , textAlign Canvas.Center
-        , fillStyle (Color.rgb 255 0 0)
-        , fillText (toString model) (w / 2) (h / 2) Nothing
-        ]
+        (empty
+            |> clearRect 0 0 w h
+            |> font "48px sans-serif"
+            |> textAlign Canvas.Center
+            |> fillStyle (Color.rgb 255 0 0)
+            |> fillText (toString model) (w / 2) (h / 2) Nothing
+        )

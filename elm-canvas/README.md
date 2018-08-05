@@ -17,3 +17,10 @@ You can also use this file from some CDN directly if you need to use it in ellie
 or so like this:
 
 - https://unpkg.com/elm-canvas/elm-canvas.js
+
+Version compatibility:
+
+| elm-canvas (Elm) | elm-canvas (npm) |
+| ---------------- | ---------------- |
+| 1.x              | 1.x              |
+| 2.x              | 2.x              |
