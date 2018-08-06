@@ -33,19 +33,23 @@ w =
 
 padding : number
 padding =
-    50
+    100
 
 
-step =
-    13
+stepX =
+    10
+
+
+stepY =
+    5
 
 
 cols =
-    (w - padding * 2) // step
+    (w - padding * 2) // stepX
 
 
 rows =
-    (h - padding * 2) // step
+    (h - padding * 2) // stepY
 
 
 cells =
@@ -62,13 +66,9 @@ type Msg
     = AnimationFrame Time
 
 
-isFirstPoint ( x, y ) =
-    x == step / 2 + padding
-
-
 coordsToPx ( x, y ) =
-    ( x * step + step / 2 + padding
-    , y * step + step / 2 + padding * 1.5
+    ( x * stepX + stepX / 2 + padding
+    , y * stepY + stepY / 2 + padding * 1.3
     )
 
 
@@ -116,6 +116,10 @@ update msg model =
             { model | count = model.count + 1 } ! []
 
 
+bgColor =
+    Color.hsl (degrees 260) 0.1 0.1
+
+
 view : Model -> Html Msg
 view model =
     Canvas.element
@@ -123,10 +127,11 @@ view model =
         h
         [ style [] ]
         (empty
-            |> clearRect 0 0 w h
-            |> strokeStyle (Color.hsl 0 0.05 0.2)
-            |> fillStyle (Color.rgb 255 255 255)
-            |> lineWidth 2
+            |> fillStyle bgColor
+            |> fillRect 0 0 w h
+            |> strokeStyle (Color.hsl (degrees 188) 0.3 0.8)
+            |> fillStyle bgColor
+            |> lineWidth 1.5
             |> drawLines 0 0 model.points
         )
 
@@ -162,7 +167,7 @@ drawLines x y points cmds =
                                                 )
 
                                         Nothing ->
-                                            ( (px + (px + step)) / 2, py )
+                                            ( (px + (px + stepX)) / 2, py )
                             in
                                 cmds
                                     |> quadraticCurveTo px py xc yc

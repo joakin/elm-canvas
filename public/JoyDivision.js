@@ -11583,6 +11583,11 @@ var _user$project$Canvas$fillCircle = F4(
 				_user$project$Canvas$beginPath(cmds)));
 	});
 
+var _user$project$Examples_JoyDivision$bgColor = A3(
+	_elm_lang$core$Color$hsl,
+	_elm_lang$core$Basics$degrees(260),
+	0.1,
+	0.1);
 var _user$project$Examples_JoyDivision$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -11593,40 +11598,37 @@ var _user$project$Examples_JoyDivision$update = F2(
 				{count: model.count + 1}),
 			{ctor: '[]'});
 	});
-var _user$project$Examples_JoyDivision$step = 13;
-var _user$project$Examples_JoyDivision$padding = 50;
-var _user$project$Examples_JoyDivision$isFirstPoint = function (_p1) {
+var _user$project$Examples_JoyDivision$stepY = 5;
+var _user$project$Examples_JoyDivision$stepX = 10;
+var _user$project$Examples_JoyDivision$padding = 100;
+var _user$project$Examples_JoyDivision$coordsToPx = function (_p1) {
 	var _p2 = _p1;
-	return _elm_lang$core$Native_Utils.eq(_p2._0, (_user$project$Examples_JoyDivision$step / 2) + _user$project$Examples_JoyDivision$padding);
-};
-var _user$project$Examples_JoyDivision$coordsToPx = function (_p3) {
-	var _p4 = _p3;
-	return {ctor: '_Tuple2', _0: ((_p4._0 * _user$project$Examples_JoyDivision$step) + (_user$project$Examples_JoyDivision$step / 2)) + _user$project$Examples_JoyDivision$padding, _1: ((_p4._1 * _user$project$Examples_JoyDivision$step) + (_user$project$Examples_JoyDivision$step / 2)) + (_user$project$Examples_JoyDivision$padding * 1.5)};
+	return {ctor: '_Tuple2', _0: ((_p2._0 * _user$project$Examples_JoyDivision$stepX) + (_user$project$Examples_JoyDivision$stepX / 2)) + _user$project$Examples_JoyDivision$padding, _1: ((_p2._1 * _user$project$Examples_JoyDivision$stepY) + (_user$project$Examples_JoyDivision$stepY / 2)) + (_user$project$Examples_JoyDivision$padding * 1.3)};
 };
 var _user$project$Examples_JoyDivision$w = 500;
-var _user$project$Examples_JoyDivision$cols = ((_user$project$Examples_JoyDivision$w - (_user$project$Examples_JoyDivision$padding * 2)) / _user$project$Examples_JoyDivision$step) | 0;
+var _user$project$Examples_JoyDivision$cols = ((_user$project$Examples_JoyDivision$w - (_user$project$Examples_JoyDivision$padding * 2)) / _user$project$Examples_JoyDivision$stepX) | 0;
 var _user$project$Examples_JoyDivision$moveAround = F2(
-	function (r, _p5) {
-		var _p6 = _p5;
-		var _p7 = _p6._0;
+	function (r, _p3) {
+		var _p4 = _p3;
+		var _p5 = _p4._0;
 		var maxVariance = 150;
 		var p = (((_user$project$Examples_JoyDivision$w - (_user$project$Examples_JoyDivision$padding * 2)) - 100) / 2) / maxVariance;
-		var distanceToCenter = _elm_lang$core$Basics$abs(_p7 - (_user$project$Examples_JoyDivision$w / 2));
+		var distanceToCenter = _elm_lang$core$Basics$abs(_p5 - (_user$project$Examples_JoyDivision$w / 2));
 		var variance = A2(_elm_lang$core$Basics$max, ((0 - distanceToCenter) / p) + maxVariance, 0);
 		var random = ((r * variance) / 2) * -1;
-		return {ctor: '_Tuple2', _0: _p7, _1: _p6._1 + random};
+		return {ctor: '_Tuple2', _0: _p5, _1: _p4._1 + random};
 	});
 var _user$project$Examples_JoyDivision$h = 500;
-var _user$project$Examples_JoyDivision$rows = ((_user$project$Examples_JoyDivision$h - (_user$project$Examples_JoyDivision$padding * 2)) / _user$project$Examples_JoyDivision$step) | 0;
+var _user$project$Examples_JoyDivision$rows = ((_user$project$Examples_JoyDivision$h - (_user$project$Examples_JoyDivision$padding * 2)) / _user$project$Examples_JoyDivision$stepY) | 0;
 var _user$project$Examples_JoyDivision$cells = _user$project$Examples_JoyDivision$rows * _user$project$Examples_JoyDivision$cols;
 var _user$project$Examples_JoyDivision$init = function (floatSeed) {
-	var _p8 = A2(
+	var _p6 = A2(
 		_elm_lang$core$Tuple$mapFirst,
-		function (_p9) {
+		function (_p7) {
 			return A2(
 				_elm_lang$core$Maybe$withDefault,
 				_eeue56$elm_flat_matrix$Matrix$empty,
-				_eeue56$elm_flat_matrix$Matrix$fromList(_p9));
+				_eeue56$elm_flat_matrix$Matrix$fromList(_p7));
 		},
 		A2(
 			_elm_lang$core$Random$step,
@@ -11639,8 +11641,8 @@ var _user$project$Examples_JoyDivision$init = function (floatSeed) {
 					A2(_elm_lang$core$Random$float, 0, 1))),
 			_elm_lang$core$Random$initialSeed(
 				_elm_lang$core$Basics$floor(floatSeed * 100000))));
-	var randomYs = _p8._0;
-	var seed = _p8._1;
+	var randomYs = _p6._0;
+	var seed = _p6._1;
 	var points = A2(
 		_elm_lang$core$Maybe$withDefault,
 		_eeue56$elm_flat_matrix$Matrix$empty,
@@ -11657,7 +11659,7 @@ var _user$project$Examples_JoyDivision$init = function (floatSeed) {
 			A2(
 				_eeue56$elm_flat_matrix$Matrix$indexedMap,
 				F3(
-					function (x, y, _p10) {
+					function (x, y, _p8) {
 						return _user$project$Examples_JoyDivision$coordsToPx(
 							{
 								ctor: '_Tuple2',
@@ -11680,24 +11682,24 @@ var _user$project$Examples_JoyDivision$drawLines = F4(
 		drawLines:
 		while (true) {
 			if (_elm_lang$core$Native_Utils.cmp(x, _user$project$Examples_JoyDivision$cols) > -1) {
-				var _v4 = 0,
-					_v5 = y + 1,
-					_v6 = points,
-					_v7 = cmds;
-				x = _v4;
-				y = _v5;
-				points = _v6;
-				cmds = _v7;
+				var _v3 = 0,
+					_v4 = y + 1,
+					_v5 = points,
+					_v6 = cmds;
+				x = _v3;
+				y = _v4;
+				points = _v5;
+				cmds = _v6;
 				continue drawLines;
 			} else {
 				if (_elm_lang$core$Native_Utils.cmp(y, _user$project$Examples_JoyDivision$rows) > -1) {
 					return cmds;
 				} else {
-					var _p11 = A3(_eeue56$elm_flat_matrix$Matrix$get, x, y, points);
-					if (_p11.ctor === 'Just') {
-						var _p12 = _p11._0.point;
-						var px = _p12._0;
-						var py = _p12._1;
+					var _p9 = A3(_eeue56$elm_flat_matrix$Matrix$get, x, y, points);
+					if (_p9.ctor === 'Just') {
+						var _p10 = _p9._0.point;
+						var px = _p10._0;
+						var py = _p10._1;
 						var cmds1 = function () {
 							if (_elm_lang$core$Native_Utils.eq(x, 0)) {
 								return A3(
@@ -11706,35 +11708,35 @@ var _user$project$Examples_JoyDivision$drawLines = F4(
 									py,
 									_user$project$Canvas$beginPath(cmds));
 							} else {
-								var _p13 = function () {
-									var _p14 = A3(_eeue56$elm_flat_matrix$Matrix$get, x + 1, y, points);
-									if (_p14.ctor === 'Just') {
-										var _p15 = _p14._0.point;
-										var nx = _p15._0;
-										var ny = _p15._1;
+								var _p11 = function () {
+									var _p12 = A3(_eeue56$elm_flat_matrix$Matrix$get, x + 1, y, points);
+									if (_p12.ctor === 'Just') {
+										var _p13 = _p12._0.point;
+										var nx = _p13._0;
+										var ny = _p13._1;
 										return {ctor: '_Tuple2', _0: (px + nx) / 2, _1: (py + ny) / 2};
 									} else {
-										return {ctor: '_Tuple2', _0: (px + (px + _user$project$Examples_JoyDivision$step)) / 2, _1: py};
+										return {ctor: '_Tuple2', _0: (px + (px + _user$project$Examples_JoyDivision$stepX)) / 2, _1: py};
 									}
 								}();
-								var xc = _p13._0;
-								var yc = _p13._1;
+								var xc = _p11._0;
+								var yc = _p11._1;
 								return A5(_user$project$Canvas$quadraticCurveTo, px, py, xc, yc, cmds);
 							}
 						}();
 						var cmds2 = _elm_lang$core$Native_Utils.eq(x, _user$project$Examples_JoyDivision$cols - 1) ? _user$project$Canvas$stroke(
 							A2(_user$project$Canvas$fill, _user$project$Canvas$NonZero, cmds1)) : cmds1;
-						var _v10 = x + 1,
-							_v11 = y,
-							_v12 = points,
-							_v13 = cmds2;
-						x = _v10;
-						y = _v11;
-						points = _v12;
-						cmds = _v13;
+						var _v9 = x + 1,
+							_v10 = y,
+							_v11 = points,
+							_v12 = cmds2;
+						x = _v9;
+						y = _v10;
+						points = _v11;
+						cmds = _v12;
 						continue drawLines;
 					} else {
-						var _p16 = A2(
+						var _p14 = A2(
 							_elm_lang$core$Debug$log,
 							'Couldn\'t get index',
 							{ctor: '_Tuple2', _0: x, _1: y});
@@ -11762,14 +11764,24 @@ var _user$project$Examples_JoyDivision$view = function (model) {
 			model.points,
 			A2(
 				_user$project$Canvas$lineWidth,
-				2,
+				1.5,
 				A2(
 					_user$project$Canvas$fillStyle,
-					A3(_elm_lang$core$Color$rgb, 255, 255, 255),
+					_user$project$Examples_JoyDivision$bgColor,
 					A2(
 						_user$project$Canvas$strokeStyle,
-						A3(_elm_lang$core$Color$hsl, 0, 5.0e-2, 0.2),
-						A5(_user$project$Canvas$clearRect, 0, 0, _user$project$Examples_JoyDivision$w, _user$project$Examples_JoyDivision$h, _user$project$Canvas$empty))))));
+						A3(
+							_elm_lang$core$Color$hsl,
+							_elm_lang$core$Basics$degrees(188),
+							0.3,
+							0.8),
+						A5(
+							_user$project$Canvas$fillRect,
+							0,
+							0,
+							_user$project$Examples_JoyDivision$w,
+							_user$project$Examples_JoyDivision$h,
+							A2(_user$project$Canvas$fillStyle, _user$project$Examples_JoyDivision$bgColor, _user$project$Canvas$empty)))))));
 };
 var _user$project$Examples_JoyDivision$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
