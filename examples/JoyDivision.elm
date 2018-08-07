@@ -8,6 +8,7 @@ import Color exposing (Color)
 import Random
 import AnimationFrame as AF
 import Matrix exposing (Matrix)
+import Grid
 
 
 main : Program Float Model Msg
@@ -56,9 +57,13 @@ cells =
     (rows * cols)
 
 
+type alias Points =
+    Matrix { point : ( Float, Float ), random : Float }
+
+
 type alias Model =
     { count : Int
-    , points : Matrix { point : ( Float, Float ), random : Float }
+    , points : Points
     }
 
 
@@ -132,59 +137,51 @@ view model =
             |> strokeStyle (Color.hsl (degrees 188) 0.3 0.8)
             |> fillStyle bgColor
             |> lineWidth 1.5
-            |> drawLines 0 0 model.points
+            |> Grid.fold2d { cols = cols, rows = rows } (drawLines model.points)
         )
 
 
-drawLines x y points cmds =
-    if x >= cols then
-        drawLines 0 (y + 1) points cmds
-    else if y >= rows then
-        cmds
-    else
-        case Matrix.get x y points of
-            Just { point } ->
+drawLines : Points -> ( Int, Int ) -> Commands -> Commands
+drawLines points ( x, y ) cmds =
+    let
+        { point } =
+            Matrix.get x y points
+                -- This shouldn't happen as we should always be in the matrix
+                -- bounds
+                |> Maybe.withDefault { point = ( 0, 0 ), random = 0 }
+
+        ( px, py ) =
+            point
+
+        drawPoint cmds =
+            if x == 0 then
+                cmds
+                    |> beginPath
+                    |> moveTo px py
+            else
                 let
-                    ( px, py ) =
+                    { point } =
+                        Matrix.get (x + 1) y points
+                            |> Maybe.withDefault { point = ( px + stepX, py ), random = 0 }
+
+                    ( nx, ny ) =
                         point
 
-                    cmds1 =
-                        if x == 0 then
-                            cmds
-                                |> beginPath
-                                |> moveTo px py
-                        else
-                            let
-                                ( xc, yc ) =
-                                    case Matrix.get (x + 1) y points of
-                                        Just { point } ->
-                                            let
-                                                ( nx, ny ) =
-                                                    point
-                                            in
-                                                ( (px + nx) / 2
-                                                , (py + ny) / 2
-                                                )
-
-                                        Nothing ->
-                                            ( (px + (px + stepX)) / 2, py )
-                            in
-                                cmds
-                                    |> quadraticCurveTo px py xc yc
-
-                    cmds2 =
-                        if x == cols - 1 then
-                            cmds1
-                                |> fill NonZero
-                                |> stroke
-                        else
-                            cmds1
+                    ( xc, yc ) =
+                        ( (px + nx) / 2
+                        , (py + ny) / 2
+                        )
                 in
-                    drawLines (x + 1) y points cmds2
+                    cmds |> quadraticCurveTo px py xc yc
 
-            Nothing ->
-                let
-                    _ =
-                        Debug.log "Couldn't get index" ( x, y )
-                in
-                    cmds
+        drawEol cmds =
+            if x == cols - 1 then
+                cmds
+                    |> fill NonZero
+                    |> stroke
+            else
+                cmds
+    in
+        cmds
+            |> drawPoint
+            |> drawEol
