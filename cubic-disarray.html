@@ -1,0 +1,21 @@
+<html>
+<head>
+  <link rel="stylesheet" href="./index.css" />
+  <style>
+  body {
+    background: #0e0e0e;
+  }
+  elm-canvas {
+    border: 20px solid black;
+  }
+  </style>
+</head>
+<body>
+  <main></main>
+  <script src="./elm-canvas.js"></script>
+  <script src="./CubicDisarray.js"></script>
+  <script>
+    var app = Elm.Examples.CubicDisarray.embed(document.querySelector('main'), Math.random())
+  </script>
+</body>
+</html>
