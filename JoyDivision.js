@@ -10503,6 +10503,125 @@ var _elm_lang$animation_frame$AnimationFrame$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['AnimationFrame'] = {pkg: 'elm-lang/animation-frame', init: _elm_lang$animation_frame$AnimationFrame$init, onEffects: _elm_lang$animation_frame$AnimationFrame$onEffects, onSelfMsg: _elm_lang$animation_frame$AnimationFrame$onSelfMsg, tag: 'sub', subMap: _elm_lang$animation_frame$AnimationFrame$subMap};
 
+var _joakin$elm_grid$Grid$fold3d = F3(
+	function (_p0, fn, initial) {
+		var _p1 = _p0;
+		var iter = F4(
+			function (x, y, z, res) {
+				iter:
+				while (true) {
+					if (_elm_lang$core$Native_Utils.cmp(z, _p1.depth) > -1) {
+						return res;
+					} else {
+						if (_elm_lang$core$Native_Utils.cmp(y, _p1.rows) > -1) {
+							var _v1 = 0,
+								_v2 = 0,
+								_v3 = z + 1,
+								_v4 = res;
+							x = _v1;
+							y = _v2;
+							z = _v3;
+							res = _v4;
+							continue iter;
+						} else {
+							if (_elm_lang$core$Native_Utils.cmp(x, _p1.cols) > -1) {
+								var _v5 = 0,
+									_v6 = y + 1,
+									_v7 = z,
+									_v8 = res;
+								x = _v5;
+								y = _v6;
+								z = _v7;
+								res = _v8;
+								continue iter;
+							} else {
+								var _v9 = x + 1,
+									_v10 = y,
+									_v11 = z,
+									_v12 = A2(
+									fn,
+									{ctor: '_Tuple3', _0: x, _1: y, _2: z},
+									res);
+								x = _v9;
+								y = _v10;
+								z = _v11;
+								res = _v12;
+								continue iter;
+							}
+						}
+					}
+				}
+			});
+		return A4(iter, 0, 0, 0, initial);
+	});
+var _joakin$elm_grid$Grid$foldr3d = F3(
+	function (_p2, fn, initial) {
+		var _p3 = _p2;
+		return A3(
+			_joakin$elm_grid$Grid$fold3d,
+			_p3,
+			F2(
+				function (_p4, result) {
+					var _p5 = _p4;
+					return A2(
+						fn,
+						{ctor: '_Tuple3', _0: (_p3.cols - _p5._0) - 1, _1: (_p3.rows - _p5._1) - 1, _2: (_p3.depth - _p5._2) - 1},
+						result);
+				}),
+			initial);
+	});
+var _joakin$elm_grid$Grid$fold2d = F3(
+	function (_p6, fn, initial) {
+		var _p7 = _p6;
+		var iter = F3(
+			function (x, y, res) {
+				iter:
+				while (true) {
+					if (_elm_lang$core$Native_Utils.cmp(y, _p7.rows) > -1) {
+						return res;
+					} else {
+						if (_elm_lang$core$Native_Utils.cmp(x, _p7.cols) > -1) {
+							var _v16 = 0,
+								_v17 = y + 1,
+								_v18 = res;
+							x = _v16;
+							y = _v17;
+							res = _v18;
+							continue iter;
+						} else {
+							var _v19 = x + 1,
+								_v20 = y,
+								_v21 = A2(
+								fn,
+								{ctor: '_Tuple2', _0: x, _1: y},
+								res);
+							x = _v19;
+							y = _v20;
+							res = _v21;
+							continue iter;
+						}
+					}
+				}
+			});
+		return A3(iter, 0, 0, initial);
+	});
+var _joakin$elm_grid$Grid$foldr2d = F3(
+	function (_p8, fn, initial) {
+		var _p9 = _p8;
+		return A3(
+			_joakin$elm_grid$Grid$fold2d,
+			_p9,
+			F2(
+				function (_p10, result) {
+					var _p11 = _p10;
+					return A2(
+						fn,
+						{ctor: '_Tuple2', _0: (_p9.cols - _p11._0) - 1, _1: (_p9.rows - _p11._1) - 1},
+						result);
+				}),
+			initial);
+	});
+
 var _user$project$Canvas$colorToCSSString = function (color) {
 	var _p0 = _elm_lang$core$Color$toRgb(color);
 	var red = _p0.red;
@@ -11607,28 +11726,76 @@ var _user$project$Examples_JoyDivision$coordsToPx = function (_p1) {
 };
 var _user$project$Examples_JoyDivision$w = 500;
 var _user$project$Examples_JoyDivision$cols = ((_user$project$Examples_JoyDivision$w - (_user$project$Examples_JoyDivision$padding * 2)) / _user$project$Examples_JoyDivision$stepX) | 0;
-var _user$project$Examples_JoyDivision$moveAround = F2(
-	function (r, _p3) {
+var _user$project$Examples_JoyDivision$drawLines = F3(
+	function (points, _p3, cmds) {
 		var _p4 = _p3;
-		var _p5 = _p4._0;
+		var _p11 = _p4._1;
+		var _p10 = _p4._0;
+		var drawEol = function (cmds) {
+			return _elm_lang$core$Native_Utils.eq(_p10, _user$project$Examples_JoyDivision$cols - 1) ? _user$project$Canvas$stroke(
+				A2(_user$project$Canvas$fill, _user$project$Canvas$NonZero, cmds)) : cmds;
+		};
+		var _p5 = A2(
+			_elm_lang$core$Maybe$withDefault,
+			{
+				point: {ctor: '_Tuple2', _0: 0, _1: 0},
+				random: 0
+			},
+			A3(_eeue56$elm_flat_matrix$Matrix$get, _p10, _p11, points));
+		var point = _p5.point;
+		var _p6 = point;
+		var px = _p6._0;
+		var py = _p6._1;
+		var drawPoint = function (cmds) {
+			if (_elm_lang$core$Native_Utils.eq(_p10, 0)) {
+				return A3(
+					_user$project$Canvas$moveTo,
+					px,
+					py,
+					_user$project$Canvas$beginPath(cmds));
+			} else {
+				var _p7 = A2(
+					_elm_lang$core$Maybe$withDefault,
+					{
+						point: {ctor: '_Tuple2', _0: px + _user$project$Examples_JoyDivision$stepX, _1: py},
+						random: 0
+					},
+					A3(_eeue56$elm_flat_matrix$Matrix$get, _p10 + 1, _p11, points));
+				var point = _p7.point;
+				var _p8 = point;
+				var nx = _p8._0;
+				var ny = _p8._1;
+				var _p9 = {ctor: '_Tuple2', _0: (px + nx) / 2, _1: (py + ny) / 2};
+				var xc = _p9._0;
+				var yc = _p9._1;
+				return A5(_user$project$Canvas$quadraticCurveTo, px, py, xc, yc, cmds);
+			}
+		};
+		return drawEol(
+			drawPoint(cmds));
+	});
+var _user$project$Examples_JoyDivision$moveAround = F2(
+	function (r, _p12) {
+		var _p13 = _p12;
+		var _p14 = _p13._0;
 		var maxVariance = 150;
 		var p = (((_user$project$Examples_JoyDivision$w - (_user$project$Examples_JoyDivision$padding * 2)) - 100) / 2) / maxVariance;
-		var distanceToCenter = _elm_lang$core$Basics$abs(_p5 - (_user$project$Examples_JoyDivision$w / 2));
+		var distanceToCenter = _elm_lang$core$Basics$abs(_p14 - (_user$project$Examples_JoyDivision$w / 2));
 		var variance = A2(_elm_lang$core$Basics$max, ((0 - distanceToCenter) / p) + maxVariance, 0);
 		var random = ((r * variance) / 2) * -1;
-		return {ctor: '_Tuple2', _0: _p5, _1: _p4._1 + random};
+		return {ctor: '_Tuple2', _0: _p14, _1: _p13._1 + random};
 	});
 var _user$project$Examples_JoyDivision$h = 500;
 var _user$project$Examples_JoyDivision$rows = ((_user$project$Examples_JoyDivision$h - (_user$project$Examples_JoyDivision$padding * 2)) / _user$project$Examples_JoyDivision$stepY) | 0;
 var _user$project$Examples_JoyDivision$cells = _user$project$Examples_JoyDivision$rows * _user$project$Examples_JoyDivision$cols;
 var _user$project$Examples_JoyDivision$init = function (floatSeed) {
-	var _p6 = A2(
+	var _p15 = A2(
 		_elm_lang$core$Tuple$mapFirst,
-		function (_p7) {
+		function (_p16) {
 			return A2(
 				_elm_lang$core$Maybe$withDefault,
 				_eeue56$elm_flat_matrix$Matrix$empty,
-				_eeue56$elm_flat_matrix$Matrix$fromList(_p7));
+				_eeue56$elm_flat_matrix$Matrix$fromList(_p16));
 		},
 		A2(
 			_elm_lang$core$Random$step,
@@ -11641,8 +11808,8 @@ var _user$project$Examples_JoyDivision$init = function (floatSeed) {
 					A2(_elm_lang$core$Random$float, 0, 1))),
 			_elm_lang$core$Random$initialSeed(
 				_elm_lang$core$Basics$floor(floatSeed * 100000))));
-	var randomYs = _p6._0;
-	var seed = _p6._1;
+	var randomYs = _p15._0;
+	var seed = _p15._1;
 	var points = A2(
 		_elm_lang$core$Maybe$withDefault,
 		_eeue56$elm_flat_matrix$Matrix$empty,
@@ -11659,7 +11826,7 @@ var _user$project$Examples_JoyDivision$init = function (floatSeed) {
 			A2(
 				_eeue56$elm_flat_matrix$Matrix$indexedMap,
 				F3(
-					function (x, y, _p8) {
+					function (x, y, _p17) {
 						return _user$project$Examples_JoyDivision$coordsToPx(
 							{
 								ctor: '_Tuple2',
@@ -11677,75 +11844,6 @@ var _user$project$Examples_JoyDivision$init = function (floatSeed) {
 		{count: 0, points: points},
 		{ctor: '[]'});
 };
-var _user$project$Examples_JoyDivision$drawLines = F4(
-	function (x, y, points, cmds) {
-		drawLines:
-		while (true) {
-			if (_elm_lang$core$Native_Utils.cmp(x, _user$project$Examples_JoyDivision$cols) > -1) {
-				var _v3 = 0,
-					_v4 = y + 1,
-					_v5 = points,
-					_v6 = cmds;
-				x = _v3;
-				y = _v4;
-				points = _v5;
-				cmds = _v6;
-				continue drawLines;
-			} else {
-				if (_elm_lang$core$Native_Utils.cmp(y, _user$project$Examples_JoyDivision$rows) > -1) {
-					return cmds;
-				} else {
-					var _p9 = A3(_eeue56$elm_flat_matrix$Matrix$get, x, y, points);
-					if (_p9.ctor === 'Just') {
-						var _p10 = _p9._0.point;
-						var px = _p10._0;
-						var py = _p10._1;
-						var cmds1 = function () {
-							if (_elm_lang$core$Native_Utils.eq(x, 0)) {
-								return A3(
-									_user$project$Canvas$moveTo,
-									px,
-									py,
-									_user$project$Canvas$beginPath(cmds));
-							} else {
-								var _p11 = function () {
-									var _p12 = A3(_eeue56$elm_flat_matrix$Matrix$get, x + 1, y, points);
-									if (_p12.ctor === 'Just') {
-										var _p13 = _p12._0.point;
-										var nx = _p13._0;
-										var ny = _p13._1;
-										return {ctor: '_Tuple2', _0: (px + nx) / 2, _1: (py + ny) / 2};
-									} else {
-										return {ctor: '_Tuple2', _0: (px + (px + _user$project$Examples_JoyDivision$stepX)) / 2, _1: py};
-									}
-								}();
-								var xc = _p11._0;
-								var yc = _p11._1;
-								return A5(_user$project$Canvas$quadraticCurveTo, px, py, xc, yc, cmds);
-							}
-						}();
-						var cmds2 = _elm_lang$core$Native_Utils.eq(x, _user$project$Examples_JoyDivision$cols - 1) ? _user$project$Canvas$stroke(
-							A2(_user$project$Canvas$fill, _user$project$Canvas$NonZero, cmds1)) : cmds1;
-						var _v9 = x + 1,
-							_v10 = y,
-							_v11 = points,
-							_v12 = cmds2;
-						x = _v9;
-						y = _v10;
-						points = _v11;
-						cmds = _v12;
-						continue drawLines;
-					} else {
-						var _p14 = A2(
-							_elm_lang$core$Debug$log,
-							'Couldn\'t get index',
-							{ctor: '_Tuple2', _0: x, _1: y});
-						return cmds;
-					}
-				}
-			}
-		}
-	});
 var _user$project$Examples_JoyDivision$view = function (model) {
 	return A4(
 		_user$project$Canvas$element,
@@ -11757,11 +11855,10 @@ var _user$project$Examples_JoyDivision$view = function (model) {
 				{ctor: '[]'}),
 			_1: {ctor: '[]'}
 		},
-		A4(
-			_user$project$Examples_JoyDivision$drawLines,
-			0,
-			0,
-			model.points,
+		A3(
+			_joakin$elm_grid$Grid$fold2d,
+			{cols: _user$project$Examples_JoyDivision$cols, rows: _user$project$Examples_JoyDivision$rows},
+			_user$project$Examples_JoyDivision$drawLines(model.points),
 			A2(
 				_user$project$Canvas$lineWidth,
 				1.5,
