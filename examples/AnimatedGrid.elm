@@ -11,6 +11,7 @@ import Html.Events exposing (onClick)
 import Time exposing (Time)
 import Canvas exposing (..)
 import Color exposing (Color)
+import Grid
 
 
 type alias Model =
@@ -62,27 +63,28 @@ w =
     500
 
 
-gridSize : Float
 gridSize =
     24
 
 
-cellSize : Float
+gridSizef =
+    toFloat gridSize
+
+
 cellSize =
-    (w - padding * 2) / gridSize
+    (w - padding * 2) / gridSizef
 
 
-padding : Float
 padding =
     w * 0.1
 
 
-clearScreen : Commands -> Commands
-clearScreen cmds =
-    cmds
-        |> clearRect 0 0 w h
-        |> fillStyle (Color.rgb 255 255 255)
-        |> fillRect 0 0 w h
+length =
+    cellSize * 0.65
+
+
+thickness =
+    cellSize * 0.1
 
 
 view : Model -> Html Msg
@@ -98,56 +100,48 @@ view ( isRunning, time ) =
         )
 
 
-renderItems : Float -> Commands -> Commands
+clearScreen cmds =
+    cmds
+        |> clearRect 0 0 w h
+        |> fillStyle (Color.rgb 255 255 255)
+        |> fillRect 0 0 w h
+
+
 renderItems time cmds =
-    List.range 0 (floor (gridSize * gridSize) - 1)
-        |> List.foldl (renderItem time) cmds
+    Grid.fold2d { rows = gridSize, cols = gridSize }
+        (renderItem time)
+        cmds
 
 
-renderItem : Float -> Int -> Commands -> Commands
-renderItem time i cmds =
+renderItem time ( col, row ) cmds =
     let
-        col =
-            toFloat (i % (floor gridSize))
+        ( colf, rowf ) =
+            ( toFloat col, toFloat row )
 
-        row =
-            toFloat (i // (floor gridSize))
+        ( x, y ) =
+            ( (rowf * cellSize) + padding + cellSize / 2
+            , (colf * cellSize) + padding + cellSize / 2
+            )
 
-        x =
-            (row * cellSize)
-                |> (+) (padding + cellSize / 2)
-
-        y =
-            (col * cellSize)
-                |> (+) (padding + cellSize / 2)
-
-        u =
-            col / (gridSize - 1)
-
-        v =
-            row / (gridSize - 1)
+        ( u, v ) =
+            ( colf / (gridSizef - 1)
+            , rowf / (gridSizef - 1)
+            )
 
         offset =
             u * 0.4 + v * 0.2
 
         t =
-            time
-                / 1000
+            time / 1000
 
-        mod =
+        rotationModifier =
             (sin (t + offset)) ^ 3
 
         initialRotation =
             degrees 90
 
         rotation =
-            initialRotation + mod * pi
-
-        length =
-            cellSize * 0.65
-
-        thickness =
-            cellSize * 0.1
+            initialRotation + rotationModifier * pi
     in
         cmds
             |> save
