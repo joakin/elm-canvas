@@ -10643,12 +10643,64 @@ var _user$project$Canvas$fillCircle = F4(
 				_user$project$Canvas$beginPath(cmds)));
 	});
 
+var _user$project$Examples_Drawing$log = F3(
+	function (msg, thingToLog, thingToReturn) {
+		return function (_p0) {
+			return thingToReturn;
+		}(
+			A2(_elm_lang$core$Debug$log, msg, thingToLog));
+	});
+var _user$project$Examples_Drawing$offsetDecoder = A2(
+	_elm_lang$core$Json_Decode$field,
+	'target',
+	A3(
+		_elm_lang$core$Json_Decode$map2,
+		F2(
+			function (top, left) {
+				return {ctor: '_Tuple2', _0: left, _1: top};
+			}),
+		A2(_elm_lang$core$Json_Decode$field, 'offsetTop', _elm_lang$core$Json_Decode$float),
+		A2(_elm_lang$core$Json_Decode$field, 'offsetLeft', _elm_lang$core$Json_Decode$float)));
+var _user$project$Examples_Drawing$eventDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (event, offset) {
+			return {event: event, targetOffset: offset};
+		}),
+	_mpizenberg$elm_pointer_events$Touch$eventDecoder,
+	_user$project$Examples_Drawing$offsetDecoder);
+var _user$project$Examples_Drawing$onTouch = F2(
+	function (event, tag) {
+		return A3(
+			_elm_lang$html$Html_Events$onWithOptions,
+			event,
+			{preventDefault: true, stopPropagation: true},
+			A2(_elm_lang$core$Json_Decode$map, tag, _user$project$Examples_Drawing$eventDecoder));
+	});
+var _user$project$Examples_Drawing$touchCoordinates = function (_p1) {
+	var _p2 = _p1;
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		{ctor: '_Tuple2', _0: 0, _1: 0},
+		A2(
+			_elm_lang$core$Maybe$map,
+			function (touch) {
+				var _p3 = _p2.targetOffset;
+				var x2 = _p3._0;
+				var y2 = _p3._1;
+				var _p4 = touch.pagePos;
+				var x = _p4._0;
+				var y = _p4._1;
+				return {ctor: '_Tuple2', _0: x - x2, _1: y - y2};
+			},
+			_elm_lang$core$List$head(_p2.event.changedTouches)));
+};
 var _user$project$Examples_Drawing$colorToCSSString = function (color) {
-	var _p0 = _elm_lang$core$Color$toRgb(color);
-	var red = _p0.red;
-	var green = _p0.green;
-	var blue = _p0.blue;
-	var alpha = _p0.alpha;
+	var _p5 = _elm_lang$core$Color$toRgb(color);
+	var red = _p5.red;
+	var green = _p5.green;
+	var blue = _p5.blue;
+	var alpha = _p5.alpha;
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		'rgba(',
@@ -10681,60 +10733,53 @@ var _user$project$Examples_Drawing$col = function (btns) {
 		{ctor: '[]'},
 		btns);
 };
-var _user$project$Examples_Drawing$log = F3(
-	function (msg, thingToLog, thingToReturn) {
-		return function (_p1) {
-			return thingToReturn;
-		}(
-			A2(_elm_lang$core$Debug$log, msg, thingToLog));
-	});
 var _user$project$Examples_Drawing$drawLines = F2(
 	function (drawings, cmds) {
 		drawLines:
 		while (true) {
-			var _p2 = drawings;
-			if (_p2.ctor === '[]') {
+			var _p6 = drawings;
+			if (_p6.ctor === '[]') {
 				return cmds;
 			} else {
-				var _v2 = _p2._1,
-					_v3 = function () {
-					var _p3 = _p2._0;
-					switch (_p3.ctor) {
+				var _v3 = _p6._1,
+					_v4 = function () {
+					var _p7 = _p6._0;
+					switch (_p7.ctor) {
 						case 'StartLine':
 							return A3(
 								_user$project$Canvas$moveTo,
-								_p3._0._0,
-								_p3._0._1,
+								_p7._0._0,
+								_p7._0._1,
 								_user$project$Canvas$beginPath(cmds));
 						case 'LineTo':
-							return A3(_user$project$Canvas$lineTo, _p3._0._0, _p3._0._1, cmds);
+							return A3(_user$project$Canvas$lineTo, _p7._0._0, _p7._0._1, cmds);
 						default:
 							return _user$project$Canvas$stroke(
-								A3(_user$project$Canvas$lineTo, _p3._0._0, _p3._0._1, cmds));
+								A3(_user$project$Canvas$lineTo, _p7._0._0, _p7._0._1, cmds));
 					}
 				}();
-				drawings = _v2;
-				cmds = _v3;
+				drawings = _v3;
+				cmds = _v4;
 				continue drawLines;
 			}
 		}
 	});
 var _user$project$Examples_Drawing$getShadowColor = function (color) {
-	var _p4 = _elm_lang$core$Color$toRgb(color);
-	var red = _p4.red;
-	var green = _p4.green;
-	var blue = _p4.blue;
+	var _p8 = _elm_lang$core$Color$toRgb(color);
+	var red = _p8.red;
+	var green = _p8.green;
+	var blue = _p8.blue;
 	return A4(_elm_lang$core$Color$rgba, red, green, blue, 0.1);
 };
 var _user$project$Examples_Drawing$addDrawingPoint = F2(
-	function (point, _p5) {
-		var _p6 = _p5;
-		var _p7 = _p6;
-		return _p6.isDrawing ? _elm_lang$core$Native_Utils.update(
-			_p7,
+	function (point, _p9) {
+		var _p10 = _p9;
+		var _p11 = _p10;
+		return _p10.isDrawing ? _elm_lang$core$Native_Utils.update(
+			_p11,
 			{
-				drawing: {ctor: '::', _0: point, _1: _p6.drawing}
-			}) : _p7;
+				drawing: {ctor: '::', _0: point, _1: _p10.drawing}
+			}) : _p11;
 	});
 var _user$project$Examples_Drawing$currentlyDrawing = F2(
 	function (isDrawing, model) {
@@ -10770,36 +10815,36 @@ var _user$project$Examples_Drawing$StartLine = function (a) {
 	return {ctor: 'StartLine', _0: a};
 };
 var _user$project$Examples_Drawing$update = F2(
-	function (msg, _p8) {
-		var _p9 = _p8;
-		var _p14 = _p9;
-		var _p13 = _p9.drawing;
+	function (msg, _p12) {
+		var _p13 = _p12;
+		var _p18 = _p13;
+		var _p17 = _p13.drawing;
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			function () {
-				var _p10 = msg;
-				switch (_p10.ctor) {
+				var _p14 = msg;
+				switch (_p14.ctor) {
 					case 'AnimationFrame':
 						return _elm_lang$core$Native_Utils.update(
-							_p14,
+							_p18,
 							{
-								frames: _p9.frames + 1,
+								frames: _p13.frames + 1,
 								drawing: function () {
-									var _p11 = _elm_lang$core$List$head(_p13);
-									if (_p11.ctor === 'Nothing') {
+									var _p15 = _elm_lang$core$List$head(_p17);
+									if (_p15.ctor === 'Nothing') {
 										return {ctor: '[]'};
 									} else {
-										switch (_p11._0.ctor) {
+										switch (_p15._0.ctor) {
 											case 'StartLine':
-												return _p13;
+												return _p17;
 											case 'LineTo':
-												var _p12 = _p11._0._0;
+												var _p16 = _p15._0._0;
 												return {
 													ctor: '::',
-													_0: _user$project$Examples_Drawing$StartLine(_p12),
+													_0: _user$project$Examples_Drawing$StartLine(_p16),
 													_1: {
 														ctor: '::',
-														_0: _user$project$Examples_Drawing$EndLine(_p12),
+														_0: _user$project$Examples_Drawing$EndLine(_p16),
 														_1: {ctor: '[]'}
 													}
 												};
@@ -10809,28 +10854,28 @@ var _user$project$Examples_Drawing$update = F2(
 									}
 								}()
 							});
-					case 'MouseDown':
+					case 'StartAt':
 						return A2(
 							_user$project$Examples_Drawing$addDrawingPoint,
-							_user$project$Examples_Drawing$StartLine(_p10._0),
-							A2(_user$project$Examples_Drawing$currentlyDrawing, true, _p14));
-					case 'MouseMove':
+							_user$project$Examples_Drawing$StartLine(_p14._0),
+							A2(_user$project$Examples_Drawing$currentlyDrawing, true, _p18));
+					case 'MoveAt':
 						return A2(
 							_user$project$Examples_Drawing$addDrawingPoint,
-							_user$project$Examples_Drawing$LineTo(_p10._0),
-							_p14);
-					case 'MouseUp':
+							_user$project$Examples_Drawing$LineTo(_p14._0),
+							_p18);
+					case 'EndAt':
 						return A2(
 							_user$project$Examples_Drawing$currentlyDrawing,
 							false,
 							A2(
 								_user$project$Examples_Drawing$addDrawingPoint,
-								_user$project$Examples_Drawing$EndLine(_p10._0),
-								_p14));
+								_user$project$Examples_Drawing$EndLine(_p14._0),
+								_p18));
 					default:
 						return _elm_lang$core$Native_Utils.update(
-							_p14,
-							{color: _p10._0});
+							_p18,
+							{color: _p14._0});
 				}
 			}(),
 			{ctor: '[]'});
@@ -11073,14 +11118,14 @@ var _user$project$Examples_Drawing$colorButtons = A2(
 			}
 		}
 	});
-var _user$project$Examples_Drawing$MouseUp = function (a) {
-	return {ctor: 'MouseUp', _0: a};
+var _user$project$Examples_Drawing$EndAt = function (a) {
+	return {ctor: 'EndAt', _0: a};
 };
-var _user$project$Examples_Drawing$MouseMove = function (a) {
-	return {ctor: 'MouseMove', _0: a};
+var _user$project$Examples_Drawing$MoveAt = function (a) {
+	return {ctor: 'MoveAt', _0: a};
 };
-var _user$project$Examples_Drawing$MouseDown = function (a) {
-	return {ctor: 'MouseDown', _0: a};
+var _user$project$Examples_Drawing$StartAt = function (a) {
+	return {ctor: 'StartAt', _0: a};
 };
 var _user$project$Examples_Drawing$view = function (model) {
 	return A2(
@@ -11118,53 +11163,87 @@ var _user$project$Examples_Drawing$view = function (model) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$style(
-							{ctor: '[]'}),
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'touch-action', _1: 'none'},
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: _mpizenberg$elm_pointer_events$Mouse$onDown(
-								function (_p15) {
-									return _user$project$Examples_Drawing$MouseDown(
+								function (_p19) {
+									return _user$project$Examples_Drawing$StartAt(
 										function (_) {
 											return _.offsetPos;
-										}(_p15));
+										}(_p19));
 								}),
 							_1: {
 								ctor: '::',
 								_0: _mpizenberg$elm_pointer_events$Mouse$onMove(
-									function (_p16) {
-										return _user$project$Examples_Drawing$MouseMove(
+									function (_p20) {
+										return _user$project$Examples_Drawing$MoveAt(
 											function (_) {
 												return _.offsetPos;
-											}(_p16));
+											}(_p20));
 									}),
 								_1: {
 									ctor: '::',
 									_0: _mpizenberg$elm_pointer_events$Mouse$onUp(
-										function (_p17) {
-											return _user$project$Examples_Drawing$MouseUp(
+										function (_p21) {
+											return _user$project$Examples_Drawing$EndAt(
 												function (_) {
 													return _.offsetPos;
-												}(_p17));
+												}(_p21));
 										}),
 									_1: {
 										ctor: '::',
 										_0: _mpizenberg$elm_pointer_events$Mouse$onLeave(
-											function (_p18) {
-												return _user$project$Examples_Drawing$MouseUp(
+											function (_p22) {
+												return _user$project$Examples_Drawing$EndAt(
 													function (_) {
 														return _.offsetPos;
-													}(_p18));
+													}(_p22));
 											}),
 										_1: {
 											ctor: '::',
 											_0: _mpizenberg$elm_pointer_events$Mouse$onContextMenu(
-												function (_p19) {
-													return _user$project$Examples_Drawing$MouseUp(
+												function (_p23) {
+													return _user$project$Examples_Drawing$EndAt(
 														function (_) {
 															return _.offsetPos;
-														}(_p19));
+														}(_p23));
 												}),
-											_1: {ctor: '[]'}
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_user$project$Examples_Drawing$onTouch,
+													'touchstart',
+													function (_p24) {
+														return _user$project$Examples_Drawing$StartAt(
+															_user$project$Examples_Drawing$touchCoordinates(_p24));
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_user$project$Examples_Drawing$onTouch,
+														'touchmove',
+														function (_p25) {
+															return _user$project$Examples_Drawing$MoveAt(
+																_user$project$Examples_Drawing$touchCoordinates(_p25));
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_user$project$Examples_Drawing$onTouch,
+															'touchend',
+															function (_p26) {
+																return _user$project$Examples_Drawing$EndAt(
+																	_user$project$Examples_Drawing$touchCoordinates(_p26));
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
 										}
 									}
 								}
