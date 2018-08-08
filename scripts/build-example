@@ -1,7 +1,9 @@
 #!/bin/bash
 
 FILE=$1
+shift
+ARGS="$@"
 echo "building $FILE"
 pushd examples/ || exit
-elm make "$FILE" --output "../public/$(basename "$FILE" .elm).js"
+elm make "$FILE" --output "../public/$(basename "$FILE" .elm).js" $ARGS
 popd || exit
