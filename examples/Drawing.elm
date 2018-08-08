@@ -10,6 +10,7 @@ import Random
 import AnimationFrame as AF
 import Mouse
 import Touch
+import Json.Decode as Decode
 
 
 main : Program Float Model Msg
@@ -54,9 +55,9 @@ type alias Model =
 
 type Msg
     = AnimationFrame Time
-    | MouseDown ( Float, Float )
-    | MouseMove ( Float, Float )
-    | MouseUp ( Float, Float )
+    | StartAt ( Float, Float )
+    | MoveAt ( Float, Float )
+    | EndAt ( Float, Float )
     | SelectColor Color
 
 
@@ -96,15 +97,15 @@ update msg ({ frames, drawing, isDrawing } as model) =
                             []
             }
 
-        MouseDown point ->
+        StartAt point ->
             model
                 |> currentlyDrawing True
                 |> addDrawingPoint (StartLine point)
 
-        MouseMove point ->
+        MoveAt point ->
             addDrawingPoint (LineTo point) model
 
-        MouseUp point ->
+        EndAt point ->
             model
                 |> addDrawingPoint (EndLine point)
                 |> currentlyDrawing False
@@ -141,12 +142,15 @@ view model =
         , Canvas.element
             w
             h
-            [ style []
-            , Mouse.onDown (.offsetPos >> MouseDown)
-            , Mouse.onMove (.offsetPos >> MouseMove)
-            , Mouse.onUp (.offsetPos >> MouseUp)
-            , Mouse.onLeave (.offsetPos >> MouseUp)
-            , Mouse.onContextMenu (.offsetPos >> MouseUp)
+            [ style [ ( "touch-action", "none" ) ]
+            , Mouse.onDown (.offsetPos >> StartAt)
+            , Mouse.onMove (.offsetPos >> MoveAt)
+            , Mouse.onUp (.offsetPos >> EndAt)
+            , Mouse.onLeave (.offsetPos >> EndAt)
+            , Mouse.onContextMenu (.offsetPos >> EndAt)
+            , onTouch "touchstart" (touchCoordinates >> StartAt)
+            , onTouch "touchmove" (touchCoordinates >> MoveAt)
+            , onTouch "touchend" (touchCoordinates >> EndAt)
             ]
             (empty
                 |> shadowColor (getShadowColor model.color)
@@ -188,11 +192,6 @@ drawLines drawings cmds =
                         |> stroke
             )
                 |> drawLines rest
-
-
-log msg thingToLog thingToReturn =
-    Debug.log msg thingToLog
-        |> (\_ -> thingToReturn)
 
 
 colorButtons =
@@ -290,3 +289,55 @@ colorToCSSString color =
             ++ ", "
             ++ (toString alpha)
             ++ ")"
+
+
+touchCoordinates : { event : Touch.Event, targetOffset : ( Float, Float ) } -> ( Float, Float )
+touchCoordinates { event, targetOffset } =
+    List.head event.changedTouches
+        |> Maybe.map
+            (\touch ->
+                let
+                    ( x, y ) =
+                        touch.pagePos
+
+                    ( x2, y2 ) =
+                        targetOffset
+                in
+                    -- log "touch + targetOffset"
+                    --     ( touch, targetOffset )
+                    ( x - x2, y - y2 )
+            )
+        |> Maybe.withDefault ( 0, 0 )
+
+
+onTouch event tag =
+    Decode.map tag eventDecoder
+        |> Html.Events.onWithOptions event
+            { preventDefault = True
+            , stopPropagation = True
+            }
+
+
+eventDecoder =
+    Decode.map2
+        (\event offset ->
+            { event = event
+            , targetOffset = offset
+            }
+        )
+        Touch.eventDecoder
+        offsetDecoder
+
+
+offsetDecoder =
+    (Decode.field "target"
+        (Decode.map2 (\top left -> ( left, top ))
+            (Decode.field "offsetTop" Decode.float)
+            (Decode.field "offsetLeft" Decode.float)
+        )
+    )
+
+
+log msg thingToLog thingToReturn =
+    Debug.log msg thingToLog
+        |> (\_ -> thingToReturn)
