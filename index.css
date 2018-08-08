@@ -24,6 +24,7 @@ ul > li {
 }
 
 elm-canvas {
+  display: block;
   background-color: white;
   box-shadow: 0 0 200px rgba(0, 0, 0, 0.07);
 }
