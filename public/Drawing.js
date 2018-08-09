@@ -10738,7 +10738,7 @@ var _user$project$Examples_Drawing$getShadowColor = function (color) {
 	var red = _p6.red;
 	var green = _p6.green;
 	var blue = _p6.blue;
-	return A4(_elm_lang$core$Color$rgba, red, green, blue, 0.1);
+	return A4(_elm_lang$core$Color$rgba, red, green, blue, 0.2);
 };
 var _user$project$Examples_Drawing$controlPoint = F2(
 	function (p1, p2) {
@@ -10769,11 +10769,24 @@ var _user$project$Examples_Drawing$finalPoint = F3(
 							_user$project$Canvas$beginPath(_p12.pending))))
 			});
 	});
-var _user$project$Examples_Drawing$selectColor = F2(
-	function (color, _p15) {
+var _user$project$Examples_Drawing$selectSize = F2(
+	function (size, _p15) {
 		var _p16 = _p15;
 		return _elm_lang$core$Native_Utils.update(
 			_p16,
+			{
+				size: size,
+				pending: A2(
+					_user$project$Canvas$lineWidth,
+					_elm_lang$core$Basics$toFloat(size),
+					_p16.pending)
+			});
+	});
+var _user$project$Examples_Drawing$selectColor = F2(
+	function (color, _p17) {
+		var _p18 = _p17;
+		return _elm_lang$core$Native_Utils.update(
+			_p18,
 			{
 				color: color,
 				pending: A2(
@@ -10782,31 +10795,32 @@ var _user$project$Examples_Drawing$selectColor = F2(
 					A2(
 						_user$project$Canvas$shadowColor,
 						_user$project$Examples_Drawing$getShadowColor(color),
-						_p16.pending))
+						_p18.pending))
 			});
 	});
 var _user$project$Examples_Drawing$init = function (floatSeed) {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
 		A2(
-			_user$project$Examples_Drawing$selectColor,
-			_elm_lang$core$Color$lightBlue,
-			{
-				frames: 0,
-				pending: A2(
-					_user$project$Canvas$lineJoin,
-					_user$project$Canvas$RoundJoin,
-					A2(
-						_user$project$Canvas$lineCap,
-						_user$project$Canvas$RoundCap,
+			_user$project$Examples_Drawing$selectSize,
+			20,
+			A2(
+				_user$project$Examples_Drawing$selectColor,
+				_elm_lang$core$Color$lightBlue,
+				{
+					frames: 0,
+					pending: A2(
+						_user$project$Canvas$lineJoin,
+						_user$project$Canvas$RoundJoin,
 						A2(
-							_user$project$Canvas$lineWidth,
-							15,
-							A2(_user$project$Canvas$shadowBlur, 10, _user$project$Canvas$empty)))),
-				toDraw: _user$project$Canvas$empty,
-				drawingPointer: _elm_lang$core$Maybe$Nothing,
-				color: _elm_lang$core$Color$lightBlue
-			}),
+							_user$project$Canvas$lineCap,
+							_user$project$Canvas$RoundCap,
+							A2(_user$project$Canvas$shadowBlur, 10, _user$project$Canvas$empty))),
+					toDraw: _user$project$Canvas$empty,
+					drawingPointer: _elm_lang$core$Maybe$Nothing,
+					color: _elm_lang$core$Color$lightBlue,
+					size: 20
+				})),
 		{ctor: '[]'});
 };
 var _user$project$Examples_Drawing$padding = 20;
@@ -10817,81 +10831,83 @@ var _user$project$Examples_Drawing$Point = F2(
 		return {x: a, y: b};
 	});
 var _user$project$Examples_Drawing$initialPoint = F2(
-	function (_p18, _p17) {
-		var _p19 = _p18;
-		var _p22 = _p19._1;
-		var _p21 = _p19._0;
-		var _p20 = _p17;
+	function (_p20, _p19) {
+		var _p21 = _p20;
+		var _p24 = _p21._1;
+		var _p23 = _p21._0;
+		var _p22 = _p19;
 		return _elm_lang$core$Native_Utils.update(
-			_p20,
+			_p22,
 			{
 				drawingPointer: _elm_lang$core$Maybe$Just(
 					{
-						previousMidpoint: A2(_user$project$Examples_Drawing$Point, _p21, _p22),
-						lastPoint: A2(_user$project$Examples_Drawing$Point, _p21, _p22)
+						previousMidpoint: A2(_user$project$Examples_Drawing$Point, _p23, _p24),
+						lastPoint: A2(_user$project$Examples_Drawing$Point, _p23, _p24)
 					})
 			});
 	});
 var _user$project$Examples_Drawing$drawPoint = F3(
-	function (_p25, _p24, _p23) {
-		var _p26 = _p25;
-		var _p27 = _p24;
-		var _p30 = _p27.previousMidpoint;
-		var _p29 = _p27.lastPoint;
-		var _p28 = _p23;
-		var newPoint = A2(_user$project$Examples_Drawing$Point, _p26._0, _p26._1);
-		var newMidPoint = A2(_user$project$Examples_Drawing$controlPoint, _p29, newPoint);
+	function (_p27, _p26, _p25) {
+		var _p28 = _p27;
+		var _p29 = _p26;
+		var _p32 = _p29.previousMidpoint;
+		var _p31 = _p29.lastPoint;
+		var _p30 = _p25;
+		var newPoint = A2(_user$project$Examples_Drawing$Point, _p28._0, _p28._1);
+		var newMidPoint = A2(_user$project$Examples_Drawing$controlPoint, _p31, newPoint);
 		return _elm_lang$core$Native_Utils.update(
-			_p28,
+			_p30,
 			{
 				drawingPointer: _elm_lang$core$Maybe$Just(
 					{previousMidpoint: newMidPoint, lastPoint: newPoint}),
 				pending: _user$project$Canvas$stroke(
 					A5(
 						_user$project$Canvas$quadraticCurveTo,
-						_p29.x,
-						_p29.y,
+						_p31.x,
+						_p31.y,
 						newMidPoint.x,
 						newMidPoint.y,
 						A3(
 							_user$project$Canvas$moveTo,
-							_p30.x,
-							_p30.y,
-							_user$project$Canvas$beginPath(_p28.pending))))
+							_p32.x,
+							_p32.y,
+							_user$project$Canvas$beginPath(_p30.pending))))
 			});
 	});
 var _user$project$Examples_Drawing$update = F2(
-	function (msg, _p31) {
-		var _p32 = _p31;
-		var _p37 = _p32;
-		var _p36 = _p32.drawingPointer;
+	function (msg, _p33) {
+		var _p34 = _p33;
+		var _p39 = _p34;
+		var _p38 = _p34.drawingPointer;
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			function () {
-				var _p33 = msg;
-				switch (_p33.ctor) {
+				var _p35 = msg;
+				switch (_p35.ctor) {
 					case 'AnimationFrame':
 						return _elm_lang$core$Native_Utils.update(
-							_p37,
-							{frames: _p32.frames + 1, pending: _user$project$Canvas$empty, toDraw: _p32.pending});
+							_p39,
+							{frames: _p34.frames + 1, pending: _user$project$Canvas$empty, toDraw: _p34.pending});
 					case 'StartAt':
-						return A2(_user$project$Examples_Drawing$initialPoint, _p33._0, _p37);
+						return A2(_user$project$Examples_Drawing$initialPoint, _p35._0, _p39);
 					case 'MoveAt':
-						var _p34 = _p36;
-						if (_p34.ctor === 'Just') {
-							return A3(_user$project$Examples_Drawing$drawPoint, _p33._0, _p34._0, _p37);
+						var _p36 = _p38;
+						if (_p36.ctor === 'Just') {
+							return A3(_user$project$Examples_Drawing$drawPoint, _p35._0, _p36._0, _p39);
 						} else {
-							return _p37;
+							return _p39;
 						}
 					case 'EndAt':
-						var _p35 = _p36;
-						if (_p35.ctor === 'Just') {
-							return A3(_user$project$Examples_Drawing$finalPoint, _p33._0, _p35._0, _p37);
+						var _p37 = _p38;
+						if (_p37.ctor === 'Just') {
+							return A3(_user$project$Examples_Drawing$finalPoint, _p35._0, _p37._0, _p39);
 						} else {
-							return _p37;
+							return _p39;
 						}
+					case 'SelectColor':
+						return A2(_user$project$Examples_Drawing$selectColor, _p35._0, _p39);
 					default:
-						return A2(_user$project$Examples_Drawing$selectColor, _p33._0, _p37);
+						return A2(_user$project$Examples_Drawing$selectSize, _p35._0, _p39);
 				}
 			}(),
 			{ctor: '[]'});
@@ -10900,9 +10916,199 @@ var _user$project$Examples_Drawing$DrawingPointer = F2(
 	function (a, b) {
 		return {previousMidpoint: a, lastPoint: b};
 	});
-var _user$project$Examples_Drawing$Model = F5(
-	function (a, b, c, d, e) {
-		return {frames: a, pending: b, toDraw: c, drawingPointer: d, color: e};
+var _user$project$Examples_Drawing$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {frames: a, pending: b, toDraw: c, drawingPointer: d, color: e, size: f};
+	});
+var _user$project$Examples_Drawing$SelectSize = function (a) {
+	return {ctor: 'SelectSize', _0: a};
+};
+var _user$project$Examples_Drawing$sizeControls = F2(
+	function (selectedColor, selectedSize) {
+		var inc = 10;
+		var brushes = 6;
+		var buttonSize = brushes * inc;
+		var controls = A2(
+			_elm_lang$core$List$map,
+			function (i) {
+				var size = A2(_elm_lang$core$Basics$max, 2, i * inc);
+				return A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: '-webkit-appearance', _1: 'none'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: '-moz-appearance', _1: 'none'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'transparent'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'border', _1: 'none'},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'margin', _1: '5px'},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'padding', _1: '0'},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'min-width',
+																_1: A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(30),
+																	'px')
+															},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'min-height',
+																	_1: A2(
+																		_elm_lang$core$Basics_ops['++'],
+																		_elm_lang$core$Basics$toString(buttonSize),
+																		'px')
+																},
+																_1: {
+																	ctor: '::',
+																	_0: {ctor: '_Tuple2', _0: 'outline', _1: 'none'},
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_user$project$Examples_Drawing$SelectSize(size)),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$style(
+									{
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'background-color',
+												_1: _user$project$Examples_Drawing$colorToCSSString(selectedColor)
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'border',
+													_1: A2(
+														_elm_lang$core$Basics_ops['++'],
+														'3px solid ',
+														_user$project$Examples_Drawing$colorToCSSString(
+															_user$project$Examples_Drawing$getShadowColor(_elm_lang$core$Color$white)))
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'width',
+														_1: A2(
+															_elm_lang$core$Basics_ops['++'],
+															_elm_lang$core$Basics$toString(size),
+															'px')
+													},
+													_1: {
+														ctor: '::',
+														_0: {
+															ctor: '_Tuple2',
+															_0: 'height',
+															_1: A2(
+																_elm_lang$core$Basics_ops['++'],
+																_elm_lang$core$Basics$toString(size),
+																'px')
+														},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'margin', _1: '0 auto'},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'box-shadow',
+																	_1: _elm_lang$core$Native_Utils.eq(selectedSize, size) ? 'rgba(0, 0, 0, 0.4) 0px 4px 6px' : 'none'
+																},
+																_1: {
+																	ctor: '::',
+																	_0: {ctor: '_Tuple2', _0: 'transition', _1: 'transform 0.2s linear'},
+																	_1: {
+																		ctor: '::',
+																		_0: {
+																			ctor: '_Tuple2',
+																			_0: 'transform',
+																			_1: _elm_lang$core$Native_Utils.eq(selectedSize, size) ? 'translateY(-6px)' : 'none'
+																		},
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					});
+			},
+			A2(_elm_lang$core$List$range, 0, brushes));
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'flex-direction', _1: 'row'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'justify-content', _1: 'space-around'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'align-items', _1: 'center'},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			controls);
 	});
 var _user$project$Examples_Drawing$SelectColor = function (a) {
 	return {ctor: 'SelectColor', _0: a};
@@ -10944,7 +11150,7 @@ var _user$project$Examples_Drawing$colorButton = F2(
 													_0: {
 														ctor: '_Tuple2',
 														_0: 'box-shadow',
-														_1: _elm_lang$core$Native_Utils.eq(selectedColor, color) ? 'rgba(0, 0, 0, 0.4) 0px 4px 4px' : 'none'
+														_1: _elm_lang$core$Native_Utils.eq(selectedColor, color) ? 'rgba(0, 0, 0, 0.4) 0px 4px 6px' : 'none'
 													},
 													_1: {
 														ctor: '::',
@@ -10957,7 +11163,7 @@ var _user$project$Examples_Drawing$colorButton = F2(
 																_0: {
 																	ctor: '_Tuple2',
 																	_0: 'transform',
-																	_1: _elm_lang$core$Native_Utils.eq(selectedColor, color) ? 'translateY(-4px)' : 'none'
+																	_1: _elm_lang$core$Native_Utils.eq(selectedColor, color) ? 'translateY(-6px)' : 'none'
 																},
 																_1: {ctor: '[]'}
 															}
@@ -10984,12 +11190,12 @@ var _user$project$Examples_Drawing$colorButtons = function (selectedColor) {
 	var layout = function (colors) {
 		return A2(
 			_elm_lang$core$List$map,
-			function (_p38) {
+			function (_p40) {
 				return _user$project$Examples_Drawing$col(
 					A2(
 						_elm_lang$core$List$map,
 						_user$project$Examples_Drawing$colorButton(selectedColor),
-						_p38));
+						_p40));
 			},
 			colors);
 	};
@@ -11181,8 +11387,9 @@ var _user$project$Examples_Drawing$MoveAt = function (a) {
 var _user$project$Examples_Drawing$StartAt = function (a) {
 	return {ctor: 'StartAt', _0: a};
 };
-var _user$project$Examples_Drawing$view = function (_p39) {
-	var _p40 = _p39;
+var _user$project$Examples_Drawing$view = function (_p41) {
+	var _p42 = _p41;
+	var _p49 = _p42.color;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -11226,56 +11433,56 @@ var _user$project$Examples_Drawing$view = function (_p39) {
 						_1: {
 							ctor: '::',
 							_0: _mpizenberg$elm_pointer_events$Mouse$onDown(
-								function (_p41) {
+								function (_p43) {
 									return _user$project$Examples_Drawing$StartAt(
 										function (_) {
 											return _.offsetPos;
-										}(_p41));
+										}(_p43));
 								}),
 							_1: {
 								ctor: '::',
 								_0: _mpizenberg$elm_pointer_events$Mouse$onMove(
-									function (_p42) {
+									function (_p44) {
 										return _user$project$Examples_Drawing$MoveAt(
 											function (_) {
 												return _.offsetPos;
-											}(_p42));
+											}(_p44));
 									}),
 								_1: {
 									ctor: '::',
 									_0: _mpizenberg$elm_pointer_events$Mouse$onUp(
-										function (_p43) {
+										function (_p45) {
 											return _user$project$Examples_Drawing$EndAt(
 												function (_) {
 													return _.offsetPos;
-												}(_p43));
+												}(_p45));
 										}),
 									_1: {
 										ctor: '::',
 										_0: A2(
 											_user$project$Examples_Drawing$onTouch,
 											'touchstart',
-											function (_p44) {
+											function (_p46) {
 												return _user$project$Examples_Drawing$StartAt(
-													_user$project$Examples_Drawing$touchCoordinates(_p44));
+													_user$project$Examples_Drawing$touchCoordinates(_p46));
 											}),
 										_1: {
 											ctor: '::',
 											_0: A2(
 												_user$project$Examples_Drawing$onTouch,
 												'touchmove',
-												function (_p45) {
+												function (_p47) {
 													return _user$project$Examples_Drawing$MoveAt(
-														_user$project$Examples_Drawing$touchCoordinates(_p45));
+														_user$project$Examples_Drawing$touchCoordinates(_p47));
 												}),
 											_1: {
 												ctor: '::',
 												_0: A2(
 													_user$project$Examples_Drawing$onTouch,
 													'touchend',
-													function (_p46) {
+													function (_p48) {
 														return _user$project$Examples_Drawing$EndAt(
-															_user$project$Examples_Drawing$touchCoordinates(_p46));
+															_user$project$Examples_Drawing$touchCoordinates(_p48));
 													}),
 												_1: {ctor: '[]'}
 											}
@@ -11285,7 +11492,7 @@ var _user$project$Examples_Drawing$view = function (_p39) {
 							}
 						}
 					},
-					_p40.toDraw),
+					_p42.toDraw),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -11313,8 +11520,12 @@ var _user$project$Examples_Drawing$view = function (_p39) {
 						},
 						{
 							ctor: '::',
-							_0: _user$project$Examples_Drawing$colorButtons(_p40.color),
-							_1: {ctor: '[]'}
+							_0: A2(_user$project$Examples_Drawing$sizeControls, _p49, _p42.size),
+							_1: {
+								ctor: '::',
+								_0: _user$project$Examples_Drawing$colorButtons(_p49),
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {ctor: '[]'}
 				}

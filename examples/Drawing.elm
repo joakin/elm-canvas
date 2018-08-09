@@ -1,7 +1,7 @@
 module Examples.Drawing exposing (main)
 
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Time exposing (Time)
 import Canvas exposing (..)
@@ -53,6 +53,7 @@ type alias Model =
     , toDraw : Commands
     , drawingPointer : Maybe DrawingPointer
     , color : Color
+    , size : Int
     }
 
 
@@ -62,6 +63,7 @@ type Msg
     | MoveAt ( Float, Float )
     | EndAt ( Float, Float )
     | SelectColor Color
+    | SelectSize Int
 
 
 init : Float -> ( Model, Cmd Msg )
@@ -70,14 +72,15 @@ init floatSeed =
      , pending =
         Canvas.empty
             |> shadowBlur 10
-            |> lineWidth 15
             |> lineCap RoundCap
             |> lineJoin RoundJoin
      , toDraw = Canvas.empty
      , drawingPointer = Nothing
      , color = Color.lightBlue
+     , size = 20
      }
         |> selectColor Color.lightBlue
+        |> selectSize 20
     )
         ! []
 
@@ -113,6 +116,9 @@ update msg ({ frames, drawingPointer, pending, toDraw } as model) =
 
         SelectColor color ->
             selectColor color model
+
+        SelectSize size ->
+            selectSize size model
     )
         ! []
 
@@ -124,6 +130,15 @@ selectColor color ({ pending } as model) =
             pending
                 |> shadowColor (getShadowColor color)
                 |> strokeStyle color
+    }
+
+
+selectSize size ({ pending } as model) =
+    { model
+        | size = size
+        , pending =
+            pending
+                |> lineWidth (toFloat size)
     }
 
 
@@ -175,11 +190,11 @@ getShadowColor color =
         { red, green, blue } =
             Color.toRgb color
     in
-        Color.rgba red green blue 0.1
+        Color.rgba red green blue 0.2
 
 
 view : Model -> Html Msg
-view { color, toDraw } =
+view { color, size, toDraw } =
     div []
         [ p [ style [ ( "text-align", "center" ), ( "font-size", "80%" ) ] ] [ text "Draw something with the mouse!" ]
         , Canvas.element
@@ -204,8 +219,82 @@ view { color, toDraw } =
                 , ( "padding", "10px" )
                 ]
             ]
-            [ colorButtons color ]
+            [ sizeControls color size
+            , colorButtons color
+            ]
         ]
+
+
+sizeControls selectedColor selectedSize =
+    let
+        brushes =
+            6
+
+        inc =
+            10
+
+        buttonSize =
+            brushes * inc
+
+        controls =
+            List.range 0 brushes
+                |> List.map
+                    (\i ->
+                        let
+                            size =
+                                max 2 (i * inc)
+                        in
+                            button
+                                [ style
+                                    [ ( "-webkit-appearance", "none" )
+                                    , ( "-moz-appearance", "none" )
+                                    , ( "display", "block" )
+                                    , ( "background-color", "transparent" )
+                                    , ( "border", "none" )
+                                    , ( "margin", "5px" )
+                                    , ( "padding", "0" )
+                                    , ( "min-width", toString 30 ++ "px" )
+                                    , ( "min-height", toString buttonSize ++ "px" )
+                                    , ( "outline", "none" )
+                                    ]
+                                , onClick (SelectSize size)
+                                ]
+                                [ div
+                                    [ style
+                                        [ ( "border-radius", "50%" )
+                                        , ( "background-color", colorToCSSString selectedColor )
+                                        , ( "border", "3px solid " ++ (Color.white |> getShadowColor |> colorToCSSString) )
+                                        , ( "width", toString size ++ "px" )
+                                        , ( "height", toString size ++ "px" )
+                                        , ( "margin", "0 auto" )
+                                        , ( "box-shadow"
+                                          , if selectedSize == size then
+                                                "rgba(0, 0, 0, 0.4) 0px 4px 6px"
+                                            else
+                                                "none"
+                                          )
+                                        , ( "transition", "transform 0.2s linear" )
+                                        , ( "transform"
+                                          , if selectedSize == size then
+                                                "translateY(-6px)"
+                                            else
+                                                "none"
+                                          )
+                                        ]
+                                    ]
+                                    []
+                                ]
+                    )
+    in
+        div
+            [ style
+                [ ( "display", "flex" )
+                , ( "flex-direction", "row" )
+                , ( "justify-content", "space-around" )
+                , ( "align-items", "center" )
+                ]
+            ]
+            controls
 
 
 colorButtons selectedColor =
@@ -281,7 +370,7 @@ colorButton selectedColor color =
             , ( "border", "2px solid white" )
             , ( "box-shadow"
               , if selectedColor == color then
-                    "rgba(0, 0, 0, 0.4) 0px 4px 4px"
+                    "rgba(0, 0, 0, 0.4) 0px 4px 6px"
                 else
                     "none"
               )
@@ -289,7 +378,7 @@ colorButton selectedColor color =
             , ( "outline", "none" )
             , ( "transform"
               , if selectedColor == color then
-                    "translateY(-4px)"
+                    "translateY(-6px)"
                 else
                     "none"
               )
