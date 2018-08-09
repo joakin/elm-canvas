@@ -11413,7 +11413,7 @@ var _user$project$Examples_Drawing$view = function (_p41) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Draw something with the mouse!'),
+					_0: _elm_lang$html$Html$text('Draw something! (mouse or touch)'),
 					_1: {ctor: '[]'}
 				}),
 			_1: {

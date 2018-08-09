@@ -196,7 +196,9 @@ getShadowColor color =
 view : Model -> Html Msg
 view { color, size, toDraw } =
     div []
-        [ p [ style [ ( "text-align", "center" ), ( "font-size", "80%" ) ] ] [ text "Draw something with the mouse!" ]
+        [ p [ style [ ( "text-align", "center" ), ( "font-size", "80%" ) ] ]
+            [ text "Draw something! (mouse or touch)"
+            ]
         , Canvas.element
             w
             h
