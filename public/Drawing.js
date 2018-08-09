@@ -10733,381 +10733,436 @@ var _user$project$Examples_Drawing$col = function (btns) {
 		{ctor: '[]'},
 		btns);
 };
-var _user$project$Examples_Drawing$drawLines = F2(
-	function (drawings, cmds) {
-		drawLines:
-		while (true) {
-			var _p6 = drawings;
-			if (_p6.ctor === '[]') {
-				return cmds;
-			} else {
-				var _v3 = _p6._1,
-					_v4 = function () {
-					var _p7 = _p6._0;
-					switch (_p7.ctor) {
-						case 'StartLine':
-							return A3(
-								_user$project$Canvas$moveTo,
-								_p7._0._0,
-								_p7._0._1,
-								_user$project$Canvas$beginPath(cmds));
-						case 'LineTo':
-							return A3(_user$project$Canvas$lineTo, _p7._0._0, _p7._0._1, cmds);
-						default:
-							return _user$project$Canvas$stroke(
-								A3(_user$project$Canvas$lineTo, _p7._0._0, _p7._0._1, cmds));
-					}
-				}();
-				drawings = _v3;
-				cmds = _v4;
-				continue drawLines;
-			}
-		}
-	});
 var _user$project$Examples_Drawing$getShadowColor = function (color) {
-	var _p8 = _elm_lang$core$Color$toRgb(color);
-	var red = _p8.red;
-	var green = _p8.green;
-	var blue = _p8.blue;
+	var _p6 = _elm_lang$core$Color$toRgb(color);
+	var red = _p6.red;
+	var green = _p6.green;
+	var blue = _p6.blue;
 	return A4(_elm_lang$core$Color$rgba, red, green, blue, 0.1);
 };
-var _user$project$Examples_Drawing$addDrawingPoint = F2(
-	function (point, _p9) {
-		var _p10 = _p9;
-		var _p11 = _p10;
-		return _p10.isDrawing ? _elm_lang$core$Native_Utils.update(
-			_p11,
-			{
-				drawing: {ctor: '::', _0: point, _1: _p10.drawing}
-			}) : _p11;
+var _user$project$Examples_Drawing$controlPoint = F2(
+	function (p1, p2) {
+		return {x: p1.x + ((p2.x - p1.x) / 2), y: p1.y + ((p2.y - p1.y) / 2)};
 	});
-var _user$project$Examples_Drawing$currentlyDrawing = F2(
-	function (isDrawing, model) {
+var _user$project$Examples_Drawing$finalPoint = F3(
+	function (_p9, _p8, _p7) {
+		var _p10 = _p9;
+		var _p11 = _p8;
+		var _p14 = _p11.previousMidpoint;
+		var _p13 = _p11.lastPoint;
+		var _p12 = _p7;
 		return _elm_lang$core$Native_Utils.update(
-			model,
-			{isDrawing: isDrawing});
+			_p12,
+			{
+				drawingPointer: _elm_lang$core$Maybe$Nothing,
+				pending: _user$project$Canvas$stroke(
+					A5(
+						_user$project$Canvas$quadraticCurveTo,
+						_p13.x,
+						_p13.y,
+						_p10._0,
+						_p10._1,
+						A3(
+							_user$project$Canvas$moveTo,
+							_p14.x,
+							_p14.y,
+							_user$project$Canvas$beginPath(_p12.pending))))
+			});
+	});
+var _user$project$Examples_Drawing$selectColor = F2(
+	function (color, _p15) {
+		var _p16 = _p15;
+		return _elm_lang$core$Native_Utils.update(
+			_p16,
+			{
+				color: color,
+				pending: A2(
+					_user$project$Canvas$strokeStyle,
+					color,
+					A2(
+						_user$project$Canvas$shadowColor,
+						_user$project$Examples_Drawing$getShadowColor(color),
+						_p16.pending))
+			});
 	});
 var _user$project$Examples_Drawing$init = function (floatSeed) {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
-		{
-			frames: 0,
-			drawing: {ctor: '[]'},
-			isDrawing: false,
-			color: _elm_lang$core$Color$lightBlue
-		},
+		A2(
+			_user$project$Examples_Drawing$selectColor,
+			_elm_lang$core$Color$lightBlue,
+			{
+				frames: 0,
+				pending: A2(
+					_user$project$Canvas$lineJoin,
+					_user$project$Canvas$RoundJoin,
+					A2(
+						_user$project$Canvas$lineCap,
+						_user$project$Canvas$RoundCap,
+						A2(
+							_user$project$Canvas$lineWidth,
+							15,
+							A2(_user$project$Canvas$shadowBlur, 10, _user$project$Canvas$empty)))),
+				toDraw: _user$project$Canvas$empty,
+				drawingPointer: _elm_lang$core$Maybe$Nothing,
+				color: _elm_lang$core$Color$lightBlue
+			}),
 		{ctor: '[]'});
 };
 var _user$project$Examples_Drawing$padding = 20;
 var _user$project$Examples_Drawing$w = 500;
 var _user$project$Examples_Drawing$h = 500;
-var _user$project$Examples_Drawing$Model = F4(
-	function (a, b, c, d) {
-		return {frames: a, drawing: b, isDrawing: c, color: d};
+var _user$project$Examples_Drawing$Point = F2(
+	function (a, b) {
+		return {x: a, y: b};
 	});
-var _user$project$Examples_Drawing$EndLine = function (a) {
-	return {ctor: 'EndLine', _0: a};
-};
-var _user$project$Examples_Drawing$LineTo = function (a) {
-	return {ctor: 'LineTo', _0: a};
-};
-var _user$project$Examples_Drawing$StartLine = function (a) {
-	return {ctor: 'StartLine', _0: a};
-};
+var _user$project$Examples_Drawing$initialPoint = F2(
+	function (_p18, _p17) {
+		var _p19 = _p18;
+		var _p22 = _p19._1;
+		var _p21 = _p19._0;
+		var _p20 = _p17;
+		return _elm_lang$core$Native_Utils.update(
+			_p20,
+			{
+				drawingPointer: _elm_lang$core$Maybe$Just(
+					{
+						previousMidpoint: A2(_user$project$Examples_Drawing$Point, _p21, _p22),
+						lastPoint: A2(_user$project$Examples_Drawing$Point, _p21, _p22)
+					})
+			});
+	});
+var _user$project$Examples_Drawing$drawPoint = F3(
+	function (_p25, _p24, _p23) {
+		var _p26 = _p25;
+		var _p27 = _p24;
+		var _p30 = _p27.previousMidpoint;
+		var _p29 = _p27.lastPoint;
+		var _p28 = _p23;
+		var newPoint = A2(_user$project$Examples_Drawing$Point, _p26._0, _p26._1);
+		var newMidPoint = A2(_user$project$Examples_Drawing$controlPoint, _p29, newPoint);
+		return _elm_lang$core$Native_Utils.update(
+			_p28,
+			{
+				drawingPointer: _elm_lang$core$Maybe$Just(
+					{previousMidpoint: newMidPoint, lastPoint: newPoint}),
+				pending: _user$project$Canvas$stroke(
+					A5(
+						_user$project$Canvas$quadraticCurveTo,
+						_p29.x,
+						_p29.y,
+						newMidPoint.x,
+						newMidPoint.y,
+						A3(
+							_user$project$Canvas$moveTo,
+							_p30.x,
+							_p30.y,
+							_user$project$Canvas$beginPath(_p28.pending))))
+			});
+	});
 var _user$project$Examples_Drawing$update = F2(
-	function (msg, _p12) {
-		var _p13 = _p12;
-		var _p18 = _p13;
-		var _p17 = _p13.drawing;
+	function (msg, _p31) {
+		var _p32 = _p31;
+		var _p37 = _p32;
+		var _p36 = _p32.drawingPointer;
 		return A2(
 			_elm_lang$core$Platform_Cmd_ops['!'],
 			function () {
-				var _p14 = msg;
-				switch (_p14.ctor) {
+				var _p33 = msg;
+				switch (_p33.ctor) {
 					case 'AnimationFrame':
 						return _elm_lang$core$Native_Utils.update(
-							_p18,
-							{
-								frames: _p13.frames + 1,
-								drawing: function () {
-									var _p15 = _elm_lang$core$List$head(_p17);
-									if (_p15.ctor === 'Nothing') {
-										return {ctor: '[]'};
-									} else {
-										switch (_p15._0.ctor) {
-											case 'StartLine':
-												return _p17;
-											case 'LineTo':
-												var _p16 = _p15._0._0;
-												return {
-													ctor: '::',
-													_0: _user$project$Examples_Drawing$StartLine(_p16),
-													_1: {
-														ctor: '::',
-														_0: _user$project$Examples_Drawing$EndLine(_p16),
-														_1: {ctor: '[]'}
-													}
-												};
-											default:
-												return {ctor: '[]'};
-										}
-									}
-								}()
-							});
+							_p37,
+							{frames: _p32.frames + 1, pending: _user$project$Canvas$empty, toDraw: _p32.pending});
 					case 'StartAt':
-						return A2(
-							_user$project$Examples_Drawing$addDrawingPoint,
-							_user$project$Examples_Drawing$StartLine(_p14._0),
-							A2(_user$project$Examples_Drawing$currentlyDrawing, true, _p18));
+						return A2(_user$project$Examples_Drawing$initialPoint, _p33._0, _p37);
 					case 'MoveAt':
-						return A2(
-							_user$project$Examples_Drawing$addDrawingPoint,
-							_user$project$Examples_Drawing$LineTo(_p14._0),
-							_p18);
+						var _p34 = _p36;
+						if (_p34.ctor === 'Just') {
+							return A3(_user$project$Examples_Drawing$drawPoint, _p33._0, _p34._0, _p37);
+						} else {
+							return _p37;
+						}
 					case 'EndAt':
-						return A2(
-							_user$project$Examples_Drawing$currentlyDrawing,
-							false,
-							A2(
-								_user$project$Examples_Drawing$addDrawingPoint,
-								_user$project$Examples_Drawing$EndLine(_p14._0),
-								_p18));
+						var _p35 = _p36;
+						if (_p35.ctor === 'Just') {
+							return A3(_user$project$Examples_Drawing$finalPoint, _p33._0, _p35._0, _p37);
+						} else {
+							return _p37;
+						}
 					default:
-						return _elm_lang$core$Native_Utils.update(
-							_p18,
-							{color: _p14._0});
+						return A2(_user$project$Examples_Drawing$selectColor, _p33._0, _p37);
 				}
 			}(),
 			{ctor: '[]'});
 	});
+var _user$project$Examples_Drawing$DrawingPointer = F2(
+	function (a, b) {
+		return {previousMidpoint: a, lastPoint: b};
+	});
+var _user$project$Examples_Drawing$Model = F5(
+	function (a, b, c, d, e) {
+		return {frames: a, pending: b, toDraw: c, drawingPointer: d, color: e};
+	});
 var _user$project$Examples_Drawing$SelectColor = function (a) {
 	return {ctor: 'SelectColor', _0: a};
 };
-var _user$project$Examples_Drawing$colorButton = function (color) {
-	return A2(
-		_elm_lang$html$Html$button,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$style(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
-					_1: {
+var _user$project$Examples_Drawing$colorButton = F2(
+	function (selectedColor, color) {
+		return A2(
+			_elm_lang$html$Html$button,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
 						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'background-color',
-							_1: _user$project$Examples_Drawing$colorToCSSString(color)
-						},
+						_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
 						_1: {
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'background-color',
+								_1: _user$project$Examples_Drawing$colorToCSSString(color)
+							},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'width', _1: '40px'},
+								_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'height', _1: '40px'},
+									_0: {ctor: '_Tuple2', _0: 'width', _1: '40px'},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'margin', _1: '5px'},
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '40px'},
 										_1: {
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'border', _1: '2px solid white'},
-											_1: {ctor: '[]'}
+											_0: {ctor: '_Tuple2', _0: 'margin', _1: '5px'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'border', _1: '2px solid white'},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'box-shadow',
+														_1: _elm_lang$core$Native_Utils.eq(selectedColor, color) ? 'rgba(0, 0, 0, 0.4) 0px 4px 4px' : 'none'
+													},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'transition', _1: 'transform 0.2s linear'},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'outline', _1: 'none'},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'transform',
+																	_1: _elm_lang$core$Native_Utils.eq(selectedColor, color) ? 'translateY(-4px)' : 'none'
+																},
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											}
 										}
 									}
 								}
-							}
-						}
-					}
-				}),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Examples_Drawing$SelectColor(color)),
-				_1: {ctor: '[]'}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Examples_Drawing$colorButtons = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$style(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
-				_1: {
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'flex-direction', _1: 'row'},
-					_1: {
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'justify-content', _1: 'space-around'},
-						_1: {ctor: '[]'}
-					}
-				}
-			}),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _user$project$Examples_Drawing$col(
-			{
-				ctor: '::',
-				_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightRed),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$red),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkRed),
-						_1: {ctor: '[]'}
-					}
-				}
-			}),
-		_1: {
-			ctor: '::',
-			_0: _user$project$Examples_Drawing$col(
-				{
-					ctor: '::',
-					_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightOrange),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$orange),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkOrange),
-							_1: {ctor: '[]'}
-						}
-					}
-				}),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Examples_Drawing$col(
-					{
-						ctor: '::',
-						_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightYellow),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$yellow),
-							_1: {
-								ctor: '::',
-								_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkYellow),
-								_1: {ctor: '[]'}
 							}
 						}
 					}),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Examples_Drawing$col(
-						{
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Examples_Drawing$SelectColor(color)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Examples_Drawing$colorButtons = function (selectedColor) {
+	var layout = function (colors) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (_p38) {
+				return _user$project$Examples_Drawing$col(
+					A2(
+						_elm_lang$core$List$map,
+						_user$project$Examples_Drawing$colorButton(selectedColor),
+						_p38));
+			},
+			colors);
+	};
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'flex-direction', _1: 'row'},
+						_1: {
 							ctor: '::',
-							_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightGreen),
+							_0: {ctor: '_Tuple2', _0: 'justify-content', _1: 'space-around'},
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		layout(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '::',
+					_0: _elm_lang$core$Color$lightRed,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Color$red,
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Color$darkRed,
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '::',
+						_0: _elm_lang$core$Color$lightOrange,
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Color$orange,
 							_1: {
 								ctor: '::',
-								_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$green),
+								_0: _elm_lang$core$Color$darkOrange,
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '::',
+							_0: _elm_lang$core$Color$lightYellow,
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Color$yellow,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkGreen),
+									_0: _elm_lang$core$Color$darkYellow,
 									_1: {ctor: '[]'}
 								}
 							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Examples_Drawing$col(
-							{
+						},
+						_1: {
+							ctor: '::',
+							_0: {
 								ctor: '::',
-								_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightBlue),
+								_0: _elm_lang$core$Color$lightGreen,
 								_1: {
 									ctor: '::',
-									_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$blue),
+									_0: _elm_lang$core$Color$green,
 									_1: {
 										ctor: '::',
-										_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkBlue),
+										_0: _elm_lang$core$Color$darkGreen,
 										_1: {ctor: '[]'}
 									}
 								}
-							}),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Examples_Drawing$col(
-								{
+							},
+							_1: {
+								ctor: '::',
+								_0: {
 									ctor: '::',
-									_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightPurple),
+									_0: _elm_lang$core$Color$lightBlue,
 									_1: {
 										ctor: '::',
-										_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$purple),
+										_0: _elm_lang$core$Color$blue,
 										_1: {
 											ctor: '::',
-											_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkPurple),
+											_0: _elm_lang$core$Color$darkBlue,
 											_1: {ctor: '[]'}
 										}
 									}
-								}),
-							_1: {
-								ctor: '::',
-								_0: _user$project$Examples_Drawing$col(
-									{
+								},
+								_1: {
+									ctor: '::',
+									_0: {
 										ctor: '::',
-										_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightBrown),
+										_0: _elm_lang$core$Color$lightPurple,
 										_1: {
 											ctor: '::',
-											_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$brown),
+											_0: _elm_lang$core$Color$purple,
 											_1: {
 												ctor: '::',
-												_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkBrown),
+												_0: _elm_lang$core$Color$darkPurple,
 												_1: {ctor: '[]'}
 											}
 										}
-									}),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Examples_Drawing$col(
-										{
+									},
+									_1: {
+										ctor: '::',
+										_0: {
 											ctor: '::',
-											_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$white),
+											_0: _elm_lang$core$Color$lightBrown,
 											_1: {
 												ctor: '::',
-												_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightGrey),
+												_0: _elm_lang$core$Color$brown,
 												_1: {
 													ctor: '::',
-													_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$grey),
+													_0: _elm_lang$core$Color$darkBrown,
 													_1: {ctor: '[]'}
 												}
 											}
-										}),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Examples_Drawing$col(
-											{
+										},
+										_1: {
+											ctor: '::',
+											_0: {
 												ctor: '::',
-												_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkGrey),
+												_0: _elm_lang$core$Color$white,
 												_1: {
 													ctor: '::',
-													_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$lightCharcoal),
+													_0: _elm_lang$core$Color$lightGrey,
 													_1: {
 														ctor: '::',
-														_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$charcoal),
+														_0: _elm_lang$core$Color$grey,
 														_1: {ctor: '[]'}
 													}
 												}
-											}),
-										_1: {
-											ctor: '::',
-											_0: _user$project$Examples_Drawing$col(
-												{
+											},
+											_1: {
+												ctor: '::',
+												_0: {
 													ctor: '::',
-													_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$darkCharcoal),
+													_0: _elm_lang$core$Color$darkGrey,
 													_1: {
 														ctor: '::',
-														_0: _user$project$Examples_Drawing$colorButton(_elm_lang$core$Color$black),
-														_1: {ctor: '[]'}
+														_0: _elm_lang$core$Color$lightCharcoal,
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$core$Color$charcoal,
+															_1: {ctor: '[]'}
+														}
 													}
-												}),
-											_1: {ctor: '[]'}
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '::',
+														_0: _elm_lang$core$Color$darkCharcoal,
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$core$Color$black,
+															_1: {ctor: '[]'}
+														}
+													},
+													_1: {ctor: '[]'}
+												}
+											}
 										}
 									}
 								}
@@ -11115,9 +11170,8 @@ var _user$project$Examples_Drawing$colorButtons = A2(
 						}
 					}
 				}
-			}
-		}
-	});
+			}));
+};
 var _user$project$Examples_Drawing$EndAt = function (a) {
 	return {ctor: 'EndAt', _0: a};
 };
@@ -11127,7 +11181,8 @@ var _user$project$Examples_Drawing$MoveAt = function (a) {
 var _user$project$Examples_Drawing$StartAt = function (a) {
 	return {ctor: 'StartAt', _0: a};
 };
-var _user$project$Examples_Drawing$view = function (model) {
+var _user$project$Examples_Drawing$view = function (_p39) {
+	var _p40 = _p39;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -11171,78 +11226,58 @@ var _user$project$Examples_Drawing$view = function (model) {
 						_1: {
 							ctor: '::',
 							_0: _mpizenberg$elm_pointer_events$Mouse$onDown(
-								function (_p19) {
+								function (_p41) {
 									return _user$project$Examples_Drawing$StartAt(
 										function (_) {
 											return _.offsetPos;
-										}(_p19));
+										}(_p41));
 								}),
 							_1: {
 								ctor: '::',
 								_0: _mpizenberg$elm_pointer_events$Mouse$onMove(
-									function (_p20) {
+									function (_p42) {
 										return _user$project$Examples_Drawing$MoveAt(
 											function (_) {
 												return _.offsetPos;
-											}(_p20));
+											}(_p42));
 									}),
 								_1: {
 									ctor: '::',
 									_0: _mpizenberg$elm_pointer_events$Mouse$onUp(
-										function (_p21) {
+										function (_p43) {
 											return _user$project$Examples_Drawing$EndAt(
 												function (_) {
 													return _.offsetPos;
-												}(_p21));
+												}(_p43));
 										}),
 									_1: {
 										ctor: '::',
-										_0: _mpizenberg$elm_pointer_events$Mouse$onLeave(
-											function (_p22) {
-												return _user$project$Examples_Drawing$EndAt(
-													function (_) {
-														return _.offsetPos;
-													}(_p22));
+										_0: A2(
+											_user$project$Examples_Drawing$onTouch,
+											'touchstart',
+											function (_p44) {
+												return _user$project$Examples_Drawing$StartAt(
+													_user$project$Examples_Drawing$touchCoordinates(_p44));
 											}),
 										_1: {
 											ctor: '::',
-											_0: _mpizenberg$elm_pointer_events$Mouse$onContextMenu(
-												function (_p23) {
-													return _user$project$Examples_Drawing$EndAt(
-														function (_) {
-															return _.offsetPos;
-														}(_p23));
+											_0: A2(
+												_user$project$Examples_Drawing$onTouch,
+												'touchmove',
+												function (_p45) {
+													return _user$project$Examples_Drawing$MoveAt(
+														_user$project$Examples_Drawing$touchCoordinates(_p45));
 												}),
 											_1: {
 												ctor: '::',
 												_0: A2(
 													_user$project$Examples_Drawing$onTouch,
-													'touchstart',
-													function (_p24) {
-														return _user$project$Examples_Drawing$StartAt(
-															_user$project$Examples_Drawing$touchCoordinates(_p24));
+													'touchend',
+													function (_p46) {
+														return _user$project$Examples_Drawing$EndAt(
+															_user$project$Examples_Drawing$touchCoordinates(_p46));
 													}),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_user$project$Examples_Drawing$onTouch,
-														'touchmove',
-														function (_p25) {
-															return _user$project$Examples_Drawing$MoveAt(
-																_user$project$Examples_Drawing$touchCoordinates(_p25));
-														}),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_user$project$Examples_Drawing$onTouch,
-															'touchend',
-															function (_p26) {
-																return _user$project$Examples_Drawing$EndAt(
-																	_user$project$Examples_Drawing$touchCoordinates(_p26));
-															}),
-														_1: {ctor: '[]'}
-													}
-												}
+												_1: {ctor: '[]'}
 											}
 										}
 									}
@@ -11250,25 +11285,7 @@ var _user$project$Examples_Drawing$view = function (model) {
 							}
 						}
 					},
-					A2(
-						_user$project$Examples_Drawing$drawLines,
-						_elm_lang$core$List$reverse(model.drawing),
-						A2(
-							_user$project$Canvas$strokeStyle,
-							model.color,
-							A2(
-								_user$project$Canvas$lineCap,
-								_user$project$Canvas$RoundCap,
-								A2(
-									_user$project$Canvas$lineWidth,
-									15,
-									A2(
-										_user$project$Canvas$shadowBlur,
-										10,
-										A2(
-											_user$project$Canvas$shadowColor,
-											_user$project$Examples_Drawing$getShadowColor(model.color),
-											_user$project$Canvas$empty))))))),
+					_p40.toDraw),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -11296,7 +11313,7 @@ var _user$project$Examples_Drawing$view = function (model) {
 						},
 						{
 							ctor: '::',
-							_0: _user$project$Examples_Drawing$colorButtons,
+							_0: _user$project$Examples_Drawing$colorButtons(_p40.color),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

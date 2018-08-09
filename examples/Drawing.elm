@@ -39,16 +39,19 @@ padding =
     20
 
 
-type Drawing
-    = StartLine ( Float, Float )
-    | LineTo ( Float, Float )
-    | EndLine ( Float, Float )
+type alias Point =
+    { x : Float, y : Float }
+
+
+type alias DrawingPointer =
+    { previousMidpoint : Point, lastPoint : Point }
 
 
 type alias Model =
     { frames : Int
-    , drawing : List Drawing
-    , isDrawing : Bool
+    , pending : Commands
+    , toDraw : Commands
+    , drawingPointer : Maybe DrawingPointer
     , color : Color
     }
 
@@ -63,68 +66,108 @@ type Msg
 
 init : Float -> ( Model, Cmd Msg )
 init floatSeed =
-    { frames = 0, drawing = [], isDrawing = False, color = Color.lightBlue }
-        ! []
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ frames, drawing, isDrawing } as model) =
-    (case msg of
-        AnimationFrame delta ->
-            { model
-                | frames = (frames + 1)
-                , drawing =
-                    {-
-                       Just rendered, clear up the drawing pipeline as needed
-                       - If nothing was drawn, nothing to do
-                       - If we started a line, we can keep it, no effect
-                       - If we moved to somewhere, lets end the line to render
-                         progress while drawing, and re-start it in the same
-                         place so that followup moves are captured
-                       - If we just ended a line, clear the queue up
-                    -}
-                    case List.head drawing of
-                        Nothing ->
-                            []
-
-                        Just (StartLine _) ->
-                            drawing
-
-                        Just (LineTo pos) ->
-                            StartLine pos :: EndLine pos :: []
-
-                        Just (EndLine _) ->
-                            []
-            }
-
-        StartAt point ->
-            model
-                |> currentlyDrawing True
-                |> addDrawingPoint (StartLine point)
-
-        MoveAt point ->
-            addDrawingPoint (LineTo point) model
-
-        EndAt point ->
-            model
-                |> addDrawingPoint (EndLine point)
-                |> currentlyDrawing False
-
-        SelectColor color ->
-            { model | color = color }
+    ({ frames = 0
+     , pending =
+        Canvas.empty
+            |> shadowBlur 10
+            |> lineWidth 15
+            |> lineCap RoundCap
+            |> lineJoin RoundJoin
+     , toDraw = Canvas.empty
+     , drawingPointer = Nothing
+     , color = Color.lightBlue
+     }
+        |> selectColor Color.lightBlue
     )
         ! []
 
 
-currentlyDrawing isDrawing model =
-    { model | isDrawing = isDrawing }
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg ({ frames, drawingPointer, pending, toDraw } as model) =
+    (case msg of
+        AnimationFrame delta ->
+            { model
+                | frames = (frames + 1)
+                , pending = Canvas.empty
+                , toDraw = pending
+            }
+
+        StartAt point ->
+            initialPoint point model
+
+        MoveAt point ->
+            case drawingPointer of
+                Just pointer ->
+                    drawPoint point pointer model
+
+                Nothing ->
+                    model
+
+        EndAt point ->
+            case drawingPointer of
+                Just pointer ->
+                    finalPoint point pointer model
+
+                Nothing ->
+                    model
+
+        SelectColor color ->
+            selectColor color model
+    )
+        ! []
 
 
-addDrawingPoint point ({ drawing, isDrawing } as model) =
-    if isDrawing then
-        { model | drawing = point :: drawing }
-    else
-        model
+selectColor color ({ pending } as model) =
+    { model
+        | color = color
+        , pending =
+            pending
+                |> shadowColor (getShadowColor color)
+                |> strokeStyle color
+    }
+
+
+initialPoint (( x, y ) as point) ({ pending } as model) =
+    { model
+        | drawingPointer = Just { previousMidpoint = Point x y, lastPoint = Point x y }
+    }
+
+
+drawPoint ( x, y ) { previousMidpoint, lastPoint } ({ pending } as model) =
+    let
+        newPoint =
+            Point x y
+
+        newMidPoint =
+            controlPoint lastPoint newPoint
+    in
+        { model
+            | drawingPointer = Just { previousMidpoint = newMidPoint, lastPoint = newPoint }
+            , pending =
+                pending
+                    |> beginPath
+                    |> moveTo previousMidpoint.x previousMidpoint.y
+                    |> quadraticCurveTo lastPoint.x lastPoint.y newMidPoint.x newMidPoint.y
+                    |> stroke
+        }
+
+
+finalPoint ( x, y ) { previousMidpoint, lastPoint } ({ pending } as model) =
+    { model
+        | drawingPointer = Nothing
+        , pending =
+            pending
+                |> beginPath
+                |> moveTo previousMidpoint.x previousMidpoint.y
+                |> quadraticCurveTo lastPoint.x lastPoint.y x y
+                |> stroke
+    }
+
+
+controlPoint p1 p2 =
+    { x = p1.x + (p2.x - p1.x) / 2
+    , y = p1.y + (p2.y - p1.y) / 2
+    }
 
 
 getShadowColor color =
@@ -136,7 +179,7 @@ getShadowColor color =
 
 
 view : Model -> Html Msg
-view model =
+view { color, toDraw } =
     div []
         [ p [ style [ ( "text-align", "center" ), ( "font-size", "80%" ) ] ] [ text "Draw something with the mouse!" ]
         , Canvas.element
@@ -146,119 +189,87 @@ view model =
             , Mouse.onDown (.offsetPos >> StartAt)
             , Mouse.onMove (.offsetPos >> MoveAt)
             , Mouse.onUp (.offsetPos >> EndAt)
-            , Mouse.onLeave (.offsetPos >> EndAt)
-            , Mouse.onContextMenu (.offsetPos >> EndAt)
+
+            -- These 2 get annoying sometimes when painting
+            -- , Mouse.onLeave (.offsetPos >> EndAt)
+            -- , Mouse.onContextMenu (.offsetPos >> EndAt)
             , onTouch "touchstart" (touchCoordinates >> StartAt)
             , onTouch "touchmove" (touchCoordinates >> MoveAt)
             , onTouch "touchend" (touchCoordinates >> EndAt)
             ]
-            (empty
-                |> shadowColor (getShadowColor model.color)
-                |> shadowBlur 10
-                |> lineWidth 15
-                |> lineCap RoundCap
-                |> strokeStyle model.color
-                |> drawLines (List.reverse model.drawing)
-            )
+            toDraw
         , div
             [ style
                 [ ( "max-width", toString (w - 20) ++ "px" )
                 , ( "padding", "10px" )
                 ]
             ]
-            [ colorButtons ]
+            [ colorButtons color ]
         ]
 
 
-drawLines drawings cmds =
-    case drawings of
-        [] ->
-            cmds
-
-        drawing :: rest ->
-            (case drawing of
-                StartLine ( x, y ) ->
-                    cmds
-                        |> beginPath
-                        |> moveTo x y
-
-                LineTo ( x, y ) ->
-                    cmds
-                        |> lineTo x y
-
-                EndLine ( x, y ) ->
-                    cmds
-                        |> lineTo x y
-                        |> stroke
-            )
-                |> drawLines rest
-
-
-colorButtons =
-    div
-        [ style
-            [ ( "display", "flex" )
-            , ( "flex-direction", "row" )
-            , ( "justify-content", "space-around" )
+colorButtons selectedColor =
+    let
+        layout colors =
+            colors
+                |> List.map ((List.map (colorButton selectedColor)) >> col)
+    in
+        div
+            [ style
+                [ ( "display", "flex" )
+                , ( "flex-direction", "row" )
+                , ( "justify-content", "space-around" )
+                ]
             ]
-        ]
-        [ col
-            [ colorButton (Color.lightRed)
-            , colorButton (Color.red)
-            , colorButton (Color.darkRed)
-            ]
-        , col
-            [ colorButton (Color.lightOrange)
-            , colorButton (Color.orange)
-            , colorButton (Color.darkOrange)
-            ]
-        , col
-            [ colorButton (Color.lightYellow)
-            , colorButton (Color.yellow)
-            , colorButton (Color.darkYellow)
-            ]
-        , col
-            [ colorButton (Color.lightGreen)
-            , colorButton (Color.green)
-            , colorButton (Color.darkGreen)
-            ]
-        , col
-            [ colorButton (Color.lightBlue)
-            , colorButton (Color.blue)
-            , colorButton (Color.darkBlue)
-            ]
-        , col
-            [ colorButton (Color.lightPurple)
-            , colorButton (Color.purple)
-            , colorButton (Color.darkPurple)
-            ]
-        , col
-            [ colorButton (Color.lightBrown)
-            , colorButton (Color.brown)
-            , colorButton (Color.darkBrown)
-            ]
-        , col
-            [ colorButton (Color.white)
-            , colorButton (Color.lightGrey)
-            , colorButton (Color.grey)
-            ]
-        , col
-            [ colorButton (Color.darkGrey)
-            , colorButton (Color.lightCharcoal)
-            , colorButton (Color.charcoal)
-            ]
-        , col
-            [ colorButton (Color.darkCharcoal)
-            , colorButton (Color.black)
-            ]
-        ]
+        <|
+            layout
+                [ [ Color.lightRed
+                  , Color.red
+                  , Color.darkRed
+                  ]
+                , [ Color.lightOrange
+                  , Color.orange
+                  , Color.darkOrange
+                  ]
+                , [ Color.lightYellow
+                  , Color.yellow
+                  , Color.darkYellow
+                  ]
+                , [ Color.lightGreen
+                  , Color.green
+                  , Color.darkGreen
+                  ]
+                , [ Color.lightBlue
+                  , Color.blue
+                  , Color.darkBlue
+                  ]
+                , [ Color.lightPurple
+                  , Color.purple
+                  , Color.darkPurple
+                  ]
+                , [ Color.lightBrown
+                  , Color.brown
+                  , Color.darkBrown
+                  ]
+                , [ Color.white
+                  , Color.lightGrey
+                  , Color.grey
+                  ]
+                , [ Color.darkGrey
+                  , Color.lightCharcoal
+                  , Color.charcoal
+                  ]
+                , [ Color.darkCharcoal
+                  , Color.black
+                  ]
+                ]
 
 
 col btns =
     div [] btns
 
 
-colorButton color =
+colorButton selectedColor color =
     button
         [ style
             [ ( "border-radius", "50%" )
@@ -268,6 +279,20 @@ colorButton color =
             , ( "height", "40px" )
             , ( "margin", "5px" )
             , ( "border", "2px solid white" )
+            , ( "box-shadow"
+              , if selectedColor == color then
+                    "rgba(0, 0, 0, 0.4) 0px 4px 4px"
+                else
+                    "none"
+              )
+            , ( "transition", "transform 0.2s linear" )
+            , ( "outline", "none" )
+            , ( "transform"
+              , if selectedColor == color then
+                    "translateY(-4px)"
+                else
+                    "none"
+              )
             ]
         , onClick (SelectColor color)
         ]
@@ -303,8 +328,6 @@ touchCoordinates { event, targetOffset } =
                     ( x2, y2 ) =
                         targetOffset
                 in
-                    -- log "touch + targetOffset"
-                    --     ( touch, targetOffset )
                     ( x - x2, y - y2 )
             )
         |> Maybe.withDefault ( 0, 0 )
