@@ -3,7 +3,8 @@ module Examples.CubicDisarray exposing (main)
 {-| Based on:
 
   - <https://generativeartistry.com/tutorials/cubic-disarray/>
-  - [[[[[[[https://media.vam.ac.uk/media/thira/collection\_images/2009CD/2009CD4551\_jpg\_l.jpg](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)
+
+`https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg`
 
 -}
 
