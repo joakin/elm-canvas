@@ -3,7 +3,7 @@
 FILE=$1
 shift
 ARGS="$@"
-echo "building $FILE"
+echo "building \"$FILE\" with args \"$ARGS\""
 pushd examples/ || exit
 elm make "$FILE" --output "../public/$(basename "$FILE" .elm).js" $ARGS
 popd || exit
