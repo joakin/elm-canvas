@@ -1,22 +1,23 @@
 module Examples.Template exposing (main)
 
+import Browser
+import Browser.Events exposing (onAnimationFrameDelta)
+import Canvas exposing (..)
+import CanvasColor as Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Time exposing (Time)
-import Canvas exposing (..)
-import Color exposing (Color)
 import Random
-import AnimationFrame as AF
+import Time exposing (Posix)
 
 
 main : Program Float Model Msg
 main =
-    Html.programWithFlags { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    AF.diffs AnimationFrame
+    onAnimationFrameDelta AnimationFrame
 
 
 h : number
@@ -39,19 +40,23 @@ type alias Model =
 
 
 type Msg
-    = AnimationFrame Time
+    = AnimationFrame Float
 
 
 init : Float -> ( Model, Cmd Msg )
 init floatSeed =
-    0 ! []
+    ( 0
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        AnimationFrame delta ->
-            (model + 1) ! []
+        AnimationFrame _ ->
+            ( model + 1
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
@@ -59,11 +64,11 @@ view model =
     Canvas.element
         w
         h
-        [ style [] ]
+        []
         (empty
             |> clearRect 0 0 w h
             |> font "48px sans-serif"
             |> textAlign Canvas.Center
             |> fillStyle (Color.rgb 255 0 0)
-            |> fillText (toString model) (w / 2) (h / 2) Nothing
+            |> fillText (String.fromInt model) (w / 2) (h / 2) Nothing
         )

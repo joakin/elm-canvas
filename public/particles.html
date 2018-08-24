@@ -8,7 +8,9 @@
   <script src="./elm-canvas.js"></script>
   <script src="./Particles.js"></script>
   <script>
-    var app = Elm.Examples.Particles.embed(document.querySelector('main'))
+    var app = Elm.Examples.Particles.init({
+      node: document.querySelector('main')
+    })
   </script>
 </body>
 </html>

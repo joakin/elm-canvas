@@ -3,28 +3,27 @@ module Examples.CubicDisarray exposing (main)
 {-| Based on:
 
   - <https://generativeartistry.com/tutorials/cubic-disarray/>
-  - <https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg>
+  - [[[[[[[https://media.vam.ac.uk/media/thira/collection\_images/2009CD/2009CD4551\_jpg\_l.jpg](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)](https://media.vam.ac.uk/media/thira/collection_images/2009CD/2009CD4551_jpg_l.jpg)
 
 -}
 
+import Browser
+import Canvas exposing (..)
+import CanvasColor as Color exposing (Color)
+import Grid
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Time exposing (Time)
-import Canvas exposing (..)
-import Color exposing (Color)
 import Random
-import AnimationFrame as AF
-import Grid
+import Time exposing (Posix)
 
 
 main : Program Float Model Msg
 main =
-    Html.programWithFlags { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    -- AF.diffs AnimationFrame
     Sub.none
 
 
@@ -57,19 +56,23 @@ type alias Model =
 
 
 type Msg
-    = AnimationFrame Time
+    = AnimationFrame Float
 
 
 init : Float -> ( Model, Cmd Msg )
 init floatSeed =
-    ( Random.initialSeed (floatSeed * 1000000 |> floor), 0 ) ! []
+    ( ( Random.initialSeed (floatSeed * 1000000 |> floor), 0 )
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AnimationFrame delta ->
-            (model |> Tuple.mapSecond ((+) 1)) ! []
+            ( model |> Tuple.mapSecond ((+) 1)
+            , Cmd.none
+            )
 
 
 bg =
@@ -81,7 +84,7 @@ view ( seed, count ) =
     Canvas.element
         w
         (floor h)
-        [ style [] ]
+        []
         (empty
             |> fillStyle bg
             |> fillRect 0 0 w h
@@ -100,19 +103,19 @@ drawRect ( x, y ) ( cmds, seed ) =
             ( toFloat x, toFloat y )
 
         ( px, py ) =
-            ( (xf * boxSize + padding), (yf * boxSize + padding) )
+            ( xf * boxSize + padding, yf * boxSize + padding )
 
         ( ( rotateAmt, translateAmt ), newSeed ) =
             moveAround ( xf, yf ) seed
     in
-        ( cmds
-            |> save
-            |> translate (px + translateAmt) py
-            |> rotate rotateAmt
-            |> strokeRect 0 0 boxSize boxSize
-            |> restore
-        , newSeed
-        )
+    ( cmds
+        |> save
+        |> translate (px + translateAmt) py
+        |> rotate rotateAmt
+        |> strokeRect 0 0 boxSize boxSize
+        |> restore
+    , newSeed
+    )
 
 
 randomDisplacement =
@@ -128,24 +131,25 @@ randomFloat =
 
 
 fourRandomFloats =
-    Random.map4 (\r1 r2 r3 r4 -> ( r1, r2, r3, r4 )) randomFloat randomFloat randomFloat randomFloat
+    Random.map4 (\r1 r2 r3 r4 -> ( ( r1, r2 ), ( r3, r4 ) )) randomFloat randomFloat randomFloat randomFloat
 
 
 moveAround ( x, y ) seed =
     let
-        ( ( r1, r2, r3, r4 ), seed2 ) =
+        ( ( ( r1, r2 ), ( r3, r4 ) ), seed2 ) =
             Random.step fourRandomFloats seed
 
         plusOrMinus r =
             if r < 0.5 then
                 -1
+
             else
                 1
 
         rotateAmt =
-            y / rows * pi / 180 * (plusOrMinus r1) * r2 * rotateMultiplier
+            y / rows * pi / 180 * plusOrMinus r1 * r2 * rotateMultiplier
 
         translateAmt =
-            y / rows * (plusOrMinus r3) * r4 * randomDisplacement
+            y / rows * plusOrMinus r3 * r4 * randomDisplacement
     in
-        ( ( rotateAmt, translateAmt ), seed2 )
+    ( ( rotateAmt, translateAmt ), seed2 )

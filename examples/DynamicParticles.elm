@@ -6,16 +6,17 @@ module Examples.DynamicParticles exposing (main)
    * https://ellie-app.com/T9NxzWvnd7a1
 -}
 
-import AnimationFrame
-import Color exposing (Color)
+import Browser
+import Browser.Events exposing (onAnimationFrame)
+import Canvas
+import CanvasColor as Color exposing (Color)
 import Html exposing (Html)
+import Html.Attributes as Attributes
 import Json.Decode as Decode exposing (Decoder, Value)
 import Random exposing (Generator)
 import Random.Extra
 import Random.List
-import Time exposing (Time)
-import Canvas
-import Html.Attributes as Attributes
+import Time exposing (Posix)
 
 
 type alias Canvas =
@@ -83,10 +84,10 @@ setHeading heading particle =
         speed =
             getSpeed particle
     in
-        { particle
-            | vx = cos heading * speed
-            , vy = sin heading * speed
-        }
+    { particle
+        | vx = cos heading * speed
+        , vy = sin heading * speed
+    }
 
 
 isOffCanvas : Canvas -> Particle -> Bool
@@ -130,25 +131,25 @@ init json =
         canvas =
             { width = Tuple.first size, height = Tuple.second size }
     in
-        ( Init canvas
-        , points
-            |> List.map pointToParticle
-            |> List.map (updateParticle True canvas)
-            |> Random.Extra.combine
-            |> Random.generate Generated
-        )
+    ( Init canvas
+    , points
+        |> List.map pointToParticle
+        |> List.map (updateParticle True canvas)
+        |> Random.Extra.combine
+        |> Random.generate Generated
+    )
 
 
 flagDecoder : Decoder ( ( Int, Int ), List Point )
 flagDecoder =
-    Decode.map2 (,)
+    Decode.map2 (\a b -> ( a, b ))
         (Decode.at [ "size" ] sizeDecoder)
         (Decode.at [ "points" ] (Decode.list pointDecoder))
 
 
 sizeDecoder : Decoder ( Int, Int )
 sizeDecoder =
-    Decode.map2 (,)
+    Decode.map2 (\a b -> ( a, b ))
         (Decode.at [ "width" ] Decode.int)
         (Decode.at [ "height" ] Decode.int)
 
@@ -202,7 +203,7 @@ view model =
             Canvas.element
                 canvas.width
                 canvas.height
-                [ Attributes.style [] ]
+                []
                 (Canvas.empty
                     |> Canvas.clearRect 0 0 (toFloat canvas.width) (toFloat canvas.height)
                     |> (\cmds -> List.foldl viewParticle cmds particles)
@@ -221,7 +222,7 @@ viewParticle { cx, cy, r, color } cmds =
 
 
 type Msg
-    = Tick Time
+    = Tick Posix
     | Generated (List Particle)
 
 
@@ -264,6 +265,7 @@ updateParticle isInit canvas particle =
                 , r = 2
                 , dying = False
             }
+
     else
         particle
             |> updateHealth
@@ -282,8 +284,9 @@ updatePosition canvas particle =
                 , r = 2
                 , dying = False
             }
+
     else
-        Random.Extra.constant
+        Random.constant
             { particle
                 | cx = particle.cx + particle.vx
                 , cy = particle.cy + particle.vy
@@ -298,6 +301,7 @@ updateHealth particle =
         { particle
             | r = particle.r + particle.duration
         }
+
     else
         { particle
             | r = particle.r - particle.duration
@@ -307,9 +311,9 @@ updateHealth particle =
 
 main : Program Value Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , update = update
-        , subscriptions = \_ -> AnimationFrame.times Tick
+        , subscriptions = \_ -> onAnimationFrame Tick
         }

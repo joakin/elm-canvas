@@ -10,26 +10,26 @@ module Examples.CirclePacking exposing (main)
 
 -}
 
+import Browser
+import Canvas
+import CanvasColor as Color exposing (Color)
+import Circle2d exposing (Circle2d)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Time exposing (Time)
-import Canvas
-import Color exposing (Color)
-import Circle2d exposing (Circle2d)
 import Point2d exposing (Point2d)
+import Process
 import Random
 import Task
-import Process
+import Time exposing (Posix)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    -- times AnimationFrame
     Sub.none
 
 
@@ -102,8 +102,8 @@ newCircle pos =
         (Point2d.fromCoordinates pos)
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init _ =
     ( { circles = [], attempts = 0 }
     , Random.generate NewCircle randomCircle
     )
@@ -116,10 +116,12 @@ update msg model =
             if collidesWithAny circle model.circles then
                 if model.attempts == createCircleAttempts then
                     ( model, Cmd.none )
+
                 else
                     ( { model | attempts = model.attempts + 1 }
                     , tryNewCircle
                     )
+
             else
                 ( { model | circles = circle :: model.circles, attempts = 0 }
                 , growCircle
@@ -132,19 +134,20 @@ update msg model =
 
                 circle :: circles ->
                     let
-                        newCircle =
+                        grownCircle =
                             grow circle
 
                         collides =
-                            collidesWithAny newCircle circles
+                            collidesWithAny grownCircle circles
 
                         tooBig =
-                            (Circle2d.radius newCircle) > maxRadius
+                            Circle2d.radius grownCircle > maxRadius
                     in
-                        if collides || tooBig then
-                            ( model, tryNewCircle )
-                        else
-                            ( { model | circles = newCircle :: circles }, growCircle )
+                    if collides || tooBig then
+                        ( model, tryNewCircle )
+
+                    else
+                        ( { model | circles = grownCircle :: circles }, growCircle )
 
         TryNewCircle _ ->
             ( model, Random.generate NewCircle randomCircle )
@@ -154,7 +157,7 @@ growCircle : Cmd Msg
 growCircle =
     -- <| Process.sleep (0 * Time.millisecond)
     -- <| Task.succeed ()
-    Task.perform GrowCircle <| Process.sleep (4 * Time.millisecond)
+    Task.perform GrowCircle <| Process.sleep 4
 
 
 tryNewCircle : Cmd Msg
@@ -165,7 +168,7 @@ tryNewCircle =
 
 grow : Circle2d -> Circle2d
 grow circle =
-    Circle2d.withRadius ((Circle2d.radius circle) + 1)
+    Circle2d.withRadius (Circle2d.radius circle + 1)
         (Circle2d.centerPoint circle)
 
 
@@ -178,36 +181,39 @@ collidesWithAny circle circles =
         ( x1, y1 ) =
             circle |> Circle2d.centerPoint |> Point2d.coordinates
     in
-        case circles of
-            [] ->
-                if x1 + r1 >= w - padding || x1 - r1 <= padding then
-                    True
-                else if y1 + r1 >= h - padding || y1 - r1 <= padding then
-                    True
-                else
-                    False
+    case circles of
+        [] ->
+            if x1 + r1 >= w - padding || x1 - r1 <= padding then
+                True
 
-            head :: rest ->
-                let
-                    r2 =
-                        Circle2d.radius head
+            else if y1 + r1 >= h - padding || y1 - r1 <= padding then
+                True
 
-                    a =
-                        r1 + r2
+            else
+                False
 
-                    ( x2, y2 ) =
-                        head |> Circle2d.centerPoint |> Point2d.coordinates
+        head :: rest ->
+            let
+                r2 =
+                    Circle2d.radius head
 
-                    ( x, y ) =
-                        ( x1 - x2, y1 - y2 )
+                a =
+                    r1 + r2
 
-                    collides =
-                        a >= sqrt ((x * x) + (y * y))
-                in
-                    if collides then
-                        True
-                    else
-                        collidesWithAny circle rest
+                ( x2, y2 ) =
+                    head |> Circle2d.centerPoint |> Point2d.coordinates
+
+                ( x, y ) =
+                    ( x1 - x2, y1 - y2 )
+
+                collides =
+                    a >= sqrt ((x * x) + (y * y))
+            in
+            if collides then
+                True
+
+            else
+                collidesWithAny circle rest
 
 
 view : Model -> Html Msg
@@ -215,7 +221,7 @@ view model =
     Canvas.element
         w
         h
-        [ style [] ]
+        []
         (Canvas.empty
             |> Canvas.clearRect 0 0 w h
             |> Canvas.lineWidth 2
@@ -234,6 +240,6 @@ viewCircle circle cmds =
         ( x, y ) =
             Point2d.coordinates center
     in
-        cmds
-            |> Canvas.fillCircle x y (Circle2d.radius circle)
-            |> Canvas.stroke
+    cmds
+        |> Canvas.fillCircle x y (Circle2d.radius circle)
+        |> Canvas.stroke

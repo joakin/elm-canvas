@@ -8,7 +8,10 @@
   <script src="./elm-canvas.js"></script>
   <script src="./Trees.js"></script>
   <script>
-    var app = Elm.Examples.Trees.embed(document.querySelector('main'), Math.random())
+    var app = Elm.Examples.Trees.init({
+      node: document.querySelector('main'),
+      flags: Math.random()
+    })
   </script>
 </body>
 </html>

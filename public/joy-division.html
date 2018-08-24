@@ -14,7 +14,10 @@
   <script src="./elm-canvas.js"></script>
   <script src="./JoyDivision.js"></script>
   <script>
-    var app = Elm.Examples.JoyDivision.embed(document.querySelector('main'), Math.random())
+    var app = Elm.Examples.JoyDivision.init({
+      node: document.querySelector('main'),
+      flags: Math.random()
+    })
   </script>
 </body>
 </html>

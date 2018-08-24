@@ -1,24 +1,23 @@
 module Examples.JoyDivision exposing (main)
 
+import Array exposing (Array)
+import Browser
+import Canvas exposing (..)
+import CanvasColor as Color exposing (Color)
+import Grid
 import Html exposing (..)
 import Html.Attributes exposing (style)
-import Time exposing (Time)
-import Canvas exposing (..)
-import Color exposing (Color)
 import Random
-import AnimationFrame as AF
-import Matrix exposing (Matrix)
-import Grid
+import Time exposing (Posix)
 
 
 main : Program Float Model Msg
 main =
-    Html.programWithFlags { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    -- AF.diffs AnimationFrame
     Sub.none
 
 
@@ -54,11 +53,11 @@ rows =
 
 
 cells =
-    (rows * cols)
+    rows * cols
 
 
 type alias Points =
-    Matrix { point : ( Float, Float ), random : Float }
+    Array { point : ( Float, Float ), random : Float }
 
 
 type alias Model =
@@ -68,7 +67,22 @@ type alias Model =
 
 
 type Msg
-    = AnimationFrame Time
+    = AnimationFrame Posix
+
+
+coordsToIndex x y =
+    -- If x is out of the grid, don't give a valid index
+    if x < cols && y < rows then
+        y * cols + x
+
+    else
+        -1
+
+
+indexToCoords i =
+    ( remainderBy cols i
+    , i // cols
+    )
 
 
 coordsToPx ( x, y ) =
@@ -94,7 +108,7 @@ moveAround r ( x, y ) =
         random =
             r * variance / 2 * -1
     in
-        ( x, y + random )
+    ( x, y + random )
 
 
 init : Float -> ( Model, Cmd Msg )
@@ -102,23 +116,33 @@ init floatSeed =
     let
         ( randomYs, seed ) =
             Random.initialSeed (floatSeed * 100000 |> floor)
-                |> Random.step (Random.list rows (Random.list cols (Random.float 0 1)))
-                |> Tuple.mapFirst (Matrix.fromList >> Maybe.withDefault Matrix.empty)
+                |> Random.step (Random.list cells (Random.float 0 1))
+
+        pointFromIndexAndRandom i r =
+            { point =
+                indexToCoords i
+                    |> Tuple.mapBoth toFloat toFloat
+                    |> coordsToPx
+                    |> moveAround r
+            , random = r
+            }
 
         points =
-            Matrix.repeat cols rows ( 0, 0 )
-                |> Matrix.indexedMap (\x y _ -> ( toFloat x, toFloat y ) |> coordsToPx)
-                |> Matrix.map2 (\r p -> { point = moveAround r p, random = r }) randomYs
-                |> Maybe.withDefault Matrix.empty
+            Array.fromList randomYs
+                |> Array.indexedMap pointFromIndexAndRandom
     in
-        { count = 0, points = points } ! []
+    ( { count = 0, points = points }
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AnimationFrame delta ->
-            { model | count = model.count + 1 } ! []
+            ( { model | count = model.count + 1 }
+            , Cmd.none
+            )
 
 
 bgColor =
@@ -130,7 +154,7 @@ view model =
     Canvas.element
         w
         h
-        [ style [] ]
+        []
         (empty
             |> fillStyle bgColor
             |> fillRect 0 0 w h
@@ -145,7 +169,7 @@ drawLines : Points -> ( Int, Int ) -> Commands -> Commands
 drawLines points ( x, y ) cmds =
     let
         { point } =
-            Matrix.get x y points
+            Array.get (coordsToIndex x y) points
                 -- This shouldn't happen as we should always be in the matrix
                 -- bounds
                 |> Maybe.withDefault { point = ( 0, 0 ), random = 0 }
@@ -153,35 +177,38 @@ drawLines points ( x, y ) cmds =
         ( px, py ) =
             point
 
-        drawPoint cmds =
+        drawPoint cs =
             if x == 0 then
-                cmds
+                cs
                     |> beginPath
                     |> moveTo px py
+
             else
                 let
-                    { point } =
-                        Matrix.get (x + 1) y points
+                    nextPoint =
+                        points
+                            |> Array.get (coordsToIndex (x + 1) y)
                             |> Maybe.withDefault { point = ( px + stepX, py ), random = 0 }
 
                     ( nx, ny ) =
-                        point
+                        nextPoint.point
 
                     ( xc, yc ) =
                         ( (px + nx) / 2
                         , (py + ny) / 2
                         )
                 in
-                    cmds |> quadraticCurveTo px py xc yc
+                cs |> quadraticCurveTo px py xc yc
 
-        drawEol cmds =
+        drawEol cs =
             if x == cols - 1 then
-                cmds
+                cs
                     |> fill NonZero
                     |> stroke
+
             else
-                cmds
+                cs
     in
-        cmds
-            |> drawPoint
-            |> drawEol
+    cmds
+        |> drawPoint
+        |> drawEol

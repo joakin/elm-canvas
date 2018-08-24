@@ -1,27 +1,27 @@
 module Examples.Trees exposing (main)
 
+import Browser
+import Browser.Events exposing (onAnimationFrameDelta)
+import Canvas exposing (..)
+import CanvasColor as Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Time exposing (Time)
-import Canvas exposing (..)
-import Color exposing (Color)
+import LineSegment2d exposing (LineSegment2d)
+import Point2d exposing (Point2d)
+import Process
 import Random
 import Task
-import Process
-import Point2d exposing (Point2d)
-import LineSegment2d exposing (LineSegment2d)
 import Vector2d
-import AnimationFrame as AF
 
 
 main : Program Float Model Msg
 main =
-    Html.programWithFlags { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    AF.diffs AnimationFrame
+    onAnimationFrameDelta AnimationFrame
 
 
 h : number
@@ -49,27 +49,33 @@ type alias Brush =
 type alias Model =
     { brushes : List Brush
     , seed : Random.Seed
+    , frames : Int
     }
 
 
 type Msg
-    = AnimationFrame Time
+    = AnimationFrame Float
 
 
 init : Float -> ( Model, Cmd Msg )
 init floatSeed =
-    initWithSeed (Random.initialSeed (floatSeed * 10000 |> round))
+    ( { brushes = []
+      , seed = Random.initialSeed (floatSeed * 10000 |> round)
+      , frames = 0
+      }
+    , Cmd.none
+    )
 
 
 treeLocation =
-    (Random.float (w * 0.2) (w * 0.8))
+    Random.float (w * 0.2) (w * 0.8)
 
 
-initWithSeed : Random.Seed -> ( Model, Cmd Msg )
-initWithSeed seed =
+initWithSeed : Model -> ( Model, Cmd Msg )
+initWithSeed model =
     let
         ( randomX, seed2 ) =
-            Random.step treeLocation seed
+            Random.step treeLocation model.seed
 
         treeStart =
             Point2d.fromCoordinates ( randomX, h )
@@ -91,24 +97,38 @@ initWithSeed seed =
               }
             ]
     in
-        ( { brushes = initialPoints
-          , seed = seed4
-          }
-        , Cmd.none
-        )
+    ( { model
+        | brushes = initialPoints
+        , seed = seed4
+      }
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AnimationFrame delta ->
-            if List.isEmpty model.brushes then
-                initWithSeed model.seed
-            else
-                { model
+            (if model.frames < 2 then
+                -- There is a couple of batched AnimationFrame at the start,
+                -- skip them before starting to draw
+                ( model, Cmd.none )
+
+             else if List.isEmpty model.brushes then
+                initWithSeed model
+
+             else
+                ( { model
                     | brushes = List.concatMap updateBrush model.brushes
-                }
-                    ! []
+                  }
+                , Cmd.none
+                )
+            )
+                |> Tuple.mapFirst incFrames
+
+
+incFrames model =
+    { model | frames = model.frames + 1 }
 
 
 updateBrush brush =
@@ -133,10 +153,11 @@ updateBrush brush =
         movedBrush =
             { seed = nextSeed2, line = movedLine, life = life - loseLife }
     in
-        if outOfBounds movedBrush || life <= 0 then
-            children
-        else
-            movedBrush :: children
+    if outOfBounds movedBrush || life <= 0 then
+        children
+
+    else
+        movedBrush :: children
 
 
 split { line, seed, life } =
@@ -150,35 +171,36 @@ split { line, seed, life } =
         shouldSplit =
             p1 > 0.98
     in
-        if shouldSplit then
-            let
-                ( childSeed, seed3 ) =
-                    Random.step (Random.int 0 10000) seed2
-                        |> Tuple.mapFirst Random.initialSeed
+    if shouldSplit then
+        let
+            ( childSeed, seed3 ) =
+                Random.step (Random.int 0 10000) seed2
+                    |> Tuple.mapFirst Random.initialSeed
 
-                ( childSeed2, seed4 ) =
-                    Random.step (Random.int 0 10000) seed3
-                        |> Tuple.mapFirst Random.initialSeed
+            ( childSeed2, seed4 ) =
+                Random.step (Random.int 0 10000) seed3
+                    |> Tuple.mapFirst Random.initialSeed
 
-                ( degrees1, seed5 ) =
-                    Random.step (Random.float -45 45) seed4
+            ( degrees1, seed5 ) =
+                Random.step (Random.float -45 45) seed4
 
-                ( degrees2, seed6 ) =
-                    Random.step (Random.float -45 45) seed5
-            in
-                ( [ { line = LineSegment2d.rotateAround start (degrees degrees1) line
-                    , life = life - 10
-                    , seed = childSeed
-                    }
-                  , { line = LineSegment2d.rotateAround start (degrees degrees2) line
-                    , life = life - 10
-                    , seed = childSeed2
-                    }
-                  ]
-                , seed6
-                )
-        else
-            ( [], seed2 )
+            ( degrees2, seed6 ) =
+                Random.step (Random.float -45 45) seed5
+        in
+        ( [ { line = LineSegment2d.rotateAround start (degrees degrees1) line
+            , life = life - 10
+            , seed = childSeed
+            }
+          , { line = LineSegment2d.rotateAround start (degrees degrees2) line
+            , life = life - 10
+            , seed = childSeed2
+            }
+          ]
+        , seed6
+        )
+
+    else
+        ( [], seed2 )
 
 
 outOfBounds { line } =
@@ -189,7 +211,7 @@ outOfBounds { line } =
         ( x, y ) =
             Point2d.coordinates end
     in
-        x >= w - padding || x <= padding || y > h || y <= padding
+    x >= w - padding || x <= padding || y > h || y <= padding
 
 
 view : Model -> Html Msg
@@ -197,12 +219,13 @@ view model =
     Canvas.element
         w
         h
-        [ style [] ]
+        []
     <|
         if List.isEmpty model.brushes then
             empty
                 |> fillStyle (Color.rgba 255 255 255 0.05)
                 |> fillRect 0 0 w h
+
         else
             empty
                 |> strokeStyle (Color.rgb 0 0 0)
@@ -217,9 +240,9 @@ paint { line, life } cmds =
         ( start, end ) =
             LineSegment2d.endpoints line
     in
-        cmds
-            |> lineWidth (30 * (toFloat life) / h)
-            |> beginPath
-            |> moveTo (Point2d.xCoordinate start) (Point2d.yCoordinate start)
-            |> lineTo (Point2d.xCoordinate end) (Point2d.yCoordinate end)
-            |> stroke
+    cmds
+        |> lineWidth (30 * toFloat life / h)
+        |> beginPath
+        |> moveTo (Point2d.xCoordinate start) (Point2d.yCoordinate start)
+        |> lineTo (Point2d.xCoordinate end) (Point2d.yCoordinate end)
+        |> stroke

@@ -5,13 +5,14 @@ module Examples.AnimatedGrid exposing (main)
    https://gist.github.com/mattdesl/cb27d1285d4ceaa091094bad92ebd7fb
 -}
 
-import AnimationFrame exposing (times)
+import Browser
+import Browser.Events exposing (onAnimationFrame)
+import Canvas exposing (..)
+import CanvasColor as Color exposing (Color)
+import Grid
 import Html exposing (Html)
 import Html.Events exposing (onClick)
-import Time exposing (Time)
-import Canvas exposing (..)
-import Color exposing (Color)
-import Grid
+import Time exposing (Posix)
 
 
 type alias Model =
@@ -19,26 +20,27 @@ type alias Model =
 
 
 type Msg
-    = AnimationFrame Time
+    = AnimationFrame Posix
     | ToggleRunning
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions ( isRunning, time ) =
     if isRunning then
-        times AnimationFrame
+        onAnimationFrame AnimationFrame
+
     else
         Sub.none
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( ( True, 0 * Time.millisecond )
+init : () -> ( Model, Cmd Msg )
+init () =
+    ( ( True, 0 )
     , Cmd.none
     )
 
@@ -46,8 +48,8 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ( isRunning, time ) =
     case msg of
-        AnimationFrame time ->
-            ( ( isRunning, Time.inMilliseconds time ), Cmd.none )
+        AnimationFrame t ->
+            ( ( isRunning, t |> Time.posixToMillis |> toFloat ), Cmd.none )
 
         ToggleRunning ->
             ( ( not isRunning, time ), Cmd.none )
@@ -135,7 +137,7 @@ renderItem time ( col, row ) cmds =
             time / 1000
 
         rotationModifier =
-            (sin (t + offset)) ^ 3
+            sin (t + offset) ^ 3
 
         initialRotation =
             degrees 90
@@ -143,14 +145,14 @@ renderItem time ( col, row ) cmds =
         rotation =
             initialRotation + rotationModifier * pi
     in
-        cmds
-            |> save
-            |> fillStyle (Color.rgb 0 0 0)
-            |> translate x y
-            |> rotate rotation
-            |> translate -x -y
-            |> fillRect (x - length / 2) (y - thickness / 2) length thickness
-            |> restore
+    cmds
+        |> save
+        |> fillStyle (Color.rgb 0 0 0)
+        |> translate x y
+        |> rotate rotation
+        |> translate -x -y
+        |> fillRect (x - length / 2) (y - thickness / 2) length thickness
+        |> restore
 
 
 lerp : Float -> Float -> Float -> Float

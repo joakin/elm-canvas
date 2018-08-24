@@ -1,11 +1,12 @@
 module Examples.Particles exposing (main)
 
-import AnimationFrame exposing (times)
+import Browser
+import Browser.Events exposing (onAnimationFrame)
+import Canvas
+import CanvasColor as Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Time exposing (Time)
-import Canvas
-import Color exposing (Color)
+import Time exposing (Posix)
 
 
 type alias Point =
@@ -22,17 +23,17 @@ type alias Model =
 
 
 type Msg
-    = AnimationFrame Time
+    = AnimationFrame Posix
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    times AnimationFrame
+    onAnimationFrame AnimationFrame
 
 
 h : Float
@@ -70,16 +71,16 @@ numParticles =
     1000
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init () =
     ( List.range 0 numParticles
         |> List.map
             (\i ->
                 { x = w / 2
                 , y = h / 2
                 , size = 3
-                , speedMod = toFloat ((i * 4236) % 345)
-                , deviation = toFloat ((i * 2346) % 4435)
+                , speedMod = toFloat (modBy 345 (i * 4236))
+                , deviation = toFloat (modBy 4435 (i * 2346))
                 }
             )
     , Cmd.none
@@ -91,24 +92,27 @@ update msg model =
     case msg of
         AnimationFrame time ->
             let
+                timef =
+                    time |> Time.posixToMillis |> toFloat
+
                 normalize x =
                     (x + 1) / 2
 
                 updatePoint point =
                     { point
                         | x =
-                            (normalize (sin ((time / (300 + point.speedMod)) + point.deviation)))
+                            normalize (sin ((timef / (300 + point.speedMod)) + point.deviation))
                                 * cellW
                                 + padding
                         , y =
-                            (normalize (cos ((time / (500 - point.speedMod)) + point.deviation + 4543)))
+                            normalize (cos ((timef / (500 - point.speedMod)) + point.deviation + 4543))
                                 * cellH
                                 + padding
                     }
             in
-                ( List.map updatePoint model
-                , Cmd.none
-                )
+            ( List.map updatePoint model
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
@@ -116,7 +120,7 @@ view model =
     Canvas.element
         (round w)
         (round h)
-        [ style [] ]
+        []
         (Canvas.empty
             |> Canvas.clearRect 0 0 w h
             |> Canvas.fillStyle particleColor

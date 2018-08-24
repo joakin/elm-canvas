@@ -73,12 +73,15 @@
     }
     
     var message = shape(canvas.width, canvas.height, "Surprise! Surprise!");
-    var app = Elm.Examples.DynamicParticles.embed(document.querySelector('main'), {
-      size: {
-        width: canvas.width,
-        height: canvas.height,
-      },
-      points: getValue(ctx, message),
+    var app = Elm.Examples.DynamicParticles.init({
+      node: document.querySelector('main'),
+      flags: {
+        size: {
+          width: canvas.width,
+          height: canvas.height,
+        },
+        points: getValue(ctx, message),
+      }
     });
 
     canvas.parentElement.removeChild(canvas);
