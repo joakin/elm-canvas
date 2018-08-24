@@ -3,7 +3,7 @@
     "name": "joakin/elm-canvas",
     "summary": "Canvas API with custom elements for low level drawing primitives",
     "license": "BSD-3-Clause",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "exposed-modules": [
         "Canvas",
         "CanvasColor"
