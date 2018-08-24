@@ -3,17 +3,13 @@
 This library exposes a low level API that mirrors most of the DOM canvas API to
 be used with Elm in a declarative way.
 
-<p align="center">
-  <a href="https://joakin.github.io/elm-canvas">Live examples</a> (<a href="https://github.com/joakin/elm-canvas/tree/master/examples">sources</a>)
-</p>
+[Live examples](https://joakin.github.io/elm-canvas)
+([sources](https://github.com/joakin/elm-canvas/tree/master/examples))
 
-<p align="center">
-  <img width="200" src="https://joakin.github.io/elm-canvas/particles.png" />
-  <img width="200" src="https://joakin.github.io/elm-canvas/animated-grid.png" />
-  <img width="200" src="https://joakin.github.io/elm-canvas/dynamic-particles.png" />
-  <img width="200" src="https://joakin.github.io/elm-canvas/circle-packing.png" />
-  <img width="200" src="https://joakin.github.io/elm-canvas/trees.png" />
-</p>
+![](https://joakin.github.io/elm-canvas/animated-grid.png)
+![](https://joakin.github.io/elm-canvas/dynamic-particles.png)
+![](https://joakin.github.io/elm-canvas/circle-packing.png)
+![](https://joakin.github.io/elm-canvas/trees.png)
 
 ---
 
