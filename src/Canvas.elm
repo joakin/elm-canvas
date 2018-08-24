@@ -1,58 +1,15 @@
-module Canvas
-    exposing
-        ( Commands
-        , empty
-        , element
-        , fillStyle
-        , strokeStyle
-        , font
-        , TextAlign(..)
-        , textAlign
-        , TextBaseLine(..)
-        , textBaseline
-        , fillText
-        , strokeText
-        , clearRect
-        , fillCircle
-        , strokeCircle
-        , fillRect
-        , strokeRect
-        , beginPath
-        , closePath
-        , FillRule(..)
-        , fill
-        , clip
-        , stroke
-        , arc
-        , arcTo
-        , bezierCurveTo
-        , lineTo
-        , moveTo
-        , quadraticCurveTo
-        , rect
-        , LineCap(..)
-        , lineCap
-        , lineDashOffset
-        , LineJoin(..)
-        , lineJoin
-        , lineWidth
-        , miterLimit
-        , setLineDash
-        , shadowBlur
-        , shadowColor
-        , shadowOffsetX
-        , shadowOffsetY
-        , globalAlpha
-        , GlobalCompositeOperationMode(..)
-        , globalCompositeOperation
-        , save
-        , restore
-        , rotate
-        , scale
-        , translate
-        , transform
-        , setTransform
-        )
+module Canvas exposing
+    ( element
+    , Commands, empty
+    , fillStyle, strokeStyle
+    , font, TextAlign(..), textAlign, TextBaseLine(..), textBaseline, fillText, strokeText
+    , fillRect, strokeRect, clearRect, fillCircle, strokeCircle
+    , beginPath, closePath, FillRule(..), fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect
+    , LineCap(..), lineCap, lineDashOffset, LineJoin(..), lineJoin, lineWidth, miterLimit, setLineDash
+    , shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY
+    , globalAlpha, GlobalCompositeOperationMode(..), globalCompositeOperation, save, restore
+    , rotate, scale, translate, transform, setTransform
+    )
 
 {-| This module exposes a low level drawing API to work with the DOM canvas.
 
@@ -120,10 +77,10 @@ better defaults as time goes by, and make specific tutorials with Elm.
 
 -}
 
+import CanvasColor as Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Json.Encode as Encode exposing (..)
-import Color exposing (Color)
 
 
 {-| Represents commands to execute on the DOM canvas. You build commands with
@@ -206,8 +163,8 @@ font](https://developer.mozilla.org/en-US/docs/Web/CSS/font) specifier. The
 default font is 10px sans-serif. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font)
 
     empty
-    |> font "48px serif"
-    |> strokeText "Hello world" 50 100
+        |> font "48px serif"
+        |> strokeText "Hello world" 50 100
 
 -}
 font : String -> Commands -> Commands
@@ -226,11 +183,11 @@ See also the chapter [Applying styles and color](https://developer.mozilla.org/e
 
     -- Drawing two transparent rectangles
     empty
-    |> globalAlpha 0.5
-    |> fillStyle (Color.rgb 0 0 255)
-    |> fillRect 10 10 100 100
-    |> fillStyle (Color.rgb 255 0 0)
-    |> fillRect 50 50 100 100
+        |> globalAlpha 0.5
+        |> fillStyle (Color.rgb 0 0 255)
+        |> fillRect 10 10 100 100
+        |> fillStyle (Color.rgb 255 0 0)
+        |> fillRect 50 50 100 100
 
 -}
 globalAlpha : Float -> Commands -> Commands
@@ -372,8 +329,8 @@ globalCompositeOperation mode cmds =
                 Luminosity ->
                     "luminosity"
     in
-        field "globalCompositeOperation" (string stringMode)
-            |> addTo cmds
+    field "globalCompositeOperation" (string stringMode)
+        |> addTo cmds
 
 
 {-| Type of end points for line drawn.
@@ -397,12 +354,12 @@ type LineCap
 possible types. By default this property is set to `ButtCap`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)
 
     empty
-    |> beginPath
-    |> moveTo 0 0
-    |> lineWidth 15
-    |> lineCap RoundCap
-    |> lineTo 100 100
-    |> stroke
+        |> beginPath
+        |> moveTo 0 0
+        |> lineWidth 15
+        |> lineCap RoundCap
+        |> lineTo 100 100
+        |> stroke
 
 -}
 lineCap : LineCap -> Commands -> Commands
@@ -427,12 +384,12 @@ lineCap cap cmds =
 docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)
 
     empty
-    |> setLineDash [4, 16]
-    |> lineDashOffset 2
-    |> beginPath
-    |> moveTo 0 100
-    |> lineTo 400 100
-    |> stroke
+        |> setLineDash [ 4, 16 ]
+        |> lineDashOffset 2
+        |> beginPath
+        |> moveTo 0 100
+        |> lineTo 400 100
+        |> stroke
 
 -}
 lineDashOffset : Float -> Commands -> Commands
@@ -475,13 +432,13 @@ joining area will be added in this case.
 [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
 
     empty
-    |> lineWidth 10
-    |> lineJoin RoundJoin
-    |> beginPath
-    |> moveTo 0 0
-    |> lineTo 200 100
-    |> lineTo 300 0
-    |> stroke
+        |> lineWidth 10
+        |> lineJoin RoundJoin
+        |> beginPath
+        |> moveTo 0 0
+        |> lineTo 200 100
+        |> lineTo 300 0
+        |> stroke
 
 -}
 lineJoin : LineJoin -> Commands -> Commands
@@ -507,11 +464,11 @@ Infinity and NaN values are ignored; otherwise the current value is set to the
 new value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)
 
     empty
-    |> beginPath
-    |> moveTo 0 0
-    |> lineWidth 15
-    |> lineTo 100 100
-    |> stroke
+        |> beginPath
+        |> moveTo 0 0
+        |> lineWidth 15
+        |> lineTo 100 100
+        |> stroke
 
 -}
 lineWidth : Float -> Commands -> Commands
@@ -537,10 +494,10 @@ shadows are only drawn, if the `shadowColor` property is set to
 a non-transparent value. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowBlur)
 
     empty
-    |> shadowColor (Color.rgb 0 0 0)
-    |> shadowBlur 10
-    |> fillStyle (Color.rgb 255 255 255)
-    |> fillRect 10 10 100 100
+        |> shadowColor (Color.rgb 0 0 0)
+        |> shadowBlur 10
+        |> fillStyle (Color.rgb 255 255 255)
+        |> fillRect 10 10 100 100
 
 -}
 shadowBlur : Float -> Commands -> Commands
@@ -557,11 +514,11 @@ Note that shadows are only drawn, if the shadowColor property is set
 shadowOffsetY property are non-zero.
 
     empty
-    |> shadowColor (Color.rgb 0 0 0)
-    |> shadowOffsetY 10
-    |> shadowOffsetX 10
-    |> fillStyle (Color.rgb 0 255 0)
-    |> fillRect 10 10 100 100
+        |> shadowColor (Color.rgb 0 0 0)
+        |> shadowOffsetY 10
+        |> shadowOffsetX 10
+        |> fillStyle (Color.rgb 0 255 0)
+        |> fillRect 10 10 100 100
 
 -}
 shadowColor : Color -> Commands -> Commands
@@ -579,11 +536,11 @@ distance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRend
 The default value is 0. Infinity or NaN values are ignored.
 
     empty
-    |> shadowColor (Color.rgb 0 0 0)
-    |> shadowOffsetY 10
-    |> shadowOffsetX 10
-    |> fillStyle (Color.rgb 0 255 0)
-    |> fillRect 10 10 100 100
+        |> shadowColor (Color.rgb 0 0 0)
+        |> shadowOffsetY 10
+        |> shadowOffsetX 10
+        |> fillStyle (Color.rgb 0 255 0)
+        |> fillRect 10 10 100 100
 
 -}
 shadowOffsetX : Float -> Commands -> Commands
@@ -598,11 +555,11 @@ distance. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRend
 The default value is 0. Infinity or NaN values are ignored.
 
     empty
-    |> shadowColor (Color.rgb 0 0 0)
-    |> shadowOffsetY 10
-    |> shadowOffsetX 10
-    |> fillStyle (Color.rgb 0 255 0)
-    |> fillRect 10 10 100 100
+        |> shadowColor (Color.rgb 0 0 0)
+        |> shadowOffsetY 10
+        |> shadowOffsetX 10
+        |> fillStyle (Color.rgb 0 255 0)
+        |> fillRect 10 10 100 100
 
 -}
 shadowOffsetY : Float -> Commands -> Commands
@@ -615,8 +572,8 @@ shadowOffsetY value cmds =
 is #000 (black). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle)
 
     empty
-    |> strokeStyle (Color.rgb 0 0 255)
-    |> strokeRect 10 10 100 100
+        |> strokeStyle (Color.rgb 0 0 255)
+        |> strokeRect 10 10 100 100
 
 -}
 strokeStyle : Color -> Commands -> Commands
@@ -660,9 +617,9 @@ that the alignment is based on the x value of the `fillText` command. So if
 The default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)
 
     empty
-    |> font "48px serif"
-    |> textAlign Left
-    |> strokeText "Hello world" 0 100
+        |> font "48px serif"
+        |> textAlign Left
+        |> strokeText "Hello world" 0 100
 
 -}
 textAlign : TextAlign -> Commands -> Commands
@@ -759,9 +716,9 @@ textBaseline baseline cmds =
 direction by `anticlockwise` (`False` is clockwise). [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc)
 
     empty
-    |> beginPath
-    |> arc x y radius startAngle endAngle anticlockwise
-    |> stroke
+        |> beginPath
+        |> arc x y radius startAngle endAngle anticlockwise
+        |> stroke
 
 -}
 arc : Float -> Float -> Float -> Float -> Float -> Bool -> Commands -> Commands
@@ -897,12 +854,13 @@ only one point, this function does nothing.
 [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath)
 
     empty
-    |> beginPath
-    |> moveTo 20 20
-    |> lineTo 200 20
-    |> lineTo 120 120
-    |> closePath -- draws last line of the triangle
-    |> stroke
+        |> beginPath
+        |> moveTo 20 20
+        |> lineTo 200 20
+        |> lineTo 120 120
+        |> closePath
+        -- draws last line of the triangle
+        |> stroke
 
 -}
 closePath : Commands -> Commands
@@ -975,18 +933,18 @@ the `font`, `textAlign`, `textBaseline`, and `direction` properties.
 To draw the outlines of the characters in a string, call the context's
 `strokeText` method.
 
-    empty |> fillText text x y maxWidth
+    empty |> fillText text x y maybeMaxWidth
 
 [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText)
 
     empty
-    |> font "48px serif"
-    |> fillText "Hello world" 50 100 Nothing
+        |> font "48px serif"
+        |> fillText "Hello world" 50 100 Nothing
 
 -}
 fillText : String -> Float -> Float -> Maybe Float -> Commands -> Commands
-fillText text x y maxWidth cmds =
-    (case maxWidth of
+fillText text x y maybeMaxWidth cmds =
+    (case maybeMaxWidth of
         Nothing ->
             fn "fillText" [ string text, float x, float y ]
 
@@ -1149,7 +1107,7 @@ To return to using solid lines, set the line dash list to an empty array.
 -}
 setLineDash : List Float -> Commands -> Commands
 setLineDash segments cmds =
-    fn "setLineDash" [ Encode.list (List.map float segments) ]
+    fn "setLineDash" [ Encode.list float segments ]
         |> addTo cmds
 
 
@@ -1211,7 +1169,7 @@ for a maximum width is provided, the text is scaled to fit that width.
 See the `fillText` method to draw the text with the characters filled with
 color rather than having just their outlines drawn.
 
-    empty |> strokeText text x y maxWidth
+    empty |> strokeText text x y maybeMaxWidth
 
 [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)
 
@@ -1219,8 +1177,8 @@ color rather than having just their outlines drawn.
 
 -}
 strokeText : String -> Float -> Float -> Maybe Float -> Commands -> Commands
-strokeText text x y maxWidth cmds =
-    (case maxWidth of
+strokeText text x y maybeMaxWidth cmds =
+    (case maybeMaxWidth of
         Nothing ->
             fn "strokeText" [ string text, float x, float y ]
 
@@ -1299,7 +1257,7 @@ translate x y cmds =
 commands : Commands -> Attribute msg
 commands (Commands list) =
     list
-        |> Encode.list
+        |> Encode.list identity
         |> property "cmds"
 
 
@@ -1310,7 +1268,7 @@ field name value =
 
 fn : String -> List Command -> Command
 fn name args =
-    Encode.object [ ( "type", string "function" ), ( "name", string name ), ( "args", Encode.list args ) ]
+    Encode.object [ ( "type", string "function" ), ( "name", string name ), ( "args", Encode.list identity args ) ]
 
 
 addTo : Commands -> Command -> Commands
@@ -1333,12 +1291,12 @@ colorToCSSString color =
         { red, green, blue, alpha } =
             Color.toRgb color
     in
-        "rgba("
-            ++ (toString red)
-            ++ ", "
-            ++ (toString green)
-            ++ ", "
-            ++ (toString blue)
-            ++ ", "
-            ++ (toString alpha)
-            ++ ")"
+    "rgba("
+        ++ String.fromInt red
+        ++ ", "
+        ++ String.fromInt green
+        ++ ", "
+        ++ String.fromInt blue
+        ++ ", "
+        ++ String.fromFloat alpha
+        ++ ")"
