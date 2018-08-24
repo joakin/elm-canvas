@@ -2,9 +2,7 @@ body {
   background-color: rgba(0, 0, 0, 0.03);
   font-family: "Source Code Pro", "Roboto Mono", "Consolas", "Courier Prime",
     "Courier", monospace;
-}
 
-main {
   display: flex;
   align-items: center;
   justify-content: center;
