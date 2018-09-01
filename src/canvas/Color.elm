@@ -1,4 +1,4 @@
-module CanvasColor exposing
+module Canvas.Color exposing
     ( Color
     , rgb, rgba, hsl, hsla, greyscale, grayscale, complement
     , Gradient, linear, radial
