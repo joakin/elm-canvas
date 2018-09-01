@@ -2,8 +2,8 @@ module Canvas exposing
     ( toHtml
     , Renderable, Point
     , fill, stroke
-    , shapes, rect, circle, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
-    , text, size, family, align, baseLine
+    , Shape, shapes, rect, circle, arc, arcC, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
+    , Text, text, size, family, align, baseLine
     , lineDash, lineCap, lineDashOffset, lineJoin, lineWidth, miterLimit
     , Shadow, shadow, alpha, compositeOperationMode
     , Transform(..), transform, translate, rotate, scale, applyMatrix
@@ -30,12 +30,12 @@ requires a web component.
 
 # Drawing shapes and lines
 
-@docs shapes, rect, circle, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
+@docs Shape, shapes, rect, circle, arc, arcC, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
 
 
 # Drawing text
 
-@docs text, TextAlign(..), TextBaseLine(..), size, family, align, baseLine
+@docs Text, text, TextAlign(..), TextBaseLine(..), size, family, align, baseLine
 
 
 # Advanced rendering concepts
@@ -216,8 +216,8 @@ quadraticCurveTo controlPoint point =
 -- Text drawables
 
 
-type alias Text =
-    { settings : TextSettings, point : Point, text : String }
+type Text
+    = Text { settings : TextSettings, point : Point, text : String }
 
 
 text : Point -> String -> Renderable
@@ -226,7 +226,7 @@ text point str =
         { settings = defaultSettings
         , drawOp = NotSpecified
         , transforms = []
-        , drawable = DrawableText (Text defaultTextSettings point str)
+        , drawable = DrawableText (Text { settings = defaultTextSettings, point = point, text = str })
         }
 
 
@@ -339,8 +339,8 @@ textBaseLineToString baseLineSetting =
 updateDrawableTextSetting : (TextSettings -> TextSettings) -> Renderable -> Renderable
 updateDrawableTextSetting update ((Renderable ({ drawable } as data)) as entity) =
     case drawable of
-        DrawableText txt ->
-            Renderable { data | drawable = DrawableText { txt | settings = update txt.settings } }
+        DrawableText (Text txt) ->
+            Renderable { data | drawable = DrawableText (Text { txt | settings = update txt.settings }) }
 
         DrawableShapes _ ->
             entity
@@ -463,7 +463,7 @@ type alias LineSettings =
     { lineCap : Maybe LineCap
     , lineDashOffset : Maybe Float
     , lineJoin : Maybe LineJoin
-    , lineWidth : Maybe Int
+    , lineWidth : Maybe Float
     , miterLimit : Maybe Float
     , lineDash : Maybe (List Float)
     }
@@ -499,7 +499,7 @@ lineJoin join entity =
     updateLineSettings (\s -> { s | lineJoin = Just join }) entity
 
 
-lineWidth : Int -> Renderable -> Renderable
+lineWidth : Float -> Renderable -> Renderable
 lineWidth width entity =
     updateLineSettings (\s -> { s | lineWidth = Just width }) entity
 
@@ -785,7 +785,7 @@ renderLineSettings s cmds =
         |> maybeCons s.lineCap (I.lineCap << lineCapToString)
         |> maybeCons s.lineDashOffset I.lineDashOffset
         |> maybeCons s.lineJoin (I.lineJoin << lineJoinToString)
-        |> maybeCons s.lineWidth (I.lineWidth << toFloat)
+        |> maybeCons s.lineWidth I.lineWidth
         |> maybeCons s.miterLimit I.miterLimit
         |> maybeCons s.lineDash I.setLineDash
 
@@ -826,38 +826,38 @@ renderDrawable drawable drawOp cmds =
 
 renderShape : Shape -> Commands -> Commands
 renderShape shape cmds =
-    (case shape of
+    case shape of
         Rect ( x, y ) w h ->
-            I.rect x y w h
+            I.rect x y w h :: I.moveTo x y :: cmds
 
         Circle ( x, y ) r ->
-            I.circle x y r
+            I.circle x y r :: I.moveTo (x + r) y :: cmds
 
         Arc ( x, y ) radius startAngle endAngle anticlockwise ->
             I.arc x y radius startAngle endAngle anticlockwise
+                :: I.moveTo (x + cos startAngle) (y + sin startAngle)
+                :: cmds
 
         ArcTo ( x, y ) ( x2, y2 ) radius ->
-            I.arcTo x y x2 y2 radius
+            I.arcTo x y x2 y2 radius :: cmds
 
         BezierCurveTo ( cp1x, cp1y ) ( cp2x, cp2y ) ( x, y ) ->
-            I.bezierCurveTo cp1x cp1y cp2x cp2y x y
+            I.bezierCurveTo cp1x cp1y cp2x cp2y x y :: cmds
 
         LineTo ( x, y ) ->
-            I.lineTo x y
+            I.lineTo x y :: cmds
 
         MoveTo ( x, y ) ->
-            I.moveTo x y
+            I.moveTo x y :: cmds
 
         QuadraticCurveTo ( cpx, cpy ) ( x, y ) ->
-            I.quadraticCurveTo cpx cpy x y
-    )
-        :: cmds
+            I.quadraticCurveTo cpx cpy x y :: cmds
 
 
 renderText : DrawOp -> Text -> Commands -> Commands
-renderText drawOp txt cmds =
+renderText drawOp ((Text t) as txt) cmds =
     cmds
-        |> renderTextSettings txt.settings
+        |> renderTextSettings t.settings
         |> renderTextDrawOp drawOp txt
 
 
@@ -888,7 +888,7 @@ renderTextSettings textSettings cmds =
 
 
 renderTextDrawOp : DrawOp -> Text -> Commands -> Commands
-renderTextDrawOp drawOp txt cmds =
+renderTextDrawOp drawOp (Text txt) cmds =
     let
         ( x, y ) =
             txt.point
