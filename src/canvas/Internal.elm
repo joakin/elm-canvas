@@ -393,7 +393,7 @@ direction by `anticlockwise` (`False` is clockwise). [MDN docs](https://develope
 -}
 arc : Float -> Float -> Float -> Float -> Float -> Bool -> Command
 arc x y radius startAngle endAngle anticlockwise =
-    fn "arc" [ float x, float y, float radius, float 0, float (2 * pi), bool anticlockwise ]
+    fn "arc" [ float x, float y, float radius, float startAngle, float endAngle, bool anticlockwise ]
 
 
 {-| Adds an arc to the path with the given control points and radius.
