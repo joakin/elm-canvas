@@ -10,7 +10,7 @@ module Examples.CubicDisarray exposing (main)
 
 import Browser
 import Canvas exposing (..)
-import CanvasColor as Color exposing (Color)
+import Canvas.Color as Color exposing (Color)
 import Grid
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -82,23 +82,23 @@ bg =
 
 view : Model -> Html Msg
 view ( seed, count ) =
-    Canvas.element
-        w
-        (floor h)
-        []
-        (empty
-            |> fillStyle bg
-            |> fillRect 0 0 w h
-            |> drawRects seed
-        )
+    let
+        background =
+            shapes [ rect ( 0, 0 ) w h ]
+                |> fill bg
+
+        rectangles =
+            drawRects seed []
+    in
+    Canvas.toHtml ( w, floor h ) [] (background :: rectangles)
 
 
-drawRects seed cmds =
-    Grid.fold2d { rows = rows, cols = cols } drawRect ( cmds, seed )
+drawRects seed rects =
+    Grid.fold2d { rows = rows, cols = cols } drawRect ( rects, seed )
         |> Tuple.first
 
 
-drawRect ( x, y ) ( cmds, seed ) =
+drawRect ( x, y ) ( rects, seed ) =
     let
         ( xf, yf ) =
             ( toFloat x, toFloat y )
@@ -109,12 +109,11 @@ drawRect ( x, y ) ( cmds, seed ) =
         ( ( rotateAmt, translateAmt ), newSeed ) =
             moveAround ( xf, yf ) seed
     in
-    ( cmds
-        |> save
-        |> translate (px + translateAmt) py
-        |> rotate rotateAmt
-        |> strokeRect 0 0 boxSize boxSize
-        |> restore
+    ( (shapes [ rect ( 0, 0 ) boxSize boxSize ]
+        |> transform [ translate (px + translateAmt) py, rotate rotateAmt ]
+        |> stroke Color.black
+      )
+        :: rects
     , newSeed
     )
 

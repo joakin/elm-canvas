@@ -3,7 +3,7 @@ module Examples.JoyDivision exposing (main)
 import Array exposing (Array)
 import Browser
 import Canvas exposing (..)
-import CanvasColor as Color exposing (Color)
+import Canvas.Color as Color exposing (Color)
 import Grid
 import Html exposing (..)
 import Html.Attributes exposing (style)
@@ -151,22 +151,19 @@ bgColor =
 
 view : Model -> Html Msg
 view model =
-    Canvas.element
-        w
-        h
+    Canvas.toHtml
+        ( w, h )
         []
-        (empty
-            |> fillStyle bgColor
-            |> fillRect 0 0 w h
-            |> strokeStyle (Color.hsl (degrees 188) 0.3 0.8)
-            |> fillStyle bgColor
-            |> lineWidth 1.5
-            |> Grid.fold2d { cols = cols, rows = rows } (drawLines model.points)
+        ((shapes [ rect ( 0, 0 ) w h ] |> fill bgColor)
+            :: (Grid.fold2d { cols = cols, rows = rows } (drawLines model.points) ( Array.empty, Array.empty )
+                    |> Tuple.second
+                    |> Array.toList
+               )
         )
 
 
-drawLines : Points -> ( Int, Int ) -> Commands -> Commands
-drawLines points ( x, y ) cmds =
+drawLines : Points -> ( Int, Int ) -> ( Array Shape, Array Renderable ) -> ( Array Shape, Array Renderable )
+drawLines points ( x, y ) ( currentLine, lines ) =
     let
         { point } =
             Array.get (coordsToIndex x y) points
@@ -177,11 +174,9 @@ drawLines points ( x, y ) cmds =
         ( px, py ) =
             point
 
-        drawPoint cs =
+        drawPoint =
             if x == 0 then
-                cs
-                    |> beginPath
-                    |> moveTo px py
+                moveTo ( px, py )
 
             else
                 let
@@ -198,17 +193,19 @@ drawLines points ( x, y ) cmds =
                         , (py + ny) / 2
                         )
                 in
-                cs |> quadraticCurveTo px py xc yc
-
-        drawEol cs =
-            if x == cols - 1 then
-                cs
-                    |> fill NonZero
-                    |> stroke
-
-            else
-                cs
+                quadraticCurveTo ( px, py ) ( xc, yc )
     in
-    cmds
-        |> drawPoint
-        |> drawEol
+    if x == cols - 1 then
+        let
+            newLine =
+                Array.push drawPoint currentLine
+                    |> Array.toList
+                    |> shapes
+                    |> lineWidth 1.5
+                    |> fill bgColor
+                    |> stroke (Color.hsl (degrees 188) 0.3 0.8)
+        in
+        ( Array.empty, Array.push newLine lines )
+
+    else
+        ( Array.push drawPoint currentLine, lines )

@@ -2,8 +2,8 @@ module Examples.Particles exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrame)
-import Canvas
-import CanvasColor as Color exposing (Color)
+import Canvas exposing (..)
+import Canvas.Color as Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Time exposing (Posix)
@@ -63,7 +63,7 @@ cellH =
 
 particleColor : Color
 particleColor =
-    Color.rgba 0 0 0 0.1
+    Color.rgba 0 0 0 0.3
 
 
 numParticles : Int
@@ -78,7 +78,7 @@ init () =
             (\i ->
                 { x = w / 2
                 , y = h / 2
-                , size = 3
+                , size = toFloat (modBy 2 i + 1)
                 , speedMod = toFloat (modBy 345 (i * 4236))
                 , deviation = toFloat (modBy 4435 (i * 2346))
                 }
@@ -117,18 +117,16 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Canvas.element
-        (round w)
-        (round h)
+    Canvas.toHtml
+        ( round w, round h )
         []
-        (Canvas.empty
-            |> Canvas.clearRect 0 0 w h
-            |> Canvas.fillStyle particleColor
-            |> (\cmds -> List.foldl drawPoint cmds model)
-        )
+        [ shapes [ rect ( 0, 0 ) w h ]
+            |> fill Color.white
+        , shapes (List.map drawPoint model)
+            |> fill particleColor
+        ]
 
 
-drawPoint : Point -> Canvas.Commands -> Canvas.Commands
-drawPoint { x, y, size } cmds =
-    cmds
-        |> Canvas.fillCircle (x - size / 2) (y - size / 2) (size / 2)
+drawPoint : Point -> Shape
+drawPoint { x, y, size } =
+    circle ( x, y ) size

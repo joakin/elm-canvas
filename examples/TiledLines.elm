@@ -3,7 +3,7 @@ module Examples.TiledLines exposing (main)
 import Browser
 import Browser.Events exposing (onAnimationFrame)
 import Canvas exposing (..)
-import CanvasColor as Color exposing (Color)
+import Canvas.Color as Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Random
@@ -11,15 +11,14 @@ import Task
 import Time exposing (Posix)
 
 
-main : Program Float Model Msg
+main : Program Float Model ()
 main =
-    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    -- AF.diffs AnimationFrame
-    Sub.none
+    Browser.element
+        { init = \floatSeed -> ( { seed = Random.initialSeed (floor (floatSeed * 10000)) }, Cmd.none )
+        , update = \_ m -> ( m, Cmd.none )
+        , subscriptions = \_ -> Sub.none
+        , view = view
+        }
 
 
 h : number
@@ -50,39 +49,17 @@ type alias Model =
     }
 
 
-type Msg
-    = AnimationFrame Posix
-
-
-init : Float -> ( Model, Cmd Msg )
-init floatSeed =
-    ( { seed = Random.initialSeed (floor (floatSeed * 10000)) }
-    , Cmd.none
-    )
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        AnimationFrame delta ->
-            ( model
-            , Cmd.none
-            )
-
-
-view : Model -> Html Msg
+view : Model -> Html ()
 view model =
-    Canvas.element
-        w
-        h
+    Canvas.toHtml
+        ( w, h )
         []
-        (empty
-            |> clearRect 0 0 w h
+        [ shapes [ rect ( 0, 0 ) w h ]
+            |> fill Color.white
+        , shapes (drawLines model.seed 0 [])
+            |> stroke Color.black
             |> lineWidth 2
-            |> beginPath
-            |> drawLines model.seed 0
-            |> stroke
-        )
+        ]
 
 
 step =
@@ -97,10 +74,10 @@ rows =
     h // step
 
 
-drawLines : Random.Seed -> Int -> Commands -> Commands
-drawLines seed i cmds =
+drawLines : Random.Seed -> Int -> List Shape -> List Shape
+drawLines seed i shapes =
     if i > cols * rows then
-        cmds
+        shapes
 
     else
         let
@@ -113,10 +90,10 @@ drawLines seed i cmds =
             ( line, seed2 ) =
                 randomLine seed (toFloat x * step) (toFloat y * step) step step
 
-            lineCmds =
-                drawLine line cmds
+            lineShapes =
+                drawLine line
         in
-        drawLines seed2 (i + 1) lineCmds
+        drawLines seed2 (i + 1) (lineShapes ++ shapes)
 
 
 randomLine seed x y width height =
@@ -152,7 +129,5 @@ horizontalLine seed x y width height =
             )
 
 
-drawLine ( ( startX, startY ), ( endX, endY ) ) cmds =
-    cmds
-        |> moveTo startX startY
-        |> lineTo endX endY
+drawLine ( start, end ) =
+    [ moveTo start, lineTo end ]

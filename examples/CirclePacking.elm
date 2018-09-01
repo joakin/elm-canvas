@@ -11,8 +11,8 @@ module Examples.CirclePacking exposing (main)
 -}
 
 import Browser
-import Canvas
-import CanvasColor as Color exposing (Color)
+import Canvas exposing (..)
+import Canvas.Color as Color exposing (Color)
 import Circle2d exposing (Circle2d)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -218,28 +218,24 @@ collidesWithAny circle circles =
 
 view : Model -> Html Msg
 view model =
-    Canvas.element
-        w
-        h
+    Canvas.toHtml ( w, h )
         []
-        (Canvas.empty
-            |> Canvas.clearRect 0 0 w h
-            |> Canvas.lineWidth 2
-            |> Canvas.fillStyle (Color.rgba 0 0 0 0.1)
-            |> Canvas.strokeStyle (Color.rgb 0 0 0)
-            |> (\cmds -> List.foldl viewCircle cmds model.circles)
-        )
+        [ shapes [ rect ( 0, 0 ) w h ] |> fill Color.white
+        , List.map viewCircle model.circles
+            |> shapes
+            |> lineWidth 2
+            |> fill (Color.rgba 0 0 0 0.1)
+            |> stroke (Color.rgb 0 0 0)
+        ]
 
 
-viewCircle : Circle2d -> Canvas.Commands -> Canvas.Commands
-viewCircle circle cmds =
+viewCircle : Circle2d -> Shape
+viewCircle c =
     let
         center =
-            Circle2d.centerPoint circle
+            Circle2d.centerPoint c
 
         ( x, y ) =
             Point2d.coordinates center
     in
-    cmds
-        |> Canvas.fillCircle x y (Circle2d.radius circle)
-        |> Canvas.stroke
+    circle ( x, y ) (Circle2d.radius c)

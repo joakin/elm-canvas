@@ -1,10 +1,11 @@
 module Examples.Drawing exposing (main)
 
+import Array exposing (Array)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
-import CanvasColor as Color exposing (Color)
-import Html exposing (..)
+import Canvas.Color as Color exposing (Color)
+import Html exposing (Html, button, div, p)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 import Html.Events.Extra.Mouse as Mouse
@@ -39,18 +40,14 @@ padding =
     20
 
 
-type alias Point =
-    { x : Float, y : Float }
-
-
 type alias DrawingPointer =
     { previousMidpoint : Point, lastPoint : Point }
 
 
 type alias Model =
     { frames : Int
-    , pending : Commands
-    , toDraw : Commands
+    , pending : Array Renderable
+    , toDraw : List Renderable
     , drawingPointer : Maybe DrawingPointer
     , color : Color
     , size : Int
@@ -69,19 +66,12 @@ type Msg
 init : Float -> ( Model, Cmd Msg )
 init floatSeed =
     ( { frames = 0
-      , pending =
-            Canvas.empty
-                |> shadowBlur 10
-                |> lineCap RoundCap
-                |> lineJoin RoundJoin
-      , toDraw = Canvas.empty
+      , pending = Array.empty
+      , toDraw = []
       , drawingPointer = Nothing
       , color = Color.lightBlue
       , size = 20
       }
-        |> selectColor Color.lightBlue
-        |> selectSize 20
-        |> flushPendingToDraw
     , Cmd.none
     )
 
@@ -128,71 +118,70 @@ incFrames ({ frames } as model) =
 
 flushPendingToDraw ({ pending } as model) =
     { model
-        | pending = Canvas.empty
-        , toDraw = pending
+        | pending = Array.empty
+        , toDraw = Array.toList pending
     }
 
 
-selectColor color ({ pending } as model) =
-    { model
-        | color = color
-        , pending =
-            pending
-                |> shadowColor (getShadowColor color)
-                |> strokeStyle color
-    }
+selectColor color model =
+    { model | color = color }
 
 
-selectSize size ({ pending } as model) =
-    { model
-        | size = size
-        , pending =
-            pending
-                |> lineWidth (toFloat size)
-    }
+selectSize size model =
+    { model | size = size }
 
 
 initialPoint (( x, y ) as point) model =
     { model
-        | drawingPointer = Just { previousMidpoint = Point x y, lastPoint = Point x y }
+        | drawingPointer = Just { previousMidpoint = ( x, y ), lastPoint = ( x, y ) }
     }
 
 
-drawPoint ( x, y ) { previousMidpoint, lastPoint } ({ pending } as model) =
+drawPoint newPoint { previousMidpoint, lastPoint } ({ pending } as model) =
     let
-        newPoint =
-            Point x y
-
         newMidPoint =
             controlPoint lastPoint newPoint
     in
     { model
         | drawingPointer = Just { previousMidpoint = newMidPoint, lastPoint = newPoint }
         , pending =
-            pending
-                |> beginPath
-                |> moveTo previousMidpoint.x previousMidpoint.y
-                |> quadraticCurveTo lastPoint.x lastPoint.y newMidPoint.x newMidPoint.y
-                |> stroke
+            Array.push
+                (drawLine model
+                    [ moveTo previousMidpoint
+                    , quadraticCurveTo lastPoint newMidPoint
+                    ]
+                )
+                pending
     }
 
 
-finalPoint ( x, y ) { previousMidpoint, lastPoint } ({ pending } as model) =
+finalPoint point { previousMidpoint, lastPoint } ({ pending } as model) =
     { model
         | drawingPointer = Nothing
         , pending =
-            pending
-                |> beginPath
-                |> moveTo previousMidpoint.x previousMidpoint.y
-                |> quadraticCurveTo lastPoint.x lastPoint.y x y
-                |> stroke
+            Array.push
+                (drawLine model
+                    [ moveTo previousMidpoint
+                    , quadraticCurveTo lastPoint point
+                    ]
+                )
+                pending
     }
 
 
-controlPoint p1 p2 =
-    { x = p1.x + (p2.x - p1.x) / 2
-    , y = p1.y + (p2.y - p1.y) / 2
-    }
+controlPoint ( x1, y1 ) ( x2, y2 ) =
+    ( x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2 )
+
+
+drawLine : Model -> List Shape -> Renderable
+drawLine { color, size } line =
+    line
+        |> shapes
+        |> lineCap RoundCap
+        |> lineJoin RoundJoin
+        |> lineWidth (toFloat size)
+        |> shadow { blur = 10, offset = ( 0, 0 ), color = getShadowColor color }
+        |> stroke color
 
 
 getShadowColor color =
@@ -207,11 +196,9 @@ view : Model -> Html Msg
 view { color, size, toDraw } =
     div []
         [ p [ style "text-align" "center", style "font-size" "80%" ]
-            [ text "Draw something! (mouse or touch)"
+            [ Html.text "Draw something! (mouse or touch)"
             ]
-        , Canvas.element
-            w
-            h
+        , Canvas.toHtml ( w, h )
             [ style "touch-action" "none"
             , Mouse.onDown (.offsetPos >> StartAt)
             , Mouse.onMove (.offsetPos >> MoveAt)
