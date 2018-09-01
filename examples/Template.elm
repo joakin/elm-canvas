@@ -3,9 +3,9 @@ module Examples.Template exposing (main)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
-import CanvasColor as Color exposing (Color)
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Canvas.Color as Color exposing (Color)
+import Html exposing (Html)
+import Html.Attributes
 import Random
 import Time exposing (Posix)
 
@@ -61,14 +61,12 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Canvas.element
-        w
-        h
+    Canvas.toHtml ( w, h )
         []
-        (empty
-            |> clearRect 0 0 w h
-            |> font "48px sans-serif"
-            |> textAlign Canvas.Center
-            |> fillStyle (Color.rgb 255 0 0)
-            |> fillText (String.fromInt model) (w / 2) (h / 2) Nothing
-        )
+        [ shapes [ rect ( 0, 0 ) w h ] |> fill Color.white
+        , text ( w / 2, h / 2 ) (String.fromInt model)
+            |> size 48
+            |> family "sans-serif"
+            |> align Center
+            |> fill (Color.rgb 255 0 0)
+        ]

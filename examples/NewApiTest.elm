@@ -59,5 +59,24 @@ view ( count, fps ) =
             , lineTo ( 10, 30 )
             , lineTo ( 30, 30 )
             , lineTo ( 20, 10 )
+            , circle ( 50, 50 ) 10
             ]
+        , shapes
+            (List.range 0 10
+                |> List.map
+                    (\i ->
+                        (if modBy 2 i == 0 then
+                            arc
+
+                         else
+                            arcC
+                        )
+                            ( toFloat i * 40 + 40, 0 )
+                            20
+                            (degrees -45)
+                            (degrees 45)
+                    )
+            )
+            |> fill Color.lightPurple
+            |> transform [ translate 10 400 ]
         ]

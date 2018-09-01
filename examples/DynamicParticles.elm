@@ -8,8 +8,8 @@ module Examples.DynamicParticles exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrame)
-import Canvas
-import CanvasColor as Color exposing (Color)
+import Canvas exposing (..)
+import Canvas.Color as Color exposing (Color)
 import Html exposing (Html)
 import Html.Attributes as Attributes
 import Json.Decode as Decode exposing (Decoder, Value)
@@ -200,21 +200,19 @@ view model =
             Html.text ""
 
         Go { canvas, particles } ->
-            Canvas.element
-                canvas.width
-                canvas.height
+            Canvas.toHtml ( canvas.width, canvas.height )
                 []
-                (Canvas.empty
-                    |> Canvas.clearRect 0 0 (toFloat canvas.width) (toFloat canvas.height)
-                    |> (\cmds -> List.foldl viewParticle cmds particles)
+                ((shapes [ rect ( 0, 0 ) (toFloat canvas.width) (toFloat canvas.height) ]
+                    |> fill Color.white
+                 )
+                    :: List.map viewParticle particles
                 )
 
 
-viewParticle : Particle -> Canvas.Commands -> Canvas.Commands
-viewParticle { cx, cy, r, color } cmds =
-    cmds
-        |> Canvas.fillStyle color
-        |> Canvas.fillCircle cx cy r
+viewParticle : Particle -> Renderable
+viewParticle { cx, cy, r, color } =
+    shapes [ circle ( cx, cy ) r ]
+        |> fill color
 
 
 

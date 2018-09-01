@@ -8,7 +8,7 @@ module Examples.AnimatedGrid exposing (main)
 import Browser
 import Browser.Events exposing (onAnimationFrame)
 import Canvas exposing (..)
-import CanvasColor as Color exposing (Color)
+import Canvas.Color as Color exposing (Color)
 import Grid
 import Html exposing (Html)
 import Html.Events exposing (onClick)
@@ -91,31 +91,20 @@ thickness =
 
 view : Model -> Html Msg
 view ( isRunning, time ) =
-    element
-        (round w)
-        (round h)
+    toHtml ( round w, round h )
         [ onClick ToggleRunning ]
-        (empty
-            |> clearScreen
-            |> fillStyle (Color.rgba 0 0 0 1)
-            |> renderItems time
+        ((shapes [ rect ( 0, 0 ) w h ] |> fill Color.white)
+            :: renderItems time
         )
 
 
-clearScreen cmds =
-    cmds
-        |> clearRect 0 0 w h
-        |> fillStyle (Color.rgb 255 255 255)
-        |> fillRect 0 0 w h
-
-
-renderItems time cmds =
+renderItems time =
     Grid.fold2d { rows = gridSize, cols = gridSize }
         (renderItem time)
-        cmds
+        []
 
 
-renderItem time ( col, row ) cmds =
+renderItem time ( col, row ) lines =
     let
         ( colf, rowf ) =
             ( toFloat col, toFloat row )
@@ -145,14 +134,11 @@ renderItem time ( col, row ) cmds =
         rotation =
             initialRotation + rotationModifier * pi
     in
-    cmds
-        |> save
-        |> fillStyle (Color.rgb 0 0 0)
-        |> translate x y
-        |> rotate rotation
-        |> translate -x -y
-        |> fillRect (x - length / 2) (y - thickness / 2) length thickness
-        |> restore
+    (shapes [ rect ( x - length / 2, y - thickness / 2 ) length thickness ]
+        |> transform [ translate x y, rotate rotation, translate -x -y ]
+        |> fill Color.black
+    )
+        :: lines
 
 
 lerp : Float -> Float -> Float -> Float
