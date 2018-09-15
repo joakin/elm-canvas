@@ -3,7 +3,7 @@ module Examples.JoyDivision exposing (main)
 import Array exposing (Array)
 import Browser
 import Canvas exposing (..)
-import Canvas.Color as Color exposing (Color)
+import Color exposing (Color)
 import Grid
 import Html exposing (..)
 import Html.Attributes exposing (style)

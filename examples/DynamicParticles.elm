@@ -9,7 +9,7 @@ module Examples.DynamicParticles exposing (main)
 import Browser
 import Browser.Events exposing (onAnimationFrame)
 import Canvas exposing (..)
-import Canvas.Color as Color exposing (Color)
+import Color exposing (Color)
 import Html exposing (Html)
 import Html.Attributes as Attributes
 import Json.Decode as Decode exposing (Decoder, Value)

@@ -48,8 +48,8 @@ requires a web component.
 
 -}
 
-import Canvas.Color as Color exposing (Color)
 import Canvas.Internal as I exposing (Commands, commands)
+import Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Json.Encode as Encode exposing (..)
