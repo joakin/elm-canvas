@@ -36,7 +36,6 @@ view ( count, fps ) =
     Canvas.toHtml
         ( w, h )
         [ Attributes.style "border" "2px solid red" ]
-    <|
         [ shapes [ rect ( 0, 0 ) w h ] |> fill Color.white
         , shapes
             [ rect ( -100, -150 ) 40 50
