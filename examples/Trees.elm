@@ -221,14 +221,11 @@ view model =
         []
     <|
         if List.isEmpty model.brushes then
-            [ shapes [ rect ( 0, 0 ) w h ]
-                |> fill (Color.rgba 255 255 255 0.05)
+            [ shapes [ fill (Color.rgba 255 255 255 0.05) ] [ rect ( 0, 0 ) w h ]
             ]
 
         else
-            (shapes [ rect ( 0, 0 ) w h ]
-                |> fill (Color.rgba 255 255 255 0.008)
-            )
+            shapes [ fill (Color.rgba 255 255 255 0.008) ] [ rect ( 0, 0 ) w h ]
                 :: List.map paint model.brushes
 
 
@@ -238,8 +235,9 @@ paint { line, life } =
             LineSegment2d.endpoints line
     in
     shapes
+        [ lineWidth (30 * toFloat life / h)
+        , stroke Color.black
+        ]
         [ moveTo (Point2d.coordinates start)
         , lineTo (Point2d.coordinates end)
         ]
-        |> lineWidth (30 * toFloat life / h)
-        |> stroke Color.black

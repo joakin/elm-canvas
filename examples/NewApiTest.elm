@@ -36,24 +36,28 @@ view ( count, fps ) =
     Canvas.toHtml
         ( w, h )
         [ Attributes.style "border" "2px solid red" ]
-        [ shapes [ rect ( 0, 0 ) w h ] |> fill Color.white
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
         , shapes
+            [ lineWidth 5
+            , transform [ translate (w / 2) (h / 2), rotate (degrees (sin (count / 100) * 360)) ]
+            , fill Color.red
+            , stroke Color.green
+            ]
             [ rect ( -100, -150 ) 40 50
             , moveTo ( 100, 100 )
             , circle ( 100, 100 ) 80
             ]
-            |> lineWidth 5
-            |> transform [ translate (w / 2) (h / 2), rotate (degrees (sin (count / 100) * 360)) ]
-            |> fill Color.red
-            |> stroke Color.green
-        , text ( w - 50, 50 ) ("fps: " ++ String.fromInt (floor fps))
-            |> align Right
-            |> size 30
-            |> family "sans-serif"
-            |> lineWidth 1
-            |> stroke Color.blue
-            |> fill Color.green
-        , shapes
+        , text
+            [ align Right
+            , size 30
+            , family "sans-serif"
+            , lineWidth 1
+            , stroke Color.blue
+            , fill Color.green
+            ]
+            ( w - 50, 50 )
+            ("fps: " ++ String.fromInt (floor fps))
+        , shapes []
             [ moveTo ( 20, 10 )
             , lineTo ( 10, 30 )
             , lineTo ( 30, 30 )
@@ -61,6 +65,9 @@ view ( count, fps ) =
             , circle ( 50, 50 ) 10
             ]
         , shapes
+            [ fill Color.lightPurple
+            , transform [ translate 10 400 ]
+            ]
             (List.range 0 10
                 |> List.map
                     (\i ->
@@ -76,6 +83,4 @@ view ( count, fps ) =
                             (degrees 45)
                     )
             )
-            |> fill Color.lightPurple
-            |> transform [ translate 10 400 ]
         ]

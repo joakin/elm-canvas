@@ -54,11 +54,12 @@ view model =
     Canvas.toHtml
         ( w, h )
         []
-        [ shapes [ rect ( 0, 0 ) w h ]
-            |> fill Color.white
-        , shapes (drawLines model.seed 0 [])
-            |> stroke Color.black
-            |> lineWidth 2
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        , shapes
+            [ stroke Color.black
+            , lineWidth 2
+            ]
+            (drawLines model.seed 0 [])
         ]
 
 

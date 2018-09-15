@@ -93,7 +93,7 @@ view : Model -> Html Msg
 view ( isRunning, time ) =
     toHtml ( round w, round h )
         [ onClick ToggleRunning ]
-        ((shapes [ rect ( 0, 0 ) w h ] |> fill Color.white)
+        (shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
             :: renderItems time
         )
 
@@ -134,10 +134,11 @@ renderItem time ( col, row ) lines =
         rotation =
             initialRotation + rotationModifier * pi
     in
-    (shapes [ rect ( x - length / 2, y - thickness / 2 ) length thickness ]
-        |> transform [ translate x y, rotate rotation, translate -x -y ]
-        |> fill Color.black
-    )
+    shapes
+        [ transform [ translate x y, rotate rotation, translate -x -y ]
+        , fill Color.black
+        ]
+        [ rect ( x - length / 2, y - thickness / 2 ) length thickness ]
         :: lines
 
 

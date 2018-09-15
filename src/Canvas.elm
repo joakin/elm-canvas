@@ -98,7 +98,11 @@ type DrawOp
     | FillAndStroke Color Color
 
 
-fill : Color -> Renderable -> Renderable
+type alias Setting =
+    Renderable -> Renderable
+
+
+fill : Color -> Setting
 fill color (Renderable data) =
     Renderable
         { data
@@ -118,7 +122,7 @@ fill color (Renderable data) =
         }
 
 
-stroke : Color -> Renderable -> Renderable
+stroke : Color -> Setting
 stroke color (Renderable data) =
     Renderable
         { data
@@ -157,14 +161,17 @@ type Shape
     | QuadraticCurveTo Point Point
 
 
-shapes : List Shape -> Renderable
-shapes ss =
-    Renderable
-        { settings = defaultSettings
-        , drawOp = NotSpecified
-        , transforms = []
-        , drawable = DrawableShapes ss
-        }
+shapes : List Setting -> List Shape -> Renderable
+shapes settings ss =
+    List.foldl (\fn renderable -> fn renderable)
+        (Renderable
+            { settings = defaultSettings
+            , drawOp = NotSpecified
+            , transforms = []
+            , drawable = DrawableShapes ss
+            }
+        )
+        settings
 
 
 rect : Point -> Float -> Float -> Shape
@@ -220,14 +227,17 @@ type Text
     = Text { settings : TextSettings, point : Point, text : String }
 
 
-text : Point -> String -> Renderable
-text point str =
-    Renderable
-        { settings = defaultSettings
-        , drawOp = NotSpecified
-        , transforms = []
-        , drawable = DrawableText (Text { settings = defaultTextSettings, point = point, text = str })
-        }
+text : List Setting -> Point -> String -> Renderable
+text settings point str =
+    List.foldl (\fn renderable -> fn renderable)
+        (Renderable
+            { settings = defaultSettings
+            , drawOp = NotSpecified
+            , transforms = []
+            , drawable = DrawableText (Text { settings = defaultTextSettings, point = point, text = str })
+            }
+        )
+        settings
 
 
 type alias TextSettings =
@@ -346,27 +356,27 @@ updateDrawableTextSetting update ((Renderable ({ drawable } as data)) as entity)
             entity
 
 
-size : Int -> Renderable -> Renderable
+size : Int -> Setting
 size px entity =
     updateDrawableTextSetting (\s -> { s | size = Just px }) entity
 
 
-family : String -> Renderable -> Renderable
+family : String -> Setting
 family fontFamily entity =
     updateDrawableTextSetting (\s -> { s | family = Just fontFamily }) entity
 
 
-align : TextAlign -> Renderable -> Renderable
+align : TextAlign -> Setting
 align alignment entity =
     updateDrawableTextSetting (\s -> { s | align = Just alignment }) entity
 
 
-baseLine : TextBaseLine -> Renderable -> Renderable
+baseLine : TextBaseLine -> Setting
 baseLine textBaseLine entity =
     updateDrawableTextSetting (\s -> { s | baseLine = Just textBaseLine }) entity
 
 
-maxWidth : Float -> Renderable -> Renderable
+maxWidth : Float -> Setting
 maxWidth width entity =
     updateDrawableTextSetting (\s -> { s | maxWidth = Just width }) entity
 
@@ -484,32 +494,32 @@ updateLineSettings update ((Renderable ({ settings } as data)) as entity) =
     Renderable { data | settings = { settings | lineSettings = update settings.lineSettings } }
 
 
-lineCap : LineCap -> Renderable -> Renderable
+lineCap : LineCap -> Setting
 lineCap cap entity =
     updateLineSettings (\s -> { s | lineCap = Just cap }) entity
 
 
-lineDashOffset : Float -> Renderable -> Renderable
+lineDashOffset : Float -> Setting
 lineDashOffset offset entity =
     updateLineSettings (\s -> { s | lineDashOffset = Just offset }) entity
 
 
-lineJoin : LineJoin -> Renderable -> Renderable
+lineJoin : LineJoin -> Setting
 lineJoin join entity =
     updateLineSettings (\s -> { s | lineJoin = Just join }) entity
 
 
-lineWidth : Float -> Renderable -> Renderable
+lineWidth : Float -> Setting
 lineWidth width entity =
     updateLineSettings (\s -> { s | lineWidth = Just width }) entity
 
 
-miterLimit : Float -> Renderable -> Renderable
+miterLimit : Float -> Setting
 miterLimit limit entity =
     updateLineSettings (\s -> { s | miterLimit = Just limit }) entity
 
 
-lineDash : List Float -> Renderable -> Renderable
+lineDash : List Float -> Setting
 lineDash dashSettings entity =
     updateLineSettings (\s -> { s | lineDash = Just dashSettings }) entity
 
@@ -646,17 +656,17 @@ updateSettings update ((Renderable ({ settings } as data)) as entity) =
     Renderable { data | settings = update settings }
 
 
-shadow : Shadow -> Renderable -> Renderable
+shadow : Shadow -> Setting
 shadow sh entity =
     updateSettings (\s -> { s | shadow = Just sh }) entity
 
 
-alpha : Float -> Renderable -> Renderable
+alpha : Float -> Setting
 alpha a entity =
     updateSettings (\s -> { s | globalAlpha = Just a }) entity
 
 
-compositeOperationMode : GlobalCompositeOperationMode -> Renderable -> Renderable
+compositeOperationMode : GlobalCompositeOperationMode -> Setting
 compositeOperationMode mode entity =
     updateSettings (\s -> { s | globalCompositeOperationMode = Just mode }) entity
 
@@ -672,7 +682,7 @@ type Transform
     | ApplyMatrix Float Float Float Float Float Float
 
 
-transform : List Transform -> Renderable -> Renderable
+transform : List Transform -> Setting
 transform newTransforms (Renderable ({ transforms } as data)) =
     Renderable
         { data

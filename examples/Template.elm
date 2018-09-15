@@ -63,10 +63,13 @@ view : Model -> Html Msg
 view model =
     Canvas.toHtml ( w, h )
         []
-        [ shapes [ rect ( 0, 0 ) w h ] |> fill Color.white
-        , text ( w / 2, h / 2 ) (String.fromInt model)
-            |> size 48
-            |> family "sans-serif"
-            |> align Center
-            |> fill (Color.rgb 255 0 0)
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        , text
+            [ size 48
+            , family "sans-serif"
+            , align Center
+            , fill (Color.rgb 255 0 0)
+            ]
+            ( w / 2, h / 2 )
+            (String.fromInt model)
         ]

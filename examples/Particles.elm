@@ -120,10 +120,8 @@ view model =
     Canvas.toHtml
         ( round w, round h )
         []
-        [ shapes [ rect ( 0, 0 ) w h ]
-            |> fill Color.white
-        , shapes (List.map drawPoint model)
-            |> fill particleColor
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        , shapes [ fill particleColor ] (List.map drawPoint model)
         ]
 
 

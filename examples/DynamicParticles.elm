@@ -202,17 +202,14 @@ view model =
         Go { canvas, particles } ->
             Canvas.toHtml ( canvas.width, canvas.height )
                 []
-                ((shapes [ rect ( 0, 0 ) (toFloat canvas.width) (toFloat canvas.height) ]
-                    |> fill Color.white
-                 )
+                (shapes [ fill Color.white ] [ rect ( 0, 0 ) (toFloat canvas.width) (toFloat canvas.height) ]
                     :: List.map viewParticle particles
                 )
 
 
 viewParticle : Particle -> Renderable
 viewParticle { cx, cy, r, color } =
-    shapes [ circle ( cx, cy ) r ]
-        |> fill color
+    shapes [ fill color ] [ circle ( cx, cy ) r ]
 
 
 

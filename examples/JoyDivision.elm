@@ -154,7 +154,7 @@ view model =
     Canvas.toHtml
         ( w, h )
         []
-        ((shapes [ rect ( 0, 0 ) w h ] |> fill bgColor)
+        (shapes [ fill bgColor ] [ rect ( 0, 0 ) w h ]
             :: (Grid.fold2d { cols = cols, rows = rows } (drawLines model.points) ( Array.empty, Array.empty )
                     |> Tuple.second
                     |> Array.toList
@@ -201,9 +201,10 @@ drawLines points ( x, y ) ( currentLine, lines ) =
                 Array.push drawPoint currentLine
                     |> Array.toList
                     |> shapes
-                    |> lineWidth 1.5
-                    |> fill bgColor
-                    |> stroke (Color.hsl (degrees 188) 0.3 0.8)
+                        [ lineWidth 1.5
+                        , fill bgColor
+                        , stroke (Color.hsl (degrees 188) 0.3 0.8)
+                        ]
         in
         ( Array.empty, Array.push newLine lines )
 

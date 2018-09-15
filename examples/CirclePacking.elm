@@ -220,12 +220,13 @@ view : Model -> Html Msg
 view model =
     Canvas.toHtml ( w, h )
         []
-        [ shapes [ rect ( 0, 0 ) w h ] |> fill Color.white
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
         , List.map viewCircle model.circles
             |> shapes
-            |> lineWidth 2
-            |> fill (Color.rgba 0 0 0 0.1)
-            |> stroke (Color.rgb 0 0 0)
+                [ lineWidth 2
+                , fill (Color.rgba 0 0 0 0.1)
+                , stroke (Color.rgb 0 0 0)
+                ]
         ]
 
 

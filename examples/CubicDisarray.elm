@@ -84,8 +84,7 @@ view : Model -> Html Msg
 view ( seed, count ) =
     let
         background =
-            shapes [ rect ( 0, 0 ) w h ]
-                |> fill bg
+            shapes [ fill bg ] [ rect ( 0, 0 ) w h ]
 
         rectangles =
             drawRects seed []
@@ -109,10 +108,11 @@ drawRect ( x, y ) ( rects, seed ) =
         ( ( rotateAmt, translateAmt ), newSeed ) =
             moveAround ( xf, yf ) seed
     in
-    ( (shapes [ rect ( 0, 0 ) boxSize boxSize ]
-        |> transform [ translate (px + translateAmt) py, rotate rotateAmt ]
-        |> stroke Color.black
-      )
+    ( shapes
+        [ transform [ translate (px + translateAmt) py, rotate rotateAmt ]
+        , stroke Color.black
+        ]
+        [ rect ( 0, 0 ) boxSize boxSize ]
         :: rects
     , newSeed
     )

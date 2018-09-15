@@ -177,11 +177,12 @@ drawLine : Model -> List Shape -> Renderable
 drawLine { color, size } line =
     line
         |> shapes
-        |> lineCap RoundCap
-        |> lineJoin RoundJoin
-        |> lineWidth (toFloat size)
-        |> shadow { blur = 10, offset = ( 0, 0 ), color = getShadowColor color }
-        |> stroke color
+            [ lineCap RoundCap
+            , lineJoin RoundJoin
+            , lineWidth (toFloat size)
+            , shadow { blur = 10, offset = ( 0, 0 ), color = getShadowColor color }
+            , stroke color
+            ]
 
 
 getShadowColor color =
