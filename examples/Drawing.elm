@@ -4,7 +4,7 @@ import Array exposing (Array)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
-import Canvas.Color as Color exposing (Color)
+import Color exposing (Color)
 import Html exposing (Html, button, div, p)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
@@ -187,7 +187,7 @@ drawLine { color, size } line =
 getShadowColor color =
     let
         { red, green, blue } =
-            Color.toRgb color
+            Color.toRgba color
     in
     Color.rgba red green blue 0.2
 
@@ -256,8 +256,8 @@ sizeControls selectedColor selectedSize =
                             ]
                             [ div
                                 [ style "border-radius" "50%"
-                                , style "background-color" (colorToCSSString selectedColor)
-                                , style "border" ("3px solid " ++ (Color.white |> getShadowColor |> colorToCSSString))
+                                , style "background-color" (Color.toCssString selectedColor)
+                                , style "border" ("3px solid " ++ (Color.white |> getShadowColor |> Color.toCssString))
                                 , style "width" (String.fromInt size ++ "px")
                                 , style "height" (String.fromInt size ++ "px")
                                 , style "margin" "0 auto"
@@ -352,7 +352,7 @@ col btns =
 colorButton selectedColor color =
     button
         [ style "border-radius" "50%"
-        , style "background-color" (colorToCSSString color)
+        , style "background-color" (Color.toCssString color)
         , style "display" "block"
         , style "width" "40px"
         , style "height" "40px"
@@ -377,23 +377,6 @@ colorButton selectedColor color =
         , onClick (SelectColor color)
         ]
         []
-
-
-colorToCSSString : Color -> String
-colorToCSSString color =
-    let
-        { red, green, blue, alpha } =
-            Color.toRgb color
-    in
-    "rgba("
-        ++ String.fromInt red
-        ++ ", "
-        ++ String.fromInt green
-        ++ ", "
-        ++ String.fromInt blue
-        ++ ", "
-        ++ String.fromFloat alpha
-        ++ ")"
 
 
 touchCoordinates : { event : Touch.Event, targetOffset : ( Float, Float ) } -> ( Float, Float )

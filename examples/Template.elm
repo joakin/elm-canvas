@@ -3,7 +3,7 @@ module Examples.Template exposing (main)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
-import Canvas.Color as Color exposing (Color)
+import Color exposing (Color)
 import Html exposing (Html)
 import Html.Attributes
 import Random

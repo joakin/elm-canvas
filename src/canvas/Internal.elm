@@ -72,7 +72,7 @@ better defaults as time goes by, and make specific tutorials with Elm.
 
 -}
 
-import Canvas.Color as Color exposing (Color)
+import Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Json.Encode as Encode exposing (..)
@@ -103,7 +103,7 @@ empty =
 fillStyle : Color -> Command
 fillStyle color =
     color
-        |> colorToCSSString
+        |> Color.toCssString
         |> string
         |> field "fillStyle"
 
@@ -288,7 +288,7 @@ shadowOffsetY property are non-zero.
 shadowColor : Color -> Command
 shadowColor color =
     color
-        |> colorToCSSString
+        |> Color.toCssString
         |> string
         |> field "shadowColor"
 
@@ -341,7 +341,7 @@ strokeStyle : Color -> Command
 strokeStyle color =
     {- TODO: support CanvasGradient and CanvasPattern -}
     color
-        |> colorToCSSString
+        |> Color.toCssString
         |> string
         |> field "strokeStyle"
 
@@ -899,24 +899,3 @@ fn name args =
 addTo : Commands -> Command -> Commands
 addTo list cmd =
     cmd :: list
-
-
-
--- Helpers
-
-
-colorToCSSString : Color -> String
-colorToCSSString color =
-    let
-        { red, green, blue, alpha } =
-            Color.toRgb color
-    in
-    "rgba("
-        ++ String.fromInt red
-        ++ ", "
-        ++ String.fromInt green
-        ++ ", "
-        ++ String.fromInt blue
-        ++ ", "
-        ++ String.fromFloat alpha
-        ++ ")"

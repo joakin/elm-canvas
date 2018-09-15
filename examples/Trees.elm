@@ -3,7 +3,7 @@ module Examples.Trees exposing (main)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
-import Canvas.Color as Color exposing (Color)
+import Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import LineSegment2d exposing (LineSegment2d)
