@@ -1,0 +1,8 @@
+- [] Migrate styles to lists of settings
+- [] Add toHtmlWithOptions
+- [] Move style settings to Canvas.{Styles|Settings}
+- [] Move shapes to Canvas.Shapes
+- [] Move text to Canvas.Text
+- [] Document it all properly
+- [] Remove docs from Internal
+- [] See if we can do something about Textures/bitmaps with the library
