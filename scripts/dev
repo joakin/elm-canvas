@@ -1,7 +1,0 @@
-#!/bin/bash
-
-pushd examples/ || exit
-for f in *.elm; do
-  elm make --warn --debug  "$f" --output "../public/$(basename "$f" .elm).js"
-done
-popd || exit
