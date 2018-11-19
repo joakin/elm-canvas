@@ -41,8 +41,10 @@ Then, you can add your HTML element like this:
 ```elm
 module Main exposing (main)
 
-import Html exposing (Html)
 import Canvas
+import CanvasColor as Color
+import Html exposing (Html)
+import Html.Attributes exposing (style)
 
 view : Html msg
 view =
@@ -53,7 +55,7 @@ view =
         Canvas.element
             width
             height
-            [ style [ ( "border", "1px solid black" ) ] ]
+            [ style "border" "1px solid black" ]
             ( Canvas.empty
                 |> Canvas.clearRect 0 0 width height
                 |> renderSquare
