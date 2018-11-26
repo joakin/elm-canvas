@@ -1,20 +1,23 @@
 module Canvas exposing
     ( toHtml
     , Renderable, Point
+    , shapes, text
     , fill, stroke
-    , Shape, shapes, rect, circle, arc, arcC, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
-    , Text, text, size, family, align, baseLine
-    , lineDash, lineCap, lineDashOffset, lineJoin, lineWidth, miterLimit
-    , Shadow, shadow, alpha, compositeOperationMode
+    , Shape
+    , rect, circle, arc, path
+    , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
+    , size, family, TextAlign(..), align, TextBaseLine(..), baseLine
+    , lineDash, LineCap(..), lineCap, lineDashOffset, LineJoin(..), lineJoin, lineWidth, miterLimit
+    , Shadow, shadow
+    , alpha, GlobalCompositeOperationMode(..), compositeOperationMode
     , Transform(..), transform, translate, rotate, scale, applyMatrix
-    , GlobalCompositeOperationMode(..), LineCap(..), LineJoin(..), TextAlign(..), TextBaseLine(..)
     )
 
 {-| This module exposes a nice drawing API that works on top of the the DOM
 canvas.
 
 See instructions in the main page of the package for installation, as it
-requires a web component.
+requires the `elm-canvas` web component to work.
 
 
 # Usage in HTML
@@ -22,27 +25,71 @@ requires a web component.
 @docs toHtml
 
 
-# Drawing things to screen
+# Drawing things
 
 @docs Renderable, Point
+
+@docs shapes, text
+
+
+# Styling the things you draw
+
 @docs fill, stroke
 
 
-# Drawing shapes and lines
+# Drawing shapes
 
-@docs Shape, shapes, rect, circle, arc, arcC, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
+Shapes can be rectangles, circles, and different types of lines. By composing
+shapes, you can draw complex figures! There are bunch of functions that produce
+a `Shape`, which you can feed to `shapes` to get something on the screen.
+
+@docs Shape
+
+Here are the different functions that produce shapes that we can draw.
+
+@docs rect, circle, arc, path
+
+
+## Path
+
+In order to make a complex path, we need to put together a list of `PathSegment`
+
+@docs PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
 
 
 # Drawing text
 
-@docs Text, text, TextAlign(..), TextBaseLine(..), size, family, align, baseLine
+To draw text we use the function `text` documented above:
+
+    text [ size 48, align Center ] ( 50, 50 ) "Hello world"
+
+You can apply the following settings to text specifically. They will do nothing
+if you apply them to other renderables, like `shapes`.
+
+@docs size, family, TextAlign, align, TextBaseLine, baseLine
 
 
-# Advanced rendering concepts
+# Advanced rendering settings
 
-@docs lineDash, LineCap(..), lineCap, lineDashOffset, LineJoin(..), lineJoin, lineWidth, miterLimit
+The following are settings that you can apply to all renderables, to create very specific effects.
 
-@docs Shadow, shadow, alpha, GlobalCompositeOperationMode(..), compositeOperationMode
+
+## Other line settings
+
+@docs lineDash, LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit
+
+
+## Shadows
+
+@docs Shadow, shadow
+
+
+## Alpha and global composite mode
+
+@docs alpha, GlobalCompositeOperationMode, compositeOperationMode
+
+
+## Transforms: scaling, rotating, translating, and matrix transformations
 
 @docs Transform, transform, translate, rotate, scale, applyMatrix
 
@@ -60,6 +107,21 @@ import Json.Encode as Encode exposing (..)
 
 
 {-| Create a Html element that you can use in your view.
+
+    Canvas.toHtml ( width, height )
+        [ onClick CanvasClick ]
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        , text [ size 48, align Center ] ( 50, 50 ) "Hello world"
+        ]
+
+`toHtml` is almost like creating other Html elements. We need to pass `(width,
+height)` in pixels, a list of `Html.Attribute`, and finally _instead_ of a list
+of html elements, we pass a `List Renderable`. A `Renderable` is a thing that
+the canvas knows how to render. Read on for more information 👇.
+
+Note: Remember to include the `elm-canvas` web component from npm in your page for
+this to work!
+
 -}
 toHtml : ( Int, Int ) -> List (Attribute msg) -> List Renderable -> Html msg
 toHtml ( w, h ) attrs entities =
@@ -73,10 +135,27 @@ toHtml ( w, h ) attrs entities =
 -- Types
 
 
+{-| A small alias to reference points on some of the functions on the package.
+
+The first argument of the tuple is the `x` position, and the second is the `y`
+position.
+
+    -- Making a point with x = 15 and y = 55
+    point : Point
+    point =
+        ( 15, 55 )
+
+-}
 type alias Point =
     ( Float, Float )
 
 
+{-| A `Renderable` is a thing that the canvas knows how to render.
+
+To make a list of `Renderable` to pass to `Canvas.toHtml` look in the docs for
+the functions that produce renderables, like `shapes` and `text`.
+
+-}
 type Renderable
     = Renderable
         { settings : Settings
@@ -88,7 +167,7 @@ type Renderable
 
 type Drawable
     = DrawableText Text
-    | DrawableShapes Shapes
+    | DrawableShapes (List Shape)
 
 
 type DrawOp
@@ -102,6 +181,14 @@ type alias Setting =
     Renderable -> Renderable
 
 
+{-| By default, renderables are drawn with black color. If you want to specify
+a different color to draw, use this `Setting` on your renderable.
+
+    shapes
+        [ fill Color.green ]
+        [ rect ( 10, 30 ) 50 50 ]
+
+-}
 fill : Color -> Setting
 fill color (Renderable data) =
     Renderable
@@ -122,6 +209,15 @@ fill color (Renderable data) =
         }
 
 
+{-| By default, renderables are drawn with no visible stroke. If you want to
+specify a stroke color to draw an outline over your renderable, use this
+`Setting` on it.
+
+    shapes
+        [ stroke Color.red ]
+        [ rect ( 10, 30 ) 50 50 ]
+
+-}
 stroke : Color -> Setting
 stroke color (Renderable data) =
     Renderable
@@ -146,21 +242,38 @@ stroke color (Renderable data) =
 -- Shapes drawables
 
 
-type alias Shapes =
-    List Shape
-
-
+{-| `shapes` takes a list of `Shape` with some `Setting`s and converts it into
+a `Renderable` for the canvas.
+-}
 type Shape
     = Rect Point Float Float
     | Circle Point Float
+    | Path Point (List PathSegment)
     | Arc Point Float Float Float Bool
-    | ArcTo Point Point Float
+
+
+{-| In order to draw a path, you need to give the function `path` a list of
+`PathSegment`
+-}
+type PathSegment
+    = ArcTo Point Point Float
     | BezierCurveTo Point Point Point
     | LineTo Point
     | MoveTo Point
     | QuadraticCurveTo Point Point
 
 
+{-| We use `shapes` to render different shapes like rectangles, circles, and
+lines of different kinds that we can connect together.
+
+You can draw many shapes with the same `Setting`s, which makes for very
+efficient rendering.
+
+    Canvas.toHtml ( width, height )
+        []
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ] ]
+
+-}
 shapes : List Setting -> List Shape -> Renderable
 shapes settings ss =
     List.foldl (\fn renderable -> fn renderable)
@@ -174,47 +287,158 @@ shapes settings ss =
         settings
 
 
+{-| Creates the shape of a rectangle. It needs the position of the top left
+corner, the width, and the height.
+
+    rect pos width height
+
+-}
 rect : Point -> Float -> Float -> Shape
 rect pos width height =
     Rect pos width height
 
 
+{-| Creates a circle. It takes the position of the center of the circle, and the
+radius of it.
+
+    circle pos radius
+
+-}
 circle : Point -> Float -> Shape
 circle pos radius =
     Circle pos radius
 
 
-arc : Point -> Float -> Float -> Float -> Shape
-arc pos radius startAngle endAngle =
-    Arc pos radius startAngle endAngle False
+{-| Creates a complex path as a shape from a list of `PathSegment` instructions.
+
+It is mandatory to pass in the starting point for the path, since the path
+starts with an implicit `moveTo` the starting point to avoid undesirable
+behavior and implicit state.
+
+    path startingPoint segments
+
+-}
+path : Point -> List PathSegment -> Shape
+path startingPoint segments =
+    Path startingPoint segments
 
 
-arcC : Point -> Float -> Float -> Float -> Shape
-arcC pos radius startAngle endAngle =
-    Arc pos radius startAngle endAngle True
+{-| Creates an arc, a partial circle. It takes the position of the center of the
+circle, the radius of it, the start angle where the arc will start, the end
+angle where the arc will end, and if it should draw anti-clockwise.
+
+    arc pos radius startAngle endAngle antiClockwise
+
+-}
+arc : Point -> Float -> Float -> Float -> Bool -> Shape
+arc pos radius startAngle endAngle antiClockwise =
+    Arc pos radius startAngle endAngle antiClockwise
 
 
-arcTo : Point -> Point -> Float -> Shape
+{-| Adds an arc to the path with the given control points and radius.
+
+The arc drawn will be a part of a circle, never elliptical. Typical use could be
+making a rounded corner.
+
+One way to think about the arc drawn is to imagine two straight segments, from
+the starting point (latest point in current path) to the first control point,
+and then from the first control point to the second control point. These two
+segments form a sharp corner with the first control point being in the corner.
+Using `arcTo`, the corner will instead be an arc with the given radius.
+
+The arc is tangential to both segments, which can sometimes produce surprising
+results, e.g. if the radius given is larger than the distance between the
+starting point and the first control point.
+
+If the radius specified doesn't make the arc meet the starting point (latest
+point in the current path), the starting point is connected to the arc with
+a straight line segment.
+
+    arcTo ( x1, y1 ) ( x2, y2 ) radius
+
+You can see more examples and docs in [this page](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arcTo)
+
+-}
+arcTo : Point -> Point -> Float -> PathSegment
 arcTo pos1 pos2 radius =
     ArcTo pos1 pos2 radius
 
 
-bezierCurveTo : Point -> Point -> Point -> Shape
+{-| Adds a cubic Bézier curve to the path. It requires three points. The first
+two points are control points and the third one is the end point. The starting
+point is the last point in the current path, which can be changed using `moveTo`
+before creating the Bézier curve. You can learn more about this curve in the
+[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/bezierCurveTo).
+
+    bezierCurveTo controlPoint1 controlPoint2 point
+
+    bezierCurveTo ( cp1x, cp1y ) ( cp2x, cp2y ) ( x, y )
+
+  - `cp1x`
+      - The x axis of the coordinate for the first control point.
+  - `cp1y`
+      - The y axis of the coordinate for the first control point.
+  - `cp2x`
+      - The x axis of the coordinate for the second control point.
+  - `cp2y`
+      - The y axis of the coordinate for the second control point.
+  - `x`
+      - The x axis of the coordinate for the end point.
+  - `y`
+      - The y axis of the coordinate for the end point.
+
+-}
+bezierCurveTo : Point -> Point -> Point -> PathSegment
 bezierCurveTo controlPoint1 controlPoint2 point =
     BezierCurveTo controlPoint1 controlPoint2 point
 
 
-lineTo : Point -> Shape
+{-| Connects the last point in the previous shape to the x, y coordinates with a
+straight line.
+
+    lineTo ( x, y )
+
+If you want to make a line independently of where the previous shape ended, you
+can use `moveTo` before using lineTo.
+
+-}
+lineTo : Point -> PathSegment
 lineTo point =
     LineTo point
 
 
-moveTo : Point -> Shape
+{-| `moveTo` doesn't necessarily produce any shape, but it moves the starting
+point somewhere so that you can use this with other lines.
+
+    moveTo point
+
+-}
+moveTo : Point -> PathSegment
 moveTo point =
     MoveTo point
 
 
-quadraticCurveTo : Point -> Point -> Shape
+{-| Adds a quadratic Bézier curve to the path. It requires two points. The
+first point is a control point and the second one is the end point. The starting
+point is the last point in the current path, which can be changed using `moveTo`
+before creating the quadratic Bézier curve. Learn more about quadratic bezier
+curves in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo)
+
+    quadraticCurveTo controlPoint point
+
+    quadraticCurveTo ( cpx, cpy ) ( x, y )
+
+  - `cpx`
+      - The x axis of the coordinate for the control point.
+  - `cpy`
+      - The y axis of the coordinate for the control point.
+  - `x`
+      - The x axis of the coordinate for the end point.
+  - `y`
+      - The y axis of the coordinate for the end point.
+
+-}
+quadraticCurveTo : Point -> Point -> PathSegment
 quadraticCurveTo controlPoint point =
     QuadraticCurveTo controlPoint point
 
@@ -223,10 +447,24 @@ quadraticCurveTo controlPoint point =
 -- Text drawables
 
 
-type Text
-    = Text { settings : TextSettings, point : Point, text : String }
+{-| To render text, we need to create with `text`
+-}
+type alias Text =
+    { settings : TextSettings, point : Point, text : String }
 
 
+{-| We use `text` to render text on the canvas. We need to pass the list of
+settings to style it, the point with the coordinates where we want to render,
+and the text to render.
+
+Keep in mind that `align` and other settings can change where the text is
+positioned with regards to the coordinates provided.
+
+    Canvas.toHtml ( width, height )
+        []
+        [ text [ size 48, align Center ] ( 50, 50 ) "Hello world" ]
+
+-}
 text : List Setting -> Point -> String -> Renderable
 text settings point str =
     List.foldl (\fn renderable -> fn renderable)
@@ -234,7 +472,7 @@ text settings point str =
             { settings = defaultSettings
             , drawOp = NotSpecified
             , transforms = []
-            , drawable = DrawableText (Text { settings = defaultTextSettings, point = point, text = str })
+            , drawable = DrawableText { settings = defaultTextSettings, point = point, text = str }
             }
         )
         settings
@@ -346,36 +584,64 @@ textBaseLineToString baseLineSetting =
             "bottom"
 
 
+{-| -}
 updateDrawableTextSetting : (TextSettings -> TextSettings) -> Renderable -> Renderable
 updateDrawableTextSetting update ((Renderable ({ drawable } as data)) as entity) =
     case drawable of
-        DrawableText (Text txt) ->
-            Renderable { data | drawable = DrawableText (Text { txt | settings = update txt.settings }) }
+        DrawableText txt ->
+            Renderable { data | drawable = DrawableText { txt | settings = update txt.settings } }
 
         DrawableShapes _ ->
             entity
 
 
+{-| What is the size of the text in pixels. Similar to the `font-size` property
+in CSS.
+-}
 size : Int -> Setting
 size px entity =
     updateDrawableTextSetting (\s -> { s | size = Just px }) entity
 
 
+{-| Font family name to use when drawing the text.
+
+For example, you can use `"monospace"`, `"serif"` or `"sans-serif"` to use the
+user configured default fonts in the browser. You can also specify other font
+names like `"Consolas"`.
+
+-}
 family : String -> Setting
 family fontFamily entity =
     updateDrawableTextSetting (\s -> { s | family = Just fontFamily }) entity
 
 
+{-| Specifies the text alignment to use when drawing text. Beware
+that the alignment is based on the x value of position passed to `text`. So if
+`textAlign` is `Center`, then the text would be drawn at `x - (width / 2)`.
+
+The default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)
+
+-}
 align : TextAlign -> Setting
 align alignment entity =
     updateDrawableTextSetting (\s -> { s | align = Just alignment }) entity
 
 
+{-| Specifies the current text baseline being used when drawing text.
+
+The default value is `Alphabetic`.
+
+See [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)
+for examples and rendering of the different modes.
+
+-}
 baseLine : TextBaseLine -> Setting
 baseLine textBaseLine entity =
     updateDrawableTextSetting (\s -> { s | baseLine = Just textBaseLine }) entity
 
 
+{-| Specify a maximum width. The text is scaled to fit that width.
+-}
 maxWidth : Float -> Setting
 maxWidth width entity =
     updateDrawableTextSetting (\s -> { s | maxWidth = Just width }) entity
@@ -494,31 +760,74 @@ updateLineSettings update ((Renderable ({ settings } as data)) as entity) =
     Renderable { data | settings = { settings | lineSettings = update settings.lineSettings } }
 
 
+{-| Determines how the end points of every line are drawn. See `LineCap` for the
+possible types. By default `ButtCap` is used. See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)
+for examples.
+-}
 lineCap : LineCap -> Setting
 lineCap cap entity =
     updateLineSettings (\s -> { s | lineCap = Just cap }) entity
 
 
+{-| Specify the line dash pattern offset or "phase".
+
+There are visual examples and more information in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)
+
+-}
 lineDashOffset : Float -> Setting
 lineDashOffset offset entity =
     updateLineSettings (\s -> { s | lineDashOffset = Just offset }) entity
 
 
+{-| Specify how two connecting segments (of lines, arcs or curves) with
+non-zero lengths in a shape are joined together (degenerate segments with zero
+lengths, whose specified endpoints and control points are exactly at the same
+position, are skipped). See the type `LineJoin`.
+
+By default this property is set to `MiterJoin`. Note that the `lineJoin` setting
+has no effect if the two connected segments have the same direction, because no
+joining area will be added in this case.
+
+More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
+
+-}
 lineJoin : LineJoin -> Setting
 lineJoin join entity =
     updateLineSettings (\s -> { s | lineJoin = Just join }) entity
 
 
+{-| Specify the thickness of lines in space units. When passing zero, negative,
+Infinity and NaN values are ignored. More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)
+-}
 lineWidth : Float -> Setting
 lineWidth width entity =
     updateLineSettings (\s -> { s | lineWidth = Just width }) entity
 
 
+{-| Specify the miter limit ratio in space units. When passing zero, negative,
+Infinity and NaN values are ignored. More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)
+-}
 miterLimit : Float -> Setting
 miterLimit limit entity =
     updateLineSettings (\s -> { s | miterLimit = Just limit }) entity
 
 
+{-| Specify the line dash pattern used when stroking lines, using a list of
+values which specify alternating lengths of lines and gaps which describe the
+pattern.
+
+    lineDash segments
+
+  - `segments`
+      - A list of numbers which specify distances to alternately draw a line
+        and a gap (in coordinate space units). If the number of elements in the list
+        is odd, the elements of the list get copied and concatenated. For example, `[5,
+        15, 25]` will become `[5, 15, 25, 5, 15, 25]`. If the list is empty, the line
+        dash list is clear and line strokes are solid.
+
+[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
+
+-}
 lineDash : List Float -> Setting
 lineDash dashSettings entity =
     updateLineSettings (\s -> { s | lineDash = Just dashSettings }) entity
@@ -647,6 +956,13 @@ globalCompositeOperationModeToString mode =
             "luminosity"
 
 
+{-| Record with the settings for a shadow.
+
+  - `blur`: Amount of blur for the shadow
+  - `color`: Color of the shadow
+  - `offset`: `( xOffset, yOffset )`
+
+-}
 type alias Shadow =
     { blur : Float, color : Color, offset : ( Float, Float ) }
 
@@ -656,16 +972,38 @@ updateSettings update ((Renderable ({ settings } as data)) as entity) =
     Renderable { data | settings = update settings }
 
 
+{-| Specify a shadow to be rendered. See the `Shadow` type alias to know what
+parameters to pass.
+-}
 shadow : Shadow -> Setting
 shadow sh entity =
     updateSettings (\s -> { s | shadow = Just sh }) entity
 
 
+{-| Specifies the alpha value that is applied to renderables before they
+are drawn onto the canvas. The value is in the range from 0.0 (fully
+transparent) to 1.0 (fully opaque). The default value is 1.0. Values outside the
+range, including `Infinity` and `NaN` will not be set and alpha will retain its
+previous value.
+-}
 alpha : Float -> Setting
 alpha a entity =
     updateSettings (\s -> { s | globalAlpha = Just a }) entity
 
 
+{-| Specify of compositing operation to apply when drawing new entities,
+where type is a `GlobalCompositeOperationMode` identifying which of the
+compositing or blending mode operations to use.
+
+See the chapter
+[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)
+from the Canvas Tutorial, or visit the [MDN
+docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)
+for more information and pictures of what each mode does.
+
+    globalCompositeOperation Screen
+
+-}
 compositeOperationMode : GlobalCompositeOperationMode -> Setting
 compositeOperationMode mode entity =
     updateSettings (\s -> { s | globalCompositeOperationMode = Just mode }) entity
@@ -675,6 +1013,8 @@ compositeOperationMode mode entity =
 -- Transforms
 
 
+{-| Type of transform to apply to the matrix, to be used in `transform`.
+-}
 type Transform
     = Rotate Float
     | Scale Float Float
@@ -682,6 +1022,14 @@ type Transform
     | ApplyMatrix Float Float Float Float Float Float
 
 
+{-| Specify the transform matrix to apply when drawing. You do so by applying
+transforms in order, like `translate`, `rotate`, or `scale`, but you can also
+use `applyMatrix` and set the matrix yourself manually if you know what you are
+doing.
+
+    shapes [ transform [ rotate (degrees 50) ] ] [ rect ( 40, 40 ) 20 20 ]
+
+-}
 transform : List Transform -> Setting
 transform newTransforms (Renderable ({ transforms } as data)) =
     Renderable
@@ -696,16 +1044,65 @@ transform newTransforms (Renderable ({ transforms } as data)) =
         }
 
 
+{-| Adds a rotation to the transformation matrix. The `angle` argument
+represents a clockwise rotation angle and is expressed in radians. Use the core
+function `degrees` to make it easier to represent the rotation.
+
+    rotate (degrees 90)
+
+The rotation center point is always the canvas origin. To change the center
+point, we will need to move the canvas by using the `translate` transform before
+rotating. For example, a very common use case to rotate from a specific point in
+the canvas, maybe the center of your renderable, would be done by translating to
+that point, rotating, and then translating back, in case you want to apply more
+transformations. Like this:
+
+    transform [ translate x y, rotate rotation, translate -x -y ]
+
+See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate)
+for more information and examples.
+
+-}
 rotate : Float -> Transform
 rotate =
     Rotate
 
 
+{-| Adds a scaling transformation to the canvas units by `x` horizontally and by
+`y` vertically.
+
+By default, one unit on the canvas is exactly one pixel. If we apply, for
+instance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels
+and so shapes would be drawn at half size. In a similar way setting the scaling
+factor to 2.0 would increase the unit size and one unit now becomes two pixels.
+This results in shapes being drawn twice as large.
+
+    scale x y
+
+  - `x`
+      - Scaling factor in the horizontal direction.
+  - `y`
+      - Scaling factor in the vertical direction.
+
+Note: You can use `scale -1 1` to flip the context horizontally and `scale 1
+-1` to flip it vertically.
+
+More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)
+
+-}
 scale : Float -> Float -> Transform
 scale =
     Scale
 
 
+{-| Adds a translation transformation by moving the canvas and its origin `x`
+units horizontally and `y` units vertically on the grid.
+
+More information and examples on the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate)
+
+    translate x y
+
+-}
 translate : Float -> Float -> Transform
 translate =
     Translate
@@ -843,11 +1240,18 @@ renderShape shape cmds =
         Circle ( x, y ) r ->
             I.circle x y r :: I.moveTo (x + r) y :: cmds
 
+        Path ( x, y ) segments ->
+            List.foldl renderLineSegment (I.moveTo x y :: cmds) segments
+
         Arc ( x, y ) radius startAngle endAngle anticlockwise ->
             I.arc x y radius startAngle endAngle anticlockwise
                 :: I.moveTo (x + cos startAngle) (y + sin startAngle)
                 :: cmds
 
+
+renderLineSegment : PathSegment -> Commands -> Commands
+renderLineSegment segment cmds =
+    case segment of
         ArcTo ( x, y ) ( x2, y2 ) radius ->
             I.arcTo x y x2 y2 radius :: cmds
 
@@ -865,9 +1269,9 @@ renderShape shape cmds =
 
 
 renderText : DrawOp -> Text -> Commands -> Commands
-renderText drawOp ((Text t) as txt) cmds =
+renderText drawOp txt cmds =
     cmds
-        |> renderTextSettings t.settings
+        |> renderTextSettings txt.settings
         |> renderTextDrawOp drawOp txt
 
 
@@ -898,7 +1302,7 @@ renderTextSettings textSettings cmds =
 
 
 renderTextDrawOp : DrawOp -> Text -> Commands -> Commands
-renderTextDrawOp drawOp (Text txt) cmds =
+renderTextDrawOp drawOp txt cmds =
     let
         ( x, y ) =
             txt.point
