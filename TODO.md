@@ -1,4 +1,3 @@
-- Optimize implementation (now piggybacks on last impl)
 - Review docs
 - Add toHtmlWithOptions (to set default settings)
 - Update example on README.md (needs rebasing with master)
