@@ -31,8 +31,8 @@ Then, you can add your HTML element like this:
 ```elm
 module Main exposing (main)
 
-import Canvas
-import CanvasColor as Color
+import Canvas exposing (..)
+import Color
 import Html exposing (Html)
 import Html.Attributes exposing (style)
 
@@ -42,19 +42,15 @@ view =
         width = 500
         height = 300
     in
-        Canvas.element
-            width
-            height
+        Canvas.toHtml (width, height)
             [ style "border" "1px solid black" ]
-            ( Canvas.empty
-                |> Canvas.clearRect 0 0 width height
-                |> renderSquare
-            )
+            [ shapes [ fill Color.white ] [ rect (0, 0) width height ]
+            , renderSquare
+            ]
 
-renderSquare cmds =
-    cmds
-        |> Canvas.fillStyle (Color.rgba 0 0 0 1)
-        |> Canvas.fillRect 0 0 100 50
+renderSquare =
+  shapes [ fill (Color.rgba 0 0 0 1) ]
+      [ rect (0, 0) 100 50 ]
 
 main = view
 ```
