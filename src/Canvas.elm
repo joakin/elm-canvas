@@ -1,6 +1,6 @@
 module Canvas exposing
     ( toHtml
-    , Renderable, Point
+    , Renderable, Point, Setting
     , shapes, text
     , fill, stroke
     , Shape
@@ -27,7 +27,7 @@ requires the `elm-canvas` web component to work.
 
 # Drawing things
 
-@docs Renderable, Point
+@docs Renderable, Point, Setting
 
 @docs shapes, text
 
@@ -176,6 +176,9 @@ type DrawOp
     | FillAndStroke Color Color
 
 
+{-| Similar to Html.Attribute, settings control the presentation and other style
+options for the `Renderable`s.
+-}
 type Setting
     = SettingCommand I.Command
     | SettingCommands I.Commands
