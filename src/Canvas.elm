@@ -6,7 +6,7 @@ module Canvas exposing
     , Shape
     , rect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
-    , size, family, TextAlign(..), align, TextBaseLine(..), baseLine
+    , font, TextAlign(..), align, TextBaseLine(..), baseLine
     , lineDash, LineCap(..), lineCap, lineDashOffset, LineJoin(..), lineJoin, lineWidth, miterLimit
     , Shadow, shadow
     , alpha, GlobalCompositeOperationMode(..), compositeOperationMode
@@ -61,12 +61,12 @@ In order to make a complex path, we need to put together a list of `PathSegment`
 
 To draw text we use the function `text` documented above:
 
-    text [ size 48, align Center ] ( 50, 50 ) "Hello world"
+    text [ font { size = 48, family = "serif" }, align Center ] ( 50, 50 ) "Hello world"
 
 You can apply the following settings to text specifically. They will do nothing
 if you apply them to other renderables, like `shapes`.
 
-@docs size, family, TextAlign, align, TextBaseLine, baseLine
+@docs font, TextAlign, align, TextBaseLine, baseLine
 
 
 # Advanced rendering settings
@@ -158,9 +158,8 @@ the functions that produce renderables, like `shapes` and `text`.
 -}
 type Renderable
     = Renderable
-        { settings : Settings
+        { commands : I.Commands
         , drawOp : DrawOp
-        , transforms : List Transform
         , drawable : Drawable
         }
 
@@ -177,8 +176,11 @@ type DrawOp
     | FillAndStroke Color Color
 
 
-type alias Setting =
-    Renderable -> Renderable
+type Setting
+    = SettingCommand I.Command
+    | SettingCommands I.Commands
+    | SettingDrawOp DrawOp
+    | SettingUpdateDrawable (Drawable -> Drawable)
 
 
 {-| By default, renderables are drawn with black color. If you want to specify
@@ -190,23 +192,39 @@ a different color to draw, use this `Setting` on your renderable.
 
 -}
 fill : Color -> Setting
-fill color (Renderable data) =
-    Renderable
-        { data
-            | drawOp =
-                case data.drawOp of
-                    NotSpecified ->
-                        Fill color
+fill color =
+    SettingDrawOp (Fill color)
 
-                    Fill _ ->
-                        Fill color
 
-                    Stroke strokeColor ->
-                        FillAndStroke color strokeColor
+mergeDrawOp : DrawOp -> DrawOp -> DrawOp
+mergeDrawOp op1 op2 =
+    case ( op1, op2 ) of
+        ( Fill _, Fill c ) ->
+            Fill c
 
-                    FillAndStroke _ strokeColor ->
-                        FillAndStroke color strokeColor
-        }
+        ( Stroke _, Stroke c ) ->
+            Stroke c
+
+        ( Fill c1, Stroke c2 ) ->
+            FillAndStroke c1 c2
+
+        ( Stroke c1, Fill c2 ) ->
+            FillAndStroke c2 c1
+
+        ( _, FillAndStroke c sc ) ->
+            FillAndStroke c sc
+
+        ( FillAndStroke c sc, Fill c2 ) ->
+            FillAndStroke c2 sc
+
+        ( FillAndStroke c sc, Stroke sc2 ) ->
+            FillAndStroke c sc2
+
+        ( NotSpecified, whatever ) ->
+            whatever
+
+        ( whatever, NotSpecified ) ->
+            whatever
 
 
 {-| By default, renderables are drawn with no visible stroke. If you want to
@@ -219,23 +237,9 @@ specify a stroke color to draw an outline over your renderable, use this
 
 -}
 stroke : Color -> Setting
-stroke color (Renderable data) =
-    Renderable
-        { data
-            | drawOp =
-                case data.drawOp of
-                    NotSpecified ->
-                        Stroke color
-
-                    Fill fillColor ->
-                        FillAndStroke fillColor color
-
-                    Stroke strokeColor ->
-                        Stroke color
-
-                    FillAndStroke fillColor _ ->
-                        FillAndStroke fillColor color
-        }
+stroke color =
+    SettingDrawOp
+        (Stroke color)
 
 
 
@@ -276,15 +280,35 @@ efficient rendering.
 -}
 shapes : List Setting -> List Shape -> Renderable
 shapes settings ss =
-    List.foldl (\fn renderable -> fn renderable)
+    addSettingsToRenderable settings
         (Renderable
-            { settings = defaultSettings
+            { commands = []
             , drawOp = NotSpecified
-            , transforms = []
             , drawable = DrawableShapes ss
             }
         )
-        settings
+
+
+addSettingsToRenderable : List Setting -> Renderable -> Renderable
+addSettingsToRenderable settings renderable =
+    let
+        addSetting : Setting -> Renderable -> Renderable
+        addSetting setting (Renderable r) =
+            Renderable <|
+                case setting of
+                    SettingCommand cmd ->
+                        { r | commands = cmd :: r.commands }
+
+                    SettingCommands cmds ->
+                        { r | commands = List.foldl (::) r.commands cmds }
+
+                    SettingUpdateDrawable f ->
+                        { r | drawable = f r.drawable }
+
+                    SettingDrawOp op ->
+                        { r | drawOp = mergeDrawOp r.drawOp op }
+    in
+    List.foldl addSetting renderable settings
 
 
 {-| Creates the shape of a rectangle. It needs the position of the top left
@@ -450,7 +474,7 @@ quadraticCurveTo controlPoint point =
 {-| To render text, we need to create with `text`
 -}
 type alias Text =
-    { settings : TextSettings, point : Point, text : String }
+    { maxWidth : Maybe Float, point : Point, text : String }
 
 
 {-| We use `text` to render text on the canvas. We need to pass the list of
@@ -467,33 +491,13 @@ positioned with regards to the coordinates provided.
 -}
 text : List Setting -> Point -> String -> Renderable
 text settings point str =
-    List.foldl (\fn renderable -> fn renderable)
+    addSettingsToRenderable settings
         (Renderable
-            { settings = defaultSettings
+            { commands = []
             , drawOp = NotSpecified
-            , transforms = []
-            , drawable = DrawableText { settings = defaultTextSettings, point = point, text = str }
+            , drawable = DrawableText { maxWidth = Nothing, point = point, text = str }
             }
         )
-        settings
-
-
-type alias TextSettings =
-    { size : Maybe Int
-    , family : Maybe String
-    , align : Maybe TextAlign
-    , baseLine : Maybe TextBaseLine
-    , maxWidth : Maybe Float
-    }
-
-
-defaultTextSettings =
-    { size = Nothing
-    , family = Nothing
-    , align = Nothing
-    , baseLine = Nothing
-    , maxWidth = Nothing
-    }
 
 
 {-| Type of text alignment
@@ -584,35 +588,21 @@ textBaseLineToString baseLineSetting =
             "bottom"
 
 
-{-| -}
-updateDrawableTextSetting : (TextSettings -> TextSettings) -> Renderable -> Renderable
-updateDrawableTextSetting update ((Renderable ({ drawable } as data)) as entity) =
-    case drawable of
-        DrawableText txt ->
-            Renderable { data | drawable = DrawableText { txt | settings = update txt.settings } }
+{-| Specify the font size and family to use when rendering text.
 
-        DrawableShapes _ ->
-            entity
-
-
-{-| What is the size of the text in pixels. Similar to the `font-size` property
-in CSS.
--}
-size : Int -> Setting
-size px entity =
-    updateDrawableTextSetting (\s -> { s | size = Just px }) entity
-
-
-{-| Font family name to use when drawing the text.
-
-For example, you can use `"monospace"`, `"serif"` or `"sans-serif"` to use the
-user configured default fonts in the browser. You can also specify other font
-names like `"Consolas"`.
+  - `size`: What is the size of the text in pixels. Similar to the `font-size`
+    property in CSS.
+  - `family`: Font family name to use when drawing the text. For example, you can
+    use `"monospace"`, `"serif"` or `"sans-serif"` to use the user configured
+    default fonts in the browser. You can also specify other font names like
+    `"Consolas"`.
 
 -}
-family : String -> Setting
-family fontFamily entity =
-    updateDrawableTextSetting (\s -> { s | family = Just fontFamily }) entity
+font : { size : Int, family : String } -> Setting
+font { size, family } =
+    (String.fromInt size ++ "px " ++ family)
+        |> I.font
+        |> SettingCommand
 
 
 {-| Specifies the text alignment to use when drawing text. Beware
@@ -623,8 +613,8 @@ The default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/doc
 
 -}
 align : TextAlign -> Setting
-align alignment entity =
-    updateDrawableTextSetting (\s -> { s | align = Just alignment }) entity
+align alignment =
+    SettingCommand <| I.textAlign <| textAlignToString alignment
 
 
 {-| Specifies the current text baseline being used when drawing text.
@@ -636,39 +626,27 @@ for examples and rendering of the different modes.
 
 -}
 baseLine : TextBaseLine -> Setting
-baseLine textBaseLine entity =
-    updateDrawableTextSetting (\s -> { s | baseLine = Just textBaseLine }) entity
+baseLine textBaseLine =
+    SettingCommand <| I.textBaseline <| textBaseLineToString textBaseLine
 
 
 {-| Specify a maximum width. The text is scaled to fit that width.
 -}
 maxWidth : Float -> Setting
-maxWidth width entity =
-    updateDrawableTextSetting (\s -> { s | maxWidth = Just width }) entity
+maxWidth width =
+    SettingUpdateDrawable
+        (\d ->
+            case d of
+                DrawableText txt ->
+                    DrawableText { txt | maxWidth = Just width }
+
+                DrawableShapes _ ->
+                    d
+        )
 
 
 
 -- Advanced rendering settings
-
-
-type alias Settings =
-    { lineSettings : LineSettings
-    , shadow : Maybe Shadow
-    , globalAlpha : Maybe Float
-    , globalCompositeOperationMode : Maybe GlobalCompositeOperationMode
-    }
-
-
-defaultSettings : Settings
-defaultSettings =
-    { lineSettings = defaultLineSettings
-    , shadow = Nothing
-    , globalAlpha = Nothing
-    , globalCompositeOperationMode = Nothing
-    }
-
-
-
 -- Line settings
 
 
@@ -735,38 +713,13 @@ lineJoinToString join =
             "miter"
 
 
-type alias LineSettings =
-    { lineCap : Maybe LineCap
-    , lineDashOffset : Maybe Float
-    , lineJoin : Maybe LineJoin
-    , lineWidth : Maybe Float
-    , miterLimit : Maybe Float
-    , lineDash : Maybe (List Float)
-    }
-
-
-defaultLineSettings =
-    { lineCap = Nothing
-    , lineDashOffset = Nothing
-    , lineJoin = Nothing
-    , lineWidth = Nothing
-    , miterLimit = Nothing
-    , lineDash = Nothing
-    }
-
-
-updateLineSettings : (LineSettings -> LineSettings) -> Renderable -> Renderable
-updateLineSettings update ((Renderable ({ settings } as data)) as entity) =
-    Renderable { data | settings = { settings | lineSettings = update settings.lineSettings } }
-
-
 {-| Determines how the end points of every line are drawn. See `LineCap` for the
 possible types. By default `ButtCap` is used. See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)
 for examples.
 -}
 lineCap : LineCap -> Setting
-lineCap cap entity =
-    updateLineSettings (\s -> { s | lineCap = Just cap }) entity
+lineCap cap =
+    cap |> lineCapToString |> I.lineCap |> SettingCommand
 
 
 {-| Specify the line dash pattern offset or "phase".
@@ -775,8 +728,9 @@ There are visual examples and more information in the [MDN docs](https://develop
 
 -}
 lineDashOffset : Float -> Setting
-lineDashOffset offset entity =
-    updateLineSettings (\s -> { s | lineDashOffset = Just offset }) entity
+lineDashOffset offset =
+    I.lineDashOffset offset
+        |> SettingCommand
 
 
 {-| Specify how two connecting segments (of lines, arcs or curves) with
@@ -792,24 +746,24 @@ More information and examples in the [MDN docs](https://developer.mozilla.org/en
 
 -}
 lineJoin : LineJoin -> Setting
-lineJoin join entity =
-    updateLineSettings (\s -> { s | lineJoin = Just join }) entity
+lineJoin join =
+    join |> lineJoinToString |> I.lineJoin |> SettingCommand
 
 
 {-| Specify the thickness of lines in space units. When passing zero, negative,
 Infinity and NaN values are ignored. More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)
 -}
 lineWidth : Float -> Setting
-lineWidth width entity =
-    updateLineSettings (\s -> { s | lineWidth = Just width }) entity
+lineWidth width =
+    I.lineWidth width |> SettingCommand
 
 
 {-| Specify the miter limit ratio in space units. When passing zero, negative,
 Infinity and NaN values are ignored. More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)
 -}
 miterLimit : Float -> Setting
-miterLimit limit entity =
-    updateLineSettings (\s -> { s | miterLimit = Just limit }) entity
+miterLimit limit =
+    I.miterLimit limit |> SettingCommand
 
 
 {-| Specify the line dash pattern used when stroking lines, using a list of
@@ -829,8 +783,8 @@ pattern.
 
 -}
 lineDash : List Float -> Setting
-lineDash dashSettings entity =
-    updateLineSettings (\s -> { s | lineDash = Just dashSettings }) entity
+lineDash dashSettings =
+    I.setLineDash dashSettings |> SettingCommand
 
 
 
@@ -967,17 +921,21 @@ type alias Shadow =
     { blur : Float, color : Color, offset : ( Float, Float ) }
 
 
-updateSettings : (Settings -> Settings) -> Renderable -> Renderable
-updateSettings update ((Renderable ({ settings } as data)) as entity) =
-    Renderable { data | settings = update settings }
-
-
 {-| Specify a shadow to be rendered. See the `Shadow` type alias to know what
 parameters to pass.
 -}
 shadow : Shadow -> Setting
-shadow sh entity =
-    updateSettings (\s -> { s | shadow = Just sh }) entity
+shadow { blur, color, offset } =
+    let
+        ( x, y ) =
+            offset
+    in
+    SettingCommands
+        [ I.shadowBlur blur
+        , I.shadowColor color
+        , I.shadowOffsetX x
+        , I.shadowOffsetY y
+        ]
 
 
 {-| Specifies the alpha value that is applied to renderables before they
@@ -987,8 +945,8 @@ range, including `Infinity` and `NaN` will not be set and alpha will retain its
 previous value.
 -}
 alpha : Float -> Setting
-alpha a entity =
-    updateSettings (\s -> { s | globalAlpha = Just a }) entity
+alpha a =
+    I.globalAlpha a |> SettingCommand
 
 
 {-| Specify of compositing operation to apply when drawing new entities,
@@ -1005,8 +963,8 @@ for more information and pictures of what each mode does.
 
 -}
 compositeOperationMode : GlobalCompositeOperationMode -> Setting
-compositeOperationMode mode entity =
-    updateSettings (\s -> { s | globalCompositeOperationMode = Just mode }) entity
+compositeOperationMode mode =
+    mode |> globalCompositeOperationModeToString |> I.globalCompositeOperation |> SettingCommand
 
 
 
@@ -1031,17 +989,24 @@ doing.
 
 -}
 transform : List Transform -> Setting
-transform newTransforms (Renderable ({ transforms } as data)) =
-    Renderable
-        { data
-            | transforms =
-                case transforms of
-                    [] ->
-                        newTransforms
+transform transforms =
+    SettingCommands <|
+        List.map
+            (\t ->
+                case t of
+                    Rotate angle ->
+                        I.rotate angle
 
-                    _ ->
-                        transforms ++ newTransforms
-        }
+                    Scale x y ->
+                        I.scale x y
+
+                    Translate x y ->
+                        I.translate x y
+
+                    ApplyMatrix a b c d e f ->
+                        I.transform a b c d e f
+            )
+            transforms
 
 
 {-| Adds a rotation to the transformation matrix. The `angle` argument
@@ -1141,83 +1106,12 @@ render entities =
 
 
 renderOne : Renderable -> Commands -> Commands
-renderOne (Renderable ({ settings, drawable, drawOp, transforms } as data)) cmds =
+renderOne (Renderable ({ commands, drawable, drawOp } as data)) cmds =
     cmds
         |> (::) I.save
-        |> renderSettings settings
-        |> renderTransforms transforms
+        |> (++) commands
         |> renderDrawable drawable drawOp
         |> (::) I.restore
-
-
-maybeCons : Maybe a -> (a -> b) -> List b -> List b
-maybeCons maybe mapper list =
-    maybeConsMany maybe (\value -> mapper value :: list) list
-
-
-maybeConsMany : Maybe a -> (a -> List b) -> List b -> List b
-maybeConsMany maybe mapper list =
-    maybe
-        |> Maybe.map (\value -> mapper value)
-        |> Maybe.withDefault list
-
-
-renderSettings : Settings -> Commands -> Commands
-renderSettings settings cmds =
-    cmds
-        |> maybeConsMany settings.shadow (\sh -> renderShadow sh cmds)
-        |> maybeCons settings.globalAlpha I.globalAlpha
-        |> maybeCons
-            settings.globalCompositeOperationMode
-            (I.globalCompositeOperation << globalCompositeOperationModeToString)
-        |> renderLineSettings settings.lineSettings
-
-
-renderShadow : Shadow -> Commands -> Commands
-renderShadow { blur, color, offset } cmds =
-    let
-        ( x, y ) =
-            offset
-    in
-    I.shadowBlur blur
-        :: I.shadowColor color
-        :: I.shadowOffsetX x
-        :: I.shadowOffsetY y
-        :: cmds
-
-
-renderLineSettings : LineSettings -> Commands -> Commands
-renderLineSettings s cmds =
-    cmds
-        |> maybeCons s.lineCap (I.lineCap << lineCapToString)
-        |> maybeCons s.lineDashOffset I.lineDashOffset
-        |> maybeCons s.lineJoin (I.lineJoin << lineJoinToString)
-        |> maybeCons s.lineWidth I.lineWidth
-        |> maybeCons s.miterLimit I.miterLimit
-        |> maybeCons s.lineDash I.setLineDash
-
-
-renderTransforms : List Transform -> Commands -> Commands
-renderTransforms ts cmds =
-    List.foldl
-        (\t cs ->
-            (case t of
-                Rotate angle ->
-                    I.rotate angle
-
-                Scale x y ->
-                    I.scale x y
-
-                Translate x y ->
-                    I.translate x y
-
-                ApplyMatrix a b c d e f ->
-                    I.transform a b c d e f
-            )
-                :: cs
-        )
-        cmds
-        ts
 
 
 renderDrawable : Drawable -> DrawOp -> Commands -> Commands
@@ -1271,34 +1165,7 @@ renderLineSegment segment cmds =
 renderText : DrawOp -> Text -> Commands -> Commands
 renderText drawOp txt cmds =
     cmds
-        |> renderTextSettings txt.settings
         |> renderTextDrawOp drawOp txt
-
-
-renderTextSettings : TextSettings -> Commands -> Commands
-renderTextSettings textSettings cmds =
-    let
-        format s f =
-            String.fromInt s ++ "px " ++ f
-
-        sizeAndFont =
-            case ( textSettings.size, textSettings.family ) of
-                ( Just s, Just f ) ->
-                    Just (format s f)
-
-                ( Just s, Nothing ) ->
-                    Just (format s "sans-serif")
-
-                ( Nothing, Just f ) ->
-                    Just (format 20 f)
-
-                ( Nothing, Nothing ) ->
-                    Nothing
-    in
-    cmds
-        |> maybeCons sizeAndFont I.font
-        |> maybeCons textSettings.align (I.textAlign << textAlignToString)
-        |> maybeCons textSettings.baseLine (I.textBaseline << textBaseLineToString)
 
 
 renderTextDrawOp : DrawOp -> Text -> Commands -> Commands
@@ -1324,13 +1191,13 @@ renderTextDrawOp drawOp txt cmds =
 
 
 renderTextFill txt x y color cmds =
-    I.fillText txt.text x y txt.settings.maxWidth
+    I.fillText txt.text x y txt.maxWidth
         :: I.fillStyle color
         :: cmds
 
 
 renderTextStroke txt x y color cmds =
-    I.strokeText txt.text x y txt.settings.maxWidth
+    I.strokeText txt.text x y txt.maxWidth
         :: I.strokeStyle color
         :: cmds
 
