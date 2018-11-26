@@ -1,8 +1,10 @@
-- [] Migrate styles to lists of settings
-- [] Add toHtmlWithOptions
-- [] Move style settings to Canvas.{Styles|Settings}
-- [] Move shapes to Canvas.Shapes
-- [] Move text to Canvas.Text
-- [] Document it all properly
-- [] Remove docs from Internal
-- [] See if we can do something about Textures/bitmaps with the library
+- Optimize implementation (now piggybacks on last impl)
+- Review docs
+- Add toHtmlWithOptions (to set default settings)
+- Update example on README.md (needs rebasing with master)
+- See if we can do something about Textures/bitmaps with the library
+- Fix README links (examples) after publishing and publish a patch version
+- _Maybe_
+  - Move style settings to Canvas.{Styles|Settings}
+  - Move shapes to Canvas.Shapes
+  - Move text to Canvas.Text
