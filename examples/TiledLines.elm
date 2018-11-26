@@ -94,7 +94,7 @@ drawLines seed i shapes =
             lineShapes =
                 drawLine line
         in
-        drawLines seed2 (i + 1) (lineShapes ++ shapes)
+        drawLines seed2 (i + 1) (lineShapes :: shapes)
 
 
 randomLine seed x y width height =
@@ -131,4 +131,4 @@ horizontalLine seed x y width height =
 
 
 drawLine ( start, end ) =
-    [ moveTo start, lineTo end ]
+    path start [ lineTo end ]

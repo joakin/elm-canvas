@@ -162,7 +162,7 @@ view model =
         )
 
 
-drawLines : Points -> ( Int, Int ) -> ( Array Shape, Array Renderable ) -> ( Array Shape, Array Renderable )
+drawLines : Points -> ( Int, Int ) -> ( Array PathSegment, Array Renderable ) -> ( Array PathSegment, Array Renderable )
 drawLines points ( x, y ) ( currentLine, lines ) =
     let
         { point } =
@@ -198,13 +198,17 @@ drawLines points ( x, y ) ( currentLine, lines ) =
     if x == cols - 1 then
         let
             newLine =
-                Array.push drawPoint currentLine
-                    |> Array.toList
-                    |> shapes
-                        [ lineWidth 1.5
-                        , fill bgColor
-                        , stroke (Color.hsl (degrees 188) 0.3 0.8)
-                        ]
+                shapes
+                    [ lineWidth 1.5
+                    , fill bgColor
+                    , stroke (Color.hsl (degrees 188) 0.3 0.8)
+                    ]
+                    [ path ( 0, 0 )
+                        -- We add the moveTo above to the line, so this won't matter
+                        (Array.push drawPoint currentLine
+                            |> Array.toList
+                        )
+                    ]
         in
         ( Array.empty, Array.push newLine lines )
 

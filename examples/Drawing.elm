@@ -147,9 +147,7 @@ drawPoint newPoint { previousMidpoint, lastPoint } ({ pending } as model) =
         , pending =
             Array.push
                 (drawLine model
-                    [ moveTo previousMidpoint
-                    , quadraticCurveTo lastPoint newMidPoint
-                    ]
+                    [ path previousMidpoint [ quadraticCurveTo lastPoint newMidPoint ] ]
                 )
                 pending
     }
@@ -161,9 +159,7 @@ finalPoint point { previousMidpoint, lastPoint } ({ pending } as model) =
         , pending =
             Array.push
                 (drawLine model
-                    [ moveTo previousMidpoint
-                    , quadraticCurveTo lastPoint point
-                    ]
+                    [ path previousMidpoint [ quadraticCurveTo lastPoint point ] ]
                 )
                 pending
     }

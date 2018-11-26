@@ -44,7 +44,6 @@ view ( count, fps ) =
             , stroke Color.green
             ]
             [ rect ( -100, -150 ) 40 50
-            , moveTo ( 100, 100 )
             , circle ( 100, 100 ) 80
             ]
         , text
@@ -58,10 +57,11 @@ view ( count, fps ) =
             ( w - 50, 50 )
             ("fps: " ++ String.fromInt (floor fps))
         , shapes []
-            [ moveTo ( 20, 10 )
-            , lineTo ( 10, 30 )
-            , lineTo ( 30, 30 )
-            , lineTo ( 20, 10 )
+            [ path ( 20, 10 )
+                [ lineTo ( 10, 30 )
+                , lineTo ( 30, 30 )
+                , lineTo ( 20, 10 )
+                ]
             , circle ( 50, 50 ) 10
             ]
         , shapes
@@ -71,16 +71,17 @@ view ( count, fps ) =
             (List.range 0 10
                 |> List.map
                     (\i ->
-                        (if modBy 2 i == 0 then
-                            arc
-
-                         else
-                            arcC
-                        )
+                        arc
                             ( toFloat i * 40 + 40, 0 )
                             20
                             (degrees -45)
                             (degrees 45)
+                            (if modBy 2 i == 0 then
+                                False
+
+                             else
+                                True
+                            )
                     )
             )
         ]

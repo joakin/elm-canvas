@@ -238,6 +238,5 @@ paint { line, life } =
         [ lineWidth (30 * toFloat life / h)
         , stroke Color.black
         ]
-        [ moveTo (Point2d.coordinates start)
-        , lineTo (Point2d.coordinates end)
+        [ path (Point2d.coordinates start) [ lineTo (Point2d.coordinates end) ]
         ]
