@@ -54,14 +54,14 @@ generateHeading =
 generateColor : Generator Color
 generateColor =
     Random.List.choose
-        [ Color.rgb 0 48 73
-        , Color.rgb 73 214 40
-        , Color.rgb 247 127 0
-        , Color.rgb 252 191 73
-        , Color.rgb 234 226 183
+        [ Color.rgb255 0 48 73
+        , Color.rgb255 73 214 40
+        , Color.rgb255 247 127 0
+        , Color.rgb255 252 191 73
+        , Color.rgb255 234 226 183
         ]
         |> Random.map Tuple.first
-        |> Random.map (Maybe.withDefault (Color.rgb 252 191 73))
+        |> Random.map (Maybe.withDefault (Color.rgb255 252 191 73))
 
 
 generateParticle : Particle -> Generator Particle
