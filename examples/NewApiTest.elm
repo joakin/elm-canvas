@@ -48,8 +48,7 @@ view ( count, fps ) =
             ]
         , text
             [ align Right
-            , size 30
-            , family "sans-serif"
+            , font { size = 30, family = "sans-serif" }
             , lineWidth 1
             , stroke Color.blue
             , fill Color.green
