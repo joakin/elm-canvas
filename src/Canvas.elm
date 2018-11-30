@@ -1,16 +1,17 @@
 module Canvas exposing
     ( toHtml
-    , Renderable, Point, Setting
+    , Renderable, Setting
     , shapes, text
+    , Point
     , fill, stroke
     , Shape
     , rect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
-    , font, TextAlign(..), align, TextBaseLine(..), baseLine
-    , lineDash, LineCap(..), lineCap, lineDashOffset, LineJoin(..), lineJoin, lineWidth, miterLimit
-    , Shadow, shadow
-    , alpha, GlobalCompositeOperationMode(..), compositeOperationMode
-    , Transform(..), transform, translate, rotate, scale, applyMatrix
+    , font, align, TextAlign(..), baseLine, TextBaseLine(..)
+    , lineWidth, lineCap, LineCap(..), lineJoin, LineJoin(..), lineDash, lineDashOffset, miterLimit
+    , shadow, Shadow
+    , transform, Transform, translate, rotate, scale, applyMatrix
+    , alpha, compositeOperationMode, GlobalCompositeOperationMode(..)
     )
 
 {-| This module exposes a nice drawing API that works on top of the the DOM
@@ -27,20 +28,37 @@ requires the `elm-canvas` web component to work.
 
 # Drawing things
 
-@docs Renderable, Point, Setting
+@docs Renderable, Setting
 
 @docs shapes, text
+
+@docs Point
 
 
 # Styling the things you draw
 
+The two main style settings are fill color and stroke color, which are
+documented here.
+
 @docs fill, stroke
+
+There are other style settings in the documentation (if you search for things
+that return a `Setting` you can see). More specifically:
+
+  - There are some style settings that only apply when drawing text, and you can find them in the **Drawing text** section.
+  - There are other more advanced rendering settings that you can read about
+    further down in the **Advanced rendering settings** section. They cover things
+    like:
+      - Line settings that apply to paths and shapes and text with stroke.
+      - Shadows.
+      - Matrix transforms.
+      - And other more advanced topics like compositing mode.
 
 
 # Drawing shapes
 
 Shapes can be rectangles, circles, and different types of lines. By composing
-shapes, you can draw complex figures! There are bunch of functions that produce
+shapes, you can draw complex figures! There are many functions that produce
 a `Shape`, which you can feed to `shapes` to get something on the screen.
 
 @docs Shape
@@ -50,7 +68,7 @@ Here are the different functions that produce shapes that we can draw.
 @docs rect, circle, arc, path
 
 
-## Path
+## Paths
 
 In order to make a complex path, we need to put together a list of `PathSegment`
 
@@ -61,37 +79,56 @@ In order to make a complex path, we need to put together a list of `PathSegment`
 
 To draw text we use the function `text` documented above:
 
-    text [ font { size = 48, family = "serif" }, align Center ] ( 50, 50 ) "Hello world"
+    text
+        [ font { size = 48, family = "serif" }
+        , align Center
+        ]
+        ( 50, 50 )
+        "Hello world"
 
-You can apply the following settings to text specifically. They will do nothing
-if you apply them to other renderables, like `shapes`.
+You can apply the following styling settings to text specifically. They will do
+nothing if you apply them to other renderables, like `shapes`.
 
-@docs font, TextAlign, align, TextBaseLine, baseLine
+@docs font, align, TextAlign, baseLine, TextBaseLine
 
 
 # Advanced rendering settings
 
-The following are settings that you can apply to all renderables, to create very specific effects.
+The following are settings that you can apply, to create very specific and
+custom effects.
 
 
-## Other line settings
+## Line settings
 
-@docs lineDash, LineCap, lineCap, lineDashOffset, LineJoin, lineJoin, lineWidth, miterLimit
+Line style settings apply to paths, and the stroke of shapes and text (if any).
+
+@docs lineWidth, lineCap, LineCap, lineJoin, LineJoin, lineDash, lineDashOffset, miterLimit
 
 
 ## Shadows
 
-@docs Shadow, shadow
+The shadow setting allows you to create a shadow for a renderable, similar to
+what the `box-shadow` CSS does to HTML elements.
 
-
-## Alpha and global composite mode
-
-@docs alpha, GlobalCompositeOperationMode, compositeOperationMode
+@docs shadow, Shadow
 
 
 ## Transforms: scaling, rotating, translating, and matrix transformations
 
-@docs Transform, transform, translate, rotate, scale, applyMatrix
+Transforms are very useful as they allow you to manipulate the rendering via
+a transformation matrix, allowing you to translate, scale, rotate and skew the
+rendering context easily. They can be a bit of an advanced topic, but they are
+powerful and can be very useful.
+
+@docs transform, Transform, translate, rotate, scale, applyMatrix
+
+
+## Alpha and global composite mode
+
+Finally, there are a couple of other settings that you can use to create
+interesting visual effects:
+
+@docs alpha, compositeOperationMode, GlobalCompositeOperationMode
 
 -}
 
@@ -119,7 +156,7 @@ height)` in pixels, a list of `Html.Attribute`, and finally _instead_ of a list
 of html elements, we pass a `List Renderable`. A `Renderable` is a thing that
 the canvas knows how to render. Read on for more information 👇.
 
-Note: Remember to include the `elm-canvas` web component from npm in your page for
+**Note**: Remember to include the `elm-canvas` web component from npm in your page for
 this to work!
 
 -}
@@ -150,10 +187,11 @@ type alias Point =
     ( Float, Float )
 
 
-{-| A `Renderable` is a thing that the canvas knows how to render.
+{-| A `Renderable` is a thing that the canvas knows how to render, similar to
+`Html` elements.
 
-To make a list of `Renderable` to pass to `Canvas.toHtml` look in the docs for
-the functions that produce renderables, like `shapes` and `text`.
+We can make `Renderable`s to use with `Canvas.toHtml` with functions like
+`shapes` and `text`.
 
 -}
 type Renderable
@@ -176,8 +214,8 @@ type DrawOp
     | FillAndStroke Color Color
 
 
-{-| Similar to Html.Attribute, settings control the presentation and other style
-options for the `Renderable`s.
+{-| Similar to `Html.Attribute`, settings control the presentation and other
+style options for the `Renderable`s.
 -}
 type Setting
     = SettingCommand I.Command
@@ -249,8 +287,20 @@ stroke color =
 -- Shapes drawables
 
 
-{-| `shapes` takes a list of `Shape` with some `Setting`s and converts it into
-a `Renderable` for the canvas.
+{-| A `Shape` represents a shape or lines to be drawn. Giving them to `shapes`
+we get a `Renderable` for the canvas.
+
+    shapes []
+        [ path ( 20, 10 )
+            [ lineTo ( 10, 30 )
+            , lineTo ( 30, 30 )
+            , lineTo ( 20, 10 )
+            ]
+        , circle ( 50, 50 ) 10
+        , rect ( 100, 150 ) 40 50
+        , circle ( 100, 100 ) 80
+        ]
+
 -}
 type Shape
     = Rect Point Float Float
@@ -278,7 +328,10 @@ efficient rendering.
 
     Canvas.toHtml ( width, height )
         []
-        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ] ]
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) width height ] ]
+
+You can read more about the different kinds of `Shape` in the **Drawing shapes**
+section.
 
 -}
 shapes : List Setting -> List Shape -> Renderable
@@ -352,14 +405,15 @@ path startingPoint segments =
 
 {-| Creates an arc, a partial circle. It takes the position of the center of the
 circle, the radius of it, the start angle where the arc will start, the end
-angle where the arc will end, and if it should draw anti-clockwise.
+angle where the arc will end, and if it should draw in clockwise or
+anti-clockwise direction.
 
-    arc pos radius startAngle endAngle antiClockwise
+    arc ( 10, 10 ) 40 { startAngle = 15, endAngle = 85, clockwise = True }
 
 -}
-arc : Point -> Float -> Float -> Float -> Bool -> Shape
-arc pos radius startAngle endAngle antiClockwise =
-    Arc pos radius startAngle endAngle antiClockwise
+arc : Point -> Float -> { startAngle : Float, endAngle : Float, clockwise : Bool } -> Shape
+arc pos radius { startAngle, endAngle, clockwise } =
+    Arc pos radius startAngle endAngle (not clockwise)
 
 
 {-| Adds an arc to the path with the given control points and radius.
@@ -490,6 +544,9 @@ positioned with regards to the coordinates provided.
     Canvas.toHtml ( width, height )
         []
         [ text [ size 48, align Center ] ( 50, 50 ) "Hello world" ]
+
+You can learn more about drawing text and its settings in the **Drawing text**
+section.
 
 -}
 text : List Setting -> Point -> String -> Renderable
@@ -683,7 +740,7 @@ lineCapToString cap =
 
 
 {-| Determines how two connecting segments with non-zero lengths in a shape are
-joined together. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
+joined together.
 
   - `Round`
       - Rounds off the corners of a shape by filling an additional sector of disc
@@ -696,6 +753,8 @@ joined together. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Can
       - Connected segments are joined by extending their outside edges to connect
         at a single point, with the effect of filling an additional lozenge-shaped
         area. This setting is affected by the miterLimit property.
+
+You can see examples and pictures on the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
 
 -}
 type LineJoin
@@ -762,7 +821,10 @@ lineWidth width =
 
 
 {-| Specify the miter limit ratio in space units. When passing zero, negative,
-Infinity and NaN values are ignored. More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)
+Infinity and NaN values are ignored. It defaults to 10.
+
+More information and live example in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)
+
 -}
 miterLimit : Float -> Setting
 miterLimit limit =
@@ -782,7 +844,7 @@ pattern.
         15, 25]` will become `[5, 15, 25, 5, 15, 25]`. If the list is empty, the line
         dash list is clear and line strokes are solid.
 
-[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
+You can see examples and more information in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
 
 -}
 lineDash : List Float -> Setting
@@ -941,28 +1003,23 @@ shadow { blur, color, offset } =
         ]
 
 
-{-| Specifies the alpha value that is applied to renderables before they
-are drawn onto the canvas. The value is in the range from 0.0 (fully
-transparent) to 1.0 (fully opaque). The default value is 1.0. Values outside the
-range, including `Infinity` and `NaN` will not be set and alpha will retain its
-previous value.
+{-| Specifies the alpha value that is applied before renderables are drawn onto
+the canvas. The value is in the range from 0.0 (fully transparent) to 1.0 (fully
+opaque). The default value is 1.0. Values outside the range, including
+`Infinity` and `NaN` will not be set and alpha will remain default.
 -}
 alpha : Float -> Setting
 alpha a =
     I.globalAlpha a |> SettingCommand
 
 
-{-| Specify of compositing operation to apply when drawing new entities,
-where type is a `GlobalCompositeOperationMode` identifying which of the
-compositing or blending mode operations to use.
+{-| Specify the type of compositing operation to apply when drawing new
+entities, where type is a `GlobalCompositeOperationMode` identifying which of
+the compositing or blending mode operations to use.
 
-See the chapter
-[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)
-from the Canvas Tutorial, or visit the [MDN
-docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation)
-for more information and pictures of what each mode does.
+See `GlobalCompositeOperationMode` below for more information.
 
-    globalCompositeOperation Screen
+    compositeOperationMode Screen
 
 -}
 compositeOperationMode : GlobalCompositeOperationMode -> Setting
@@ -974,13 +1031,21 @@ compositeOperationMode mode =
 -- Transforms
 
 
-{-| Type of transform to apply to the matrix, to be used in `transform`.
+{-| Type of transform to apply to the matrix, to be used in `transform`. See the
+functions below to learn how to create transforms.
 -}
 type Transform
     = Rotate Float
     | Scale Float Float
     | Translate Float Float
-    | ApplyMatrix Float Float Float Float Float Float
+    | ApplyMatrix
+        { m11 : Float
+        , m12 : Float
+        , m21 : Float
+        , m22 : Float
+        , dx : Float
+        , dy : Float
+        }
 
 
 {-| Specify the transform matrix to apply when drawing. You do so by applying
@@ -988,7 +1053,9 @@ transforms in order, like `translate`, `rotate`, or `scale`, but you can also
 use `applyMatrix` and set the matrix yourself manually if you know what you are
 doing.
 
-    shapes [ transform [ rotate (degrees 50) ] ] [ rect ( 40, 40 ) 20 20 ]
+    shapes
+        [ transform [ rotate (degrees 50) ] ]
+        [ rect ( 40, 40 ) 20 20 ]
 
 -}
 transform : List Transform -> Setting
@@ -1006,8 +1073,8 @@ transform transforms =
                     Translate x y ->
                         I.translate x y
 
-                    ApplyMatrix a b c d e f ->
-                        I.transform a b c d e f
+                    ApplyMatrix { m11, m12, m21, m22, dx, dy } ->
+                        I.transform m11 m12 m21 m22 dx dy
             )
             transforms
 
@@ -1022,10 +1089,16 @@ The rotation center point is always the canvas origin. To change the center
 point, we will need to move the canvas by using the `translate` transform before
 rotating. For example, a very common use case to rotate from a specific point in
 the canvas, maybe the center of your renderable, would be done by translating to
-that point, rotating, and then translating back, in case you want to apply more
+that point, rotating, and then translating back, if you want to apply more
 transformations. Like this:
 
-    transform [ translate x y, rotate rotation, translate -x -y ]
+    transform
+        [ translate x y
+        , rotate rotation
+        , translate -x -y
+
+        {- Other transforms -}
+        ]
 
 See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate)
 for more information and examples.
@@ -1052,7 +1125,7 @@ This results in shapes being drawn twice as large.
   - `y`
       - Scaling factor in the vertical direction.
 
-Note: You can use `scale -1 1` to flip the context horizontally and `scale 1
+**Note**: You can use `scale -1 1` to flip the context horizontally and `scale 1
 -1` to flip it vertically.
 
 More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)
@@ -1080,21 +1153,29 @@ translate =
 arguments of this method. You are able to scale, rotate, move and skew the
 context.
 
-  - `a` (m11)
+  - `m11`
       - Horizontal scaling.
-  - `b` (m12)
+  - `m12`
       - Horizontal skewing.
-  - `c` (m21)
+  - `m21`
       - Vertical skewing.
-  - `d` (m22)
+  - `m22`
       - Vertical scaling.
-  - `e` (dx)
+  - `dx`
       - Horizontal moving.
-  - `f` (dy)
+  - `dy`
       - Vertical moving.
 
 -}
-applyMatrix : Float -> Float -> Float -> Float -> Float -> Float -> Transform
+applyMatrix :
+    { m11 : Float
+    , m12 : Float
+    , m21 : Float
+    , m22 : Float
+    , dx : Float
+    , dy : Float
+    }
+    -> Transform
 applyMatrix =
     ApplyMatrix
 

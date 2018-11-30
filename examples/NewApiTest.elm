@@ -73,14 +73,10 @@ view ( count, fps ) =
                         arc
                             ( toFloat i * 40 + 40, 0 )
                             20
-                            (degrees -45)
-                            (degrees 45)
-                            (if modBy 2 i == 0 then
-                                False
-
-                             else
-                                True
-                            )
+                            { startAngle = degrees -45
+                            , endAngle = degrees 45
+                            , clockwise = modBy 2 i == 0
+                            }
                     )
             )
         ]
