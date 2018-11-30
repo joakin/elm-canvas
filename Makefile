@@ -4,7 +4,7 @@ default: all
 MINIFY:=0
 ELM_MAKE_FLAGS:=
 
-LIBRARY_SOURCES:=$(wildcard src/**/*.elm)
+LIBRARY_SOURCES:=$(wildcard src/*.elm)
 EXAMPLES:=$(wildcard examples/*.elm)
 EXAMPLES_COMPILED:=$(patsubst examples/%.elm,public/%.js,$(EXAMPLES))
 
@@ -15,7 +15,7 @@ ELM_CANVAS_COPY=public/elm-canvas.js
 .PHONY=all
 all: $(DOCS_OUTPUT) $(EXAMPLES_COMPILED) $(ELM_CANVAS_COPY)
 
-public/%.js: examples/%.elm
+public/%.js: examples/%.elm $(LIBRARY_SOURCES)
 	@echo "Compiling $@ from $<"
 	cd examples/ && elm make $(patsubst examples/%,%,$<) --output ../$@ $(ELM_MAKE_FLAGS)
 	@if [ "$(MINIFY)" = "1" ]; then \
