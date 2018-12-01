@@ -1,8 +1,5 @@
-- Review docs
-- Add toHtmlWithOptions (to set default settings)
-- Update example on README.md (needs rebasing with master)
-- See if we can do something about Textures/bitmaps with the library
 - Fix README links (examples) after publishing and publish a patch version
+- See if we can do something about Textures/bitmaps with the library
 - _Maybe_
   - Move style settings to Canvas.{Styles|Settings}
   - Move shapes to Canvas.Shapes
