@@ -17,6 +17,14 @@ customElements.define(
         this.canvas = this.querySelector("canvas");
         this.context = this.canvas.getContext("2d");
         this.mounted = true;
+
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        this.canvas.style.width = this.canvas.width;
+        this.canvas.style.height = this.canvas.height;
+        this.canvas.width = this.canvas.width * devicePixelRatio;
+        this.canvas.height = this.canvas.height * devicePixelRatio;
+        this.context.scale(devicePixelRatio, devicePixelRatio);
+
         this.render();
       });
     }
