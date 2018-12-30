@@ -3,7 +3,7 @@
 This module exposes a nice drawing API that works on top of the the DOM canvas.
 
 [Live examples](https://joakin.github.io/elm-canvas)
-([sources](https://github.com/joakin/elm-canvas/tree/master/examples))
+([example sources](https://github.com/joakin/elm-canvas/tree/master/examples))
 
 ![](https://joakin.github.io/elm-canvas/animated-grid.png)
 ![](https://joakin.github.io/elm-canvas/dynamic-particles.png)
@@ -18,10 +18,8 @@ application.
 
 - [Ellie basic example](https://ellie-app.com/38zhvnLGCKMa1) (**Outdated**)
   - Good starting point to play with the library. (Old version 2)
-- Basic template to get started:
-  - [Template.elm](https://github.com/joakin/elm-canvas/blob/master/examples/Template.elm)
-  - [template.html](https://github.com/joakin/elm-canvas/blob/master/public/template.html)
-    - Remember to use the CDN version of elm-canvas.js, see 👇
+- Basic project template to get started:
+  [joakin/elm-canvas-sketch](https://github.com/joakin/elm-canvas-sketch)
 - <http://unpkg.com/elm-canvas/elm-canvas.js>
   - CDN link. Visit it and copy the redirected URL with the version number into
     your HTML.
