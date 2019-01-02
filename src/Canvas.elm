@@ -227,6 +227,15 @@ type Setting
 {-| By default, renderables are drawn with black color. If you want to specify
 a different color to draw, use this `Setting` on your renderable.
 
+The type `Color` comes from the package `avh4/elm-color`. To use it explicitly,
+run:
+
+    elm install avh4 / elm - color
+
+and then import it in.
+
+    import Color
+    -- ...
     shapes
         [ fill Color.green ]
         [ rect ( 10, 30 ) 50 50 ]
@@ -272,6 +281,15 @@ mergeDrawOp op1 op2 =
 specify a stroke color to draw an outline over your renderable, use this
 `Setting` on it.
 
+The type `Color` comes from the package `avh4/elm-color`. To use it explicitly,
+run:
+
+    elm install avh4 / elm - color
+
+and then import it in.
+
+    import Color
+    -- ...
     shapes
         [ stroke Color.red ]
         [ rect ( 10, 30 ) 50 50 ]
@@ -325,6 +343,9 @@ lines of different kinds that we can connect together.
 
 You can draw many shapes with the same `Setting`s, which makes for very
 efficient rendering.
+
+    import Canvas exposing (..)
+    import Color -- elm install avh4/elm-color
 
     Canvas.toHtml ( width, height )
         []
@@ -978,7 +999,7 @@ globalCompositeOperationModeToString mode =
 {-| Record with the settings for a shadow.
 
   - `blur`: Amount of blur for the shadow
-  - `color`: Color of the shadow
+  - `color`: `Color` of the shadow (from avh4/elm-color)
   - `offset`: `( xOffset, yOffset )`
 
 -}
