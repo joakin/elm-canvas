@@ -12,22 +12,37 @@ customElements.define(
       this.render();
     }
 
+    static get observedAttributes() {
+      return ['canvas.width', 'canvas.height'];
+    }
+
+
+    setCanvasDimensions(w, h){
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        this.canvas.style.width = w;
+        this.canvas.style.height = h;
+        this.canvas.width = w * devicePixelRatio;
+        this.canvas.height = h * devicePixelRatio;
+        this.context.scale(devicePixelRatio, devicePixelRatio);
+    }
+
     connectedCallback() {
       requestAnimationFrame(() => {
         this.canvas = this.querySelector("canvas");
         this.context = this.canvas.getContext("2d");
         this.mounted = true;
 
-        var devicePixelRatio = window.devicePixelRatio || 1;
-        this.canvas.style.width = this.canvas.width;
-        this.canvas.style.height = this.canvas.height;
-        this.canvas.width = this.canvas.width * devicePixelRatio;
-        this.canvas.height = this.canvas.height * devicePixelRatio;
-        this.context.scale(devicePixelRatio, devicePixelRatio);
+        setCanvasDimensions(this.canvas.width, this.canvas.height);
 
         this.render();
       });
     }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      //we're assuming that only canvas.width or canvas.height can change
+      setCanvasDimensions(this.canvas.width,this.canvas.height)
+    }
+
 
     render() {
       if (!this.mounted) return;
