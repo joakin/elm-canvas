@@ -23,6 +23,8 @@ customElements.define(
         this.canvas.style.height = h;
         this.canvas.width = w * devicePixelRatio;
         this.canvas.height = h * devicePixelRatio;
+        // Reset current transformation matrix to the identity matrix
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.context.scale(devicePixelRatio, devicePixelRatio);
     }
 
