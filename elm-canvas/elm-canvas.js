@@ -24,7 +24,7 @@ customElements.define(
         this.canvas.width = w * devicePixelRatio;
         this.canvas.height = h * devicePixelRatio;
         // Reset current transformation matrix to the identity matrix
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.scale(devicePixelRatio, devicePixelRatio);
     }
 
@@ -34,7 +34,7 @@ customElements.define(
         this.context = this.canvas.getContext("2d");
         this.mounted = true;
 
-        this.setCanvasDimensions(this.width, this.height);
+        setCanvasDimensions(this.width, this.height);
 
         this.render();
       });
@@ -42,7 +42,7 @@ customElements.define(
 
     attributeChangedCallback(name, oldValue, newValue) {
       if ((name === 'width' || name === 'height') && oldValue !== newValue) {
-        this.setCanvasDimensions(this.width, this.height)
+        setCanvasDimensions(this.width, this.height)
       }
     }
 

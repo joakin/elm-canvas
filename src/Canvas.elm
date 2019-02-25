@@ -163,7 +163,7 @@ this to work!
 toHtml : ( Int, Int ) -> List (Attribute msg) -> List Renderable -> Html msg
 toHtml ( w, h ) attrs entities =
     Html.node "elm-canvas"
-        [ commands (render entities) ]
+        [ commands (render entities), height h, width w ]
         [ canvas (height h :: width w :: attrs) []
         ]
 
