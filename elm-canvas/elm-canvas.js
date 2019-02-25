@@ -13,7 +13,7 @@ customElements.define(
     }
 
     static get observedAttributes() {
-      return ['canvas.width', 'canvas.height'];
+      return ['width', 'height'];
     }
 
 
