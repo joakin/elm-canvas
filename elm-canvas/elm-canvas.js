@@ -34,7 +34,7 @@ customElements.define(
         this.context = this.canvas.getContext("2d");
         this.mounted = true;
 
-        setCanvasDimensions(this.canvas.width, this.canvas.height);
+        this.setCanvasDimensions(this.width, this.height);
 
         this.render();
       });
