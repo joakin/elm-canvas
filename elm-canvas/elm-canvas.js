@@ -41,7 +41,6 @@ customElements.define(
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-      //we're assuming that only canvas.width or canvas.height can change
       setCanvasDimensions(this.canvas.width,this.canvas.height)
     }
 
