@@ -3,6 +3,7 @@ body {
   font-family: "Source Code Pro", "Roboto Mono", "Consolas", "Courier Prime",
     "Courier", monospace;
 
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
