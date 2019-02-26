@@ -16,7 +16,7 @@ To use it, read the docs on the `Canvas` module, and remember to include the
 `elm-canvas` custom element script in your page before you initialize your Elm
 application.
 
-- [Ellie basic example](https://ellie-app.com/4jxw7rnQ9q6a1)
+- [Ellie basic example](https://ellie-app.com/4Qf8fd4vWbva1)
   - Good starting point to play with the library without installing anything.
 - Basic project template to get started:
   [joakin/elm-canvas-sketch](https://github.com/joakin/elm-canvas-sketch)
