@@ -25,3 +25,4 @@ Version compatibility:
 | 1.x              | 1.x              |
 | 2.x              | 2.x              |
 | 3.x              | 2.x              |
+| >= 3.0.4         | 2.2.0            |
