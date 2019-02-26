@@ -40,5 +40,5 @@ $(DOCS_OUTPUT): $(LIBRARY_SOURCES)
 
 .PHONY=watch
 watch:
-	@find src examples -name '*.elm' | entr $(MAKE)
+	@find src examples elm-canvas -name '*.elm' -or -name '*.js' | entr $(MAKE)
 
