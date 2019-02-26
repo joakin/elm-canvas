@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Examples.Ellie exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
