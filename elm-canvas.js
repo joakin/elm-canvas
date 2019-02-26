@@ -12,21 +12,53 @@ customElements.define(
       this.render();
     }
 
+    static get observedAttributes() {
+      return ["width", "height"];
+    }
+
     connectedCallback() {
+      // Wait for the inner elements to be rendered before using them
       requestAnimationFrame(() => {
         this.canvas = this.querySelector("canvas");
         this.context = this.canvas.getContext("2d");
         this.mounted = true;
 
-        var devicePixelRatio = window.devicePixelRatio || 1;
-        this.canvas.style.width = this.canvas.width;
-        this.canvas.style.height = this.canvas.height;
-        this.canvas.width = this.canvas.width * devicePixelRatio;
-        this.canvas.height = this.canvas.height * devicePixelRatio;
-        this.context.scale(devicePixelRatio, devicePixelRatio);
+        this.setCanvasDimensions();
 
         this.render();
       });
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if ((name === "width" || name === "height") && oldValue !== newValue) {
+        // Wait for Elm to finish rendering and setting its stuff before
+        // changing the inner canvas dimensions
+        requestAnimationFrame(() => {
+          this.setCanvasDimensions();
+        });
+      }
+    }
+
+    setCanvasDimensions() {
+      if (!this.mounted) return;
+
+      // Get dimensions from the elm-canvas element. If they are not set, try to
+      // get them from the canvas element inside (to support elm-canvas@3.0.3)
+      var width = Number(
+        this.getAttribute("width") || this.canvas.getAttribute("width")
+      );
+      var height = Number(
+        this.getAttribute("height") || this.canvas.getAttribute("height")
+      );
+
+      var devicePixelRatio = window.devicePixelRatio || 1;
+      this.canvas.style.width = width;
+      this.canvas.style.height = height;
+      this.canvas.width = width * devicePixelRatio;
+      this.canvas.height = height * devicePixelRatio;
+      // Reset current transformation matrix to the identity matrix
+      this.context.setTransform(1, 0, 0, 1, 0, 0);
+      this.context.scale(devicePixelRatio, devicePixelRatio);
     }
 
     render() {
