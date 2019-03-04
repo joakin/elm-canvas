@@ -895,7 +895,3 @@ fn : String -> List Command -> Command
 fn name args =
     Encode.object [ ( "type", string "function" ), ( "name", string name ), ( "args", Encode.list identity args ) ]
 
-
-addTo : Commands -> Command -> Commands
-addTo list cmd =
-    cmd :: list
