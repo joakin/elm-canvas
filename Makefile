@@ -4,7 +4,7 @@ default: all
 MINIFY:=0
 ELM_MAKE_FLAGS:=
 
-LIBRARY_SOURCES:=$(wildcard src/*.elm)
+LIBRARY_SOURCES:=$(wildcard src/*.elm) $(wildcard src/*/*.elm)
 EXAMPLES:=$(wildcard examples/*.elm)
 EXAMPLES_COMPILED:=$(patsubst examples/%.elm,public/%.js,$(EXAMPLES))
 
