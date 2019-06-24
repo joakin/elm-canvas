@@ -82,10 +82,13 @@ this to work!
 -}
 toHtml : ( Int, Int ) -> List (Attribute msg) -> List Renderable -> Html msg
 toHtml ( w, h ) attrs entities =
-    Html.node "elm-canvas"
-        [ commands (render entities), height h, width w ]
-        [ canvas (height h :: width w :: attrs) []
-        ]
+    toHtmlWith
+        { width = w
+        , height = h
+        , textures = []
+        }
+        attrs
+        entities
 
 
 {-| Similar to `toHtml` but with more explicit options and the ability to load
@@ -117,10 +120,14 @@ toHtmlWith :
     -> Html msg
 toHtmlWith options attrs entities =
     Keyed.node "elm-canvas"
-        [ commands (render entities), height options.height, width options.width ]
-        (( "__canvas", canvas (height options.height :: width options.height :: attrs) [] )
+        (commands (render entities) :: height options.height :: width options.width :: attrs)
+        (( "__canvas", cnvs )
             :: List.map renderTextureSource options.textures
         )
+
+
+cnvs =
+    canvas [] []
 
 
 
