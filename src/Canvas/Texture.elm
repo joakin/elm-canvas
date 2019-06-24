@@ -34,11 +34,7 @@ You can get some information from the texture, like its dimensions:
 
 -}
 
-import Canvas.InternalTexture as I
-
-
-type Image
-    = Image I.Image
+import Canvas.Internal.Texture as T
 
 
 {-| Origin of a texture to load. Passing a `List Source` to `Canvas.toHtmlWith`
@@ -46,14 +42,14 @@ will try to load the textures and send you events with the actual `Texture` when
 it is loaded.
 -}
 type alias Source msg =
-    I.Source msg
+    T.Source msg
 
 
 {-| The `Texture` type. You can use this type with `Canvas.texture` to get
 a `Renderable` into the screen.
 -}
 type alias Texture =
-    I.Texture
+    T.Texture
 
 
 {-| Make a sprite from a texture. A sprite is like a window into a bigger
@@ -67,11 +63,11 @@ Very useful for using sprite sheet textures.
 sprite : { x : Int, y : Int, width : Int, height : Int } -> Texture -> Texture
 sprite data texture =
     case texture of
-        I.TImage image ->
-            I.TSprite data image
+        T.TImage image ->
+            T.TSprite data image
 
-        I.TSprite _ image ->
-            I.TSprite data image
+        T.TSprite _ image ->
+            T.TSprite data image
 
 
 {-| Make a `Texture.Source` from an image URL. When passing this Source to
@@ -79,7 +75,7 @@ sprite data texture =
 -}
 loadFromImageUrl : String -> (Maybe Texture -> msg) -> Source msg
 loadFromImageUrl url onLoad =
-    I.TSImageUrl url onLoad
+    T.TSImageUrl url onLoad
 
 
 {-| Get the width and height of a texture
@@ -87,8 +83,8 @@ loadFromImageUrl url onLoad =
 dimensions : Texture -> { width : Int, height : Int }
 dimensions texture =
     case texture of
-        I.TImage image ->
+        T.TImage image ->
             { width = image.width, height = image.height }
 
-        I.TSprite data _ ->
+        T.TSprite data _ ->
             { width = data.width, height = data.height }

@@ -4,7 +4,13 @@
   "summary": "2D drawing API based on the DOM Canvas, but a nicer",
   "license": "BSD-3-Clause",
   "version": "3.0.5",
-  "exposed-modules": ["Canvas", "Canvas.Texture"],
+  "exposed-modules": [
+    "Canvas",
+    "Canvas.Settings",
+    "Canvas.Settings.Text",
+    "Canvas.Settings.Line",
+    "Canvas.Texture"
+  ],
   "elm-version": "0.19.0 <= v < 0.20.0",
   "dependencies": {
     "avh4/elm-color": "1.0.0 <= v < 2.0.0",

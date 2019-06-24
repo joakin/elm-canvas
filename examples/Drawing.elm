@@ -4,6 +4,8 @@ import Array exposing (Array)
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
+import Canvas.Settings exposing (..)
+import Canvas.Settings.Line exposing (..)
 import Color exposing (Color)
 import Html exposing (Html, button, div, p)
 import Html.Attributes exposing (style)

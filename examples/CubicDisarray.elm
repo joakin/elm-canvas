@@ -10,6 +10,7 @@ module Examples.CubicDisarray exposing (main)
 
 import Browser
 import Canvas exposing (..)
+import Canvas.Settings exposing (..)
 import Color exposing (Color)
 import Grid
 import Html exposing (..)

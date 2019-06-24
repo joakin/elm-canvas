@@ -1,17 +1,10 @@
 module Canvas exposing
     ( toHtml, toHtmlWith
-    , Renderable, Setting
+    , Renderable, Point
     , shapes, text, texture
-    , Point
-    , fill, stroke
     , Shape
     , rect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
-    , font, align, TextAlign(..), baseLine, TextBaseLine(..), maxWidth
-    , lineWidth, lineCap, LineCap(..), lineJoin, LineJoin(..), lineDash, lineDashOffset, miterLimit
-    , shadow, Shadow
-    , transform, Transform, translate, rotate, scale, applyMatrix
-    , alpha, compositeOperationMode, GlobalCompositeOperationMode(..)
     )
 
 {-| This module exposes a nice drawing API that works on top of the the DOM
@@ -28,31 +21,9 @@ requires the `elm-canvas` web component to work.
 
 # Drawing things
 
-@docs Renderable, Setting
+@docs Renderable, Point
 
 @docs shapes, text, texture
-
-@docs Point
-
-
-# Styling the things you draw
-
-The two main style settings are fill color and stroke color, which are
-documented here.
-
-@docs fill, stroke
-
-There are other style settings in the documentation (if you search for things
-that return a `Setting` you can see). More specifically:
-
-  - There are some style settings that only apply when drawing text, and you can find them in the **Drawing text** section.
-  - There are other more advanced rendering settings that you can read about
-    further down in the **Advanced rendering settings** section. They cover things
-    like:
-      - Line settings that apply to paths and shapes and text with stroke.
-      - Shadows.
-      - Matrix transforms.
-      - And other more advanced topics like compositing mode.
 
 
 # Drawing shapes
@@ -74,66 +45,11 @@ In order to make a complex path, we need to put together a list of `PathSegment`
 
 @docs PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
 
-
-# Drawing text
-
-To draw text we use the function `text` documented above:
-
-    text
-        [ font { size = 48, family = "serif" }
-        , align Center
-        ]
-        ( 50, 50 )
-        "Hello world"
-
-You can apply the following styling settings to text specifically. They will do
-nothing if you apply them to other renderables, like `shapes`.
-
-@docs font, align, TextAlign, baseLine, TextBaseLine, maxWidth
-
-
-# Advanced rendering settings
-
-The following are settings that you can apply, to create very specific and
-custom effects.
-
-
-## Line settings
-
-Line style settings apply to paths, and the stroke of shapes and text (if any).
-
-@docs lineWidth, lineCap, LineCap, lineJoin, LineJoin, lineDash, lineDashOffset, miterLimit
-
-
-## Shadows
-
-The shadow setting allows you to create a shadow for a renderable, similar to
-what the `box-shadow` CSS does to HTML elements.
-
-@docs shadow, Shadow
-
-
-## Transforms: scaling, rotating, translating, and matrix transformations
-
-Transforms are very useful as they allow you to manipulate the rendering via
-a transformation matrix, allowing you to translate, scale, rotate and skew the
-rendering context easily. They can be a bit of an advanced topic, but they are
-powerful and can be very useful.
-
-@docs transform, Transform, translate, rotate, scale, applyMatrix
-
-
-## Alpha and global composite mode
-
-Finally, there are a couple of other settings that you can use to create
-interesting visual effects:
-
-@docs alpha, compositeOperationMode, GlobalCompositeOperationMode
-
 -}
 
-import Canvas.Internal as I exposing (Commands, commands)
-import Canvas.InternalTexture as TI
+import Canvas.Internal.Canvas as C exposing (..)
+import Canvas.Internal.CustomElementJsonApi as CE exposing (Commands, commands)
+import Canvas.Internal.Texture as T
 import Canvas.Texture as Texture exposing (Texture)
 import Color exposing (Color)
 import Html exposing (..)
@@ -235,55 +151,10 @@ We can make `Renderable`s to use with `Canvas.toHtml` with functions like
 -}
 type Renderable
     = Renderable
-        { commands : I.Commands
+        { commands : Commands
         , drawOp : DrawOp
         , drawable : Drawable
         }
-
-
-type Drawable
-    = DrawableText Text
-    | DrawableShapes (List Shape)
-    | DrawableTexture Point Texture
-
-
-type DrawOp
-    = NotSpecified
-    | Fill Color
-    | Stroke Color
-    | FillAndStroke Color Color
-
-
-{-| Similar to `Html.Attribute`, settings control the presentation and other
-style options for the `Renderable`s.
--}
-type Setting
-    = SettingCommand I.Command
-    | SettingCommands I.Commands
-    | SettingDrawOp DrawOp
-    | SettingUpdateDrawable (Drawable -> Drawable)
-
-
-{-| By default, renderables are drawn with black color. If you want to specify
-a different color to draw, use this `Setting` on your renderable.
-
-The type `Color` comes from the package `avh4/elm-color`. To use it explicitly,
-run:
-
-    elm install avh4 / elm - color
-
-and then import it in.
-
-    import Color
-    -- ...
-    shapes
-        [ fill Color.green ]
-        [ rect ( 10, 30 ) 50 50 ]
-
--}
-fill : Color -> Setting
-fill color =
-    SettingDrawOp (Fill color)
 
 
 mergeDrawOp : DrawOp -> DrawOp -> DrawOp
@@ -317,30 +188,6 @@ mergeDrawOp op1 op2 =
             whatever
 
 
-{-| By default, renderables are drawn with no visible stroke. If you want to
-specify a stroke color to draw an outline over your renderable, use this
-`Setting` on it.
-
-The type `Color` comes from the package `avh4/elm-color`. To use it explicitly,
-run:
-
-    elm install avh4 / elm - color
-
-and then import it in.
-
-    import Color
-    -- ...
-    shapes
-        [ stroke Color.red ]
-        [ rect ( 10, 30 ) 50 50 ]
-
--}
-stroke : Color -> Setting
-stroke color =
-    SettingDrawOp
-        (Stroke color)
-
-
 
 -- Shapes drawables
 
@@ -360,22 +207,15 @@ we get a `Renderable` for the canvas.
         ]
 
 -}
-type Shape
-    = Rect Point Float Float
-    | Circle Point Float
-    | Path Point (List PathSegment)
-    | Arc Point Float Float Float Bool
+type alias Shape =
+    C.Shape
 
 
 {-| In order to draw a path, you need to give the function `path` a list of
 `PathSegment`
 -}
-type PathSegment
-    = ArcTo Point Point Float
-    | BezierCurveTo Point Point Point
-    | LineTo Point
-    | MoveTo Point
-    | QuadraticCurveTo Point Point
+type alias PathSegment =
+    C.PathSegment
 
 
 {-| We use `shapes` to render different shapes like rectangles, circles, and
@@ -589,12 +429,6 @@ quadraticCurveTo controlPoint point =
 -- Text drawables
 
 
-{-| To render text, we need to create with `text`
--}
-type alias Text =
-    { maxWidth : Maybe Float, point : Point, text : String }
-
-
 {-| We use `text` to render text on the canvas. We need to pass the list of
 settings to style it, the point with the coordinates where we want to render,
 and the text to render.
@@ -618,154 +452,6 @@ text settings point str =
             , drawOp = NotSpecified
             , drawable = DrawableText { maxWidth = Nothing, point = point, text = str }
             }
-        )
-
-
-{-| Type of text alignment
-
-  - `Left`
-      - The text is left-aligned.
-  - `Right`
-      - The text is right-aligned.
-  - `Center`
-      - The text is centered.
-  - `Start`
-      - The text is aligned at the normal start of the line (left-aligned for
-        left-to-right locales, right-aligned for right-to-left locales).
-  - `End`
-      - The text is aligned at the normal end of the line (right-aligned for
-        left-to-right locales, left-aligned for right-to-left locales).
-
--}
-type TextAlign
-    = Left
-    | Right
-    | Center
-    | Start
-    | End
-
-
-textAlignToString alignment =
-    case alignment of
-        Left ->
-            "left"
-
-        Right ->
-            "right"
-
-        Center ->
-            "center"
-
-        Start ->
-            "start"
-
-        End ->
-            "end"
-
-
-{-| Type of text baseline.
-
-  - `Top`
-      - The text baseline is the top of the em square.
-  - `Hanging`
-      - The text baseline is the hanging baseline. (Used by Tibetan and other Indic scripts.)
-  - `Middle`
-      - The text baseline is the middle of the em square.
-  - `Alphabetic`
-      - The text baseline is the normal alphabetic baseline.
-  - `Ideographic`
-      - The text baseline is the ideographic baseline; this is the bottom of the body of the characters, if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese and Korean scripts.)
-  - `Bottom`
-      - The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.
-
--}
-type TextBaseLine
-    = Top
-    | Hanging
-    | Middle
-    | Alphabetic
-    | Ideographic
-    | Bottom
-
-
-textBaseLineToString baseLineSetting =
-    case baseLineSetting of
-        Top ->
-            "top"
-
-        Hanging ->
-            "hanging"
-
-        Middle ->
-            "middle"
-
-        Alphabetic ->
-            "alphabetic"
-
-        Ideographic ->
-            "ideographic"
-
-        Bottom ->
-            "bottom"
-
-
-{-| Specify the font size and family to use when rendering text.
-
-  - `size`: What is the size of the text in pixels. Similar to the `font-size`
-    property in CSS.
-  - `family`: Font family name to use when drawing the text. For example, you can
-    use `"monospace"`, `"serif"` or `"sans-serif"` to use the user configured
-    default fonts in the browser. You can also specify other font names like
-    `"Consolas"`.
-
--}
-font : { size : Int, family : String } -> Setting
-font { size, family } =
-    (String.fromInt size ++ "px " ++ family)
-        |> I.font
-        |> SettingCommand
-
-
-{-| Specifies the text alignment to use when drawing text. Beware
-that the alignment is based on the x value of position passed to `text`. So if
-`textAlign` is `Center`, then the text would be drawn at `x - (width / 2)`.
-
-The default value is `Start`. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)
-
--}
-align : TextAlign -> Setting
-align alignment =
-    SettingCommand <| I.textAlign <| textAlignToString alignment
-
-
-{-| Specifies the current text baseline being used when drawing text.
-
-The default value is `Alphabetic`.
-
-See [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)
-for examples and rendering of the different modes.
-
--}
-baseLine : TextBaseLine -> Setting
-baseLine textBaseLine =
-    SettingCommand <| I.textBaseline <| textBaseLineToString textBaseLine
-
-
-{-| Specify a maximum width. The text is scaled to fit that width.
--}
-maxWidth : Float -> Setting
-maxWidth width =
-    SettingUpdateDrawable
-        (\d ->
-            case d of
-                DrawableText txt ->
-                    DrawableText { txt | maxWidth = Just width }
-
-                DrawableShapes _ ->
-                    d
-
-                DrawableTexture _ _ ->
-                    d
         )
 
 
@@ -798,496 +484,21 @@ texture settings p t =
 
 
 
--- Advanced rendering settings
--- Line settings
-
-
-{-| Type of end points for line drawn.
-
-  - `ButtCap`
-      - The ends of lines are squared off at the endpoints.
-  - `RoundCap`
-      - The ends of lines are rounded.
-  - `SquareCap`
-      - The ends of lines are squared off by adding a box with an equal width
-        and half the height of the line's thickness.
-
--}
-type LineCap
-    = ButtCap
-    | RoundCap
-    | SquareCap
-
-
-lineCapToString cap =
-    case cap of
-        ButtCap ->
-            "butt"
-
-        RoundCap ->
-            "round"
-
-        SquareCap ->
-            "square"
-
-
-{-| Determines how two connecting segments with non-zero lengths in a shape are
-joined together.
-
-  - `Round`
-      - Rounds off the corners of a shape by filling an additional sector of disc
-        centered at the common endpoint of connected segments. The radius for these
-        rounded corners is equal to the line width.
-  - `Bevel`
-      - Fills an additional triangular area between the common endpoint of
-        connected segments, and the separate outside rectangular corners of each segment.
-  - `Miter`
-      - Connected segments are joined by extending their outside edges to connect
-        at a single point, with the effect of filling an additional lozenge-shaped
-        area. This setting is affected by the miterLimit property.
-
-You can see examples and pictures on the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
-
--}
-type LineJoin
-    = BevelJoin
-    | RoundJoin
-    | MiterJoin
-
-
-lineJoinToString join =
-    case join of
-        BevelJoin ->
-            "bevel"
-
-        RoundJoin ->
-            "round"
-
-        MiterJoin ->
-            "miter"
-
-
-{-| Determines how the end points of every line are drawn. See `LineCap` for the
-possible types. By default `ButtCap` is used. See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap)
-for examples.
--}
-lineCap : LineCap -> Setting
-lineCap cap =
-    cap |> lineCapToString |> I.lineCap |> SettingCommand
-
-
-{-| Specify the line dash pattern offset or "phase".
-
-There are visual examples and more information in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset)
-
--}
-lineDashOffset : Float -> Setting
-lineDashOffset offset =
-    I.lineDashOffset offset
-        |> SettingCommand
-
-
-{-| Specify how two connecting segments (of lines, arcs or curves) with
-non-zero lengths in a shape are joined together (degenerate segments with zero
-lengths, whose specified endpoints and control points are exactly at the same
-position, are skipped). See the type `LineJoin`.
-
-By default this property is set to `MiterJoin`. Note that the `lineJoin` setting
-has no effect if the two connected segments have the same direction, because no
-joining area will be added in this case.
-
-More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin)
-
--}
-lineJoin : LineJoin -> Setting
-lineJoin join =
-    join |> lineJoinToString |> I.lineJoin |> SettingCommand
-
-
-{-| Specify the thickness of lines in space units. When passing zero, negative,
-Infinity and NaN values are ignored. More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth)
--}
-lineWidth : Float -> Setting
-lineWidth width =
-    I.lineWidth width |> SettingCommand
-
-
-{-| Specify the miter limit ratio in space units. When passing zero, negative,
-Infinity and NaN values are ignored. It defaults to 10.
-
-More information and live example in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)
-
--}
-miterLimit : Float -> Setting
-miterLimit limit =
-    I.miterLimit limit |> SettingCommand
-
-
-{-| Specify the line dash pattern used when stroking lines, using a list of
-values which specify alternating lengths of lines and gaps which describe the
-pattern.
-
-    lineDash segments
-
-  - `segments`
-      - A list of numbers which specify distances to alternately draw a line
-        and a gap (in coordinate space units). If the number of elements in the list
-        is odd, the elements of the list get copied and concatenated. For example, `[5,
-        15, 25]` will become `[5, 15, 25, 5, 15, 25]`. If the list is empty, the line
-        dash list is clear and line strokes are solid.
-
-You can see examples and more information in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
-
--}
-lineDash : List Float -> Setting
-lineDash dashSettings =
-    I.setLineDash dashSettings |> SettingCommand
-
-
-
--- Global style settings
-
-
-{-| Type of compositing operation, identifying which of the compositing or
-blending mode operations to use. See the chapter
-[Compositing](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)
-from the Canvas Tutorial.
-
-For more information and pictures of what each mode does, see the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation).
-
--}
-type GlobalCompositeOperationMode
-    = SourceOver
-    | SourceIn
-    | SourceOut
-    | SourceAtop
-    | DestinationOver
-    | DestinationIn
-    | DestinationOut
-    | DestinationAtop
-    | Lighter
-    | Copy
-    | Xor
-    | Multiply
-    | Screen
-    | Overlay
-    | Darken
-    | Lighten
-    | ColorDodge
-    | ColorBurn
-    | HardLight
-    | SoftLight
-    | Difference
-    | Exclusion
-    | Hue
-    | Saturation
-    | Color
-    | Luminosity
-
-
-globalCompositeOperationModeToString : GlobalCompositeOperationMode -> String
-globalCompositeOperationModeToString mode =
-    case mode of
-        SourceOver ->
-            "source-over"
-
-        SourceIn ->
-            "source-in"
-
-        SourceOut ->
-            "source-out"
-
-        SourceAtop ->
-            "source-atop"
-
-        DestinationOver ->
-            "destination-over"
-
-        DestinationIn ->
-            "destination-in"
-
-        DestinationOut ->
-            "destination-out"
-
-        DestinationAtop ->
-            "destination-atop"
-
-        Lighter ->
-            "lighter"
-
-        Copy ->
-            "copy"
-
-        Xor ->
-            "xor"
-
-        Multiply ->
-            "multiply"
-
-        Screen ->
-            "screen"
-
-        Overlay ->
-            "overlay"
-
-        Darken ->
-            "darken"
-
-        Lighten ->
-            "lighten"
-
-        ColorDodge ->
-            "color-dodge"
-
-        ColorBurn ->
-            "color-burn"
-
-        HardLight ->
-            "hard-light"
-
-        SoftLight ->
-            "soft-light"
-
-        Difference ->
-            "difference"
-
-        Exclusion ->
-            "exclusion"
-
-        Hue ->
-            "hue"
-
-        Saturation ->
-            "saturation"
-
-        Color ->
-            "color"
-
-        Luminosity ->
-            "luminosity"
-
-
-{-| Record with the settings for a shadow.
-
-  - `blur`: Amount of blur for the shadow
-  - `color`: `Color` of the shadow (from avh4/elm-color)
-  - `offset`: `( xOffset, yOffset )`
-
--}
-type alias Shadow =
-    { blur : Float, color : Color, offset : ( Float, Float ) }
-
-
-{-| Specify a shadow to be rendered. See the `Shadow` type alias to know what
-parameters to pass.
--}
-shadow : Shadow -> Setting
-shadow { blur, color, offset } =
-    let
-        ( x, y ) =
-            offset
-    in
-    SettingCommands
-        [ I.shadowBlur blur
-        , I.shadowColor color
-        , I.shadowOffsetX x
-        , I.shadowOffsetY y
-        ]
-
-
-{-| Specifies the alpha value that is applied before renderables are drawn onto
-the canvas. The value is in the range from 0.0 (fully transparent) to 1.0 (fully
-opaque). The default value is 1.0. Values outside the range, including
-`Infinity` and `NaN` will not be set and alpha will remain default.
--}
-alpha : Float -> Setting
-alpha a =
-    I.globalAlpha a |> SettingCommand
-
-
-{-| Specify the type of compositing operation to apply when drawing new
-entities, where type is a `GlobalCompositeOperationMode` identifying which of
-the compositing or blending mode operations to use.
-
-See `GlobalCompositeOperationMode` below for more information.
-
-    compositeOperationMode Screen
-
--}
-compositeOperationMode : GlobalCompositeOperationMode -> Setting
-compositeOperationMode mode =
-    mode |> globalCompositeOperationModeToString |> I.globalCompositeOperation |> SettingCommand
-
-
-
--- Transforms
-
-
-{-| Type of transform to apply to the matrix, to be used in `transform`. See the
-functions below to learn how to create transforms.
--}
-type Transform
-    = Rotate Float
-    | Scale Float Float
-    | Translate Float Float
-    | ApplyMatrix
-        { m11 : Float
-        , m12 : Float
-        , m21 : Float
-        , m22 : Float
-        , dx : Float
-        , dy : Float
-        }
-
-
-{-| Specify the transform matrix to apply when drawing. You do so by applying
-transforms in order, like `translate`, `rotate`, or `scale`, but you can also
-use `applyMatrix` and set the matrix yourself manually if you know what you are
-doing.
-
-    shapes
-        [ transform [ rotate (degrees 50) ] ]
-        [ rect ( 40, 40 ) 20 20 ]
-
--}
-transform : List Transform -> Setting
-transform transforms =
-    SettingCommands <|
-        List.map
-            (\t ->
-                case t of
-                    Rotate angle ->
-                        I.rotate angle
-
-                    Scale x y ->
-                        I.scale x y
-
-                    Translate x y ->
-                        I.translate x y
-
-                    ApplyMatrix { m11, m12, m21, m22, dx, dy } ->
-                        I.transform m11 m12 m21 m22 dx dy
-            )
-            transforms
-
-
-{-| Adds a rotation to the transformation matrix. The `angle` argument
-represents a clockwise rotation angle and is expressed in radians. Use the core
-function `degrees` to make it easier to represent the rotation.
-
-    rotate (degrees 90)
-
-The rotation center point is always the canvas origin. To change the center
-point, we will need to move the canvas by using the `translate` transform before
-rotating. For example, a very common use case to rotate from a specific point in
-the canvas, maybe the center of your renderable, would be done by translating to
-that point, rotating, and then translating back, if you want to apply more
-transformations. Like this:
-
-    transform
-        [ translate x y
-        , rotate rotation
-        , translate -x -y
-
-        {- Other transforms -}
-        ]
-
-See the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate)
-for more information and examples.
-
--}
-rotate : Float -> Transform
-rotate =
-    Rotate
-
-
-{-| Adds a scaling transformation to the canvas units by `x` horizontally and by
-`y` vertically.
-
-By default, one unit on the canvas is exactly one pixel. If we apply, for
-instance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels
-and so shapes would be drawn at half size. In a similar way setting the scaling
-factor to 2.0 would increase the unit size and one unit now becomes two pixels.
-This results in shapes being drawn twice as large.
-
-    scale x y
-
-  - `x`
-      - Scaling factor in the horizontal direction.
-  - `y`
-      - Scaling factor in the vertical direction.
-
-**Note**: You can use `scale -1 1` to flip the context horizontally and `scale 1
--1` to flip it vertically.
-
-More information and examples in the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)
-
--}
-scale : Float -> Float -> Transform
-scale =
-    Scale
-
-
-{-| Adds a translation transformation by moving the canvas and its origin `x`
-units horizontally and `y` units vertically on the grid.
-
-More information and examples on the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate)
-
-    translate x y
-
--}
-translate : Float -> Float -> Transform
-translate =
-    Translate
-
-
-{-| Multiplies the current transformation with the matrix described by the
-arguments of this method. You are able to scale, rotate, move and skew the
-context.
-
-  - `m11`
-      - Horizontal scaling.
-  - `m12`
-      - Horizontal skewing.
-  - `m21`
-      - Vertical skewing.
-  - `m22`
-      - Vertical scaling.
-  - `dx`
-      - Horizontal moving.
-  - `dy`
-      - Vertical moving.
-
--}
-applyMatrix :
-    { m11 : Float
-    , m12 : Float
-    , m21 : Float
-    , m22 : Float
-    , dx : Float
-    , dy : Float
-    }
-    -> Transform
-applyMatrix =
-    ApplyMatrix
-
-
-
 -- Rendering internals
 
 
 render : List Renderable -> Commands
 render entities =
-    List.foldl renderOne I.empty entities
+    List.foldl renderOne CE.empty entities
 
 
 renderOne : Renderable -> Commands -> Commands
 renderOne (Renderable ({ commands, drawable, drawOp } as data)) cmds =
     cmds
-        |> (::) I.save
+        |> (::) CE.save
         |> (++) commands
         |> renderDrawable drawable drawOp
-        |> (::) I.restore
+        |> (::) CE.restore
 
 
 renderDrawable : Drawable -> DrawOp -> Commands -> Commands
@@ -1297,7 +508,7 @@ renderDrawable drawable drawOp cmds =
             renderText drawOp txt cmds
 
         DrawableShapes ss ->
-            List.foldl renderShape (I.beginPath :: cmds) ss
+            List.foldl renderShape (CE.beginPath :: cmds) ss
                 |> renderShapeDrawOp drawOp
 
         DrawableTexture p t ->
@@ -1308,17 +519,17 @@ renderShape : Shape -> Commands -> Commands
 renderShape shape cmds =
     case shape of
         Rect ( x, y ) w h ->
-            I.rect x y w h :: I.moveTo x y :: cmds
+            CE.rect x y w h :: CE.moveTo x y :: cmds
 
         Circle ( x, y ) r ->
-            I.circle x y r :: I.moveTo (x + r) y :: cmds
+            CE.circle x y r :: CE.moveTo (x + r) y :: cmds
 
         Path ( x, y ) segments ->
-            List.foldl renderLineSegment (I.moveTo x y :: cmds) segments
+            List.foldl renderLineSegment (CE.moveTo x y :: cmds) segments
 
         Arc ( x, y ) radius startAngle endAngle anticlockwise ->
-            I.arc x y radius startAngle endAngle anticlockwise
-                :: I.moveTo (x + cos startAngle) (y + sin startAngle)
+            CE.arc x y radius startAngle endAngle anticlockwise
+                :: CE.moveTo (x + cos startAngle) (y + sin startAngle)
                 :: cmds
 
 
@@ -1326,19 +537,19 @@ renderLineSegment : PathSegment -> Commands -> Commands
 renderLineSegment segment cmds =
     case segment of
         ArcTo ( x, y ) ( x2, y2 ) radius ->
-            I.arcTo x y x2 y2 radius :: cmds
+            CE.arcTo x y x2 y2 radius :: cmds
 
         BezierCurveTo ( cp1x, cp1y ) ( cp2x, cp2y ) ( x, y ) ->
-            I.bezierCurveTo cp1x cp1y cp2x cp2y x y :: cmds
+            CE.bezierCurveTo cp1x cp1y cp2x cp2y x y :: cmds
 
         LineTo ( x, y ) ->
-            I.lineTo x y :: cmds
+            CE.lineTo x y :: cmds
 
         MoveTo ( x, y ) ->
-            I.moveTo x y :: cmds
+            CE.moveTo x y :: cmds
 
         QuadraticCurveTo ( cpx, cpy ) ( x, y ) ->
-            I.quadraticCurveTo cpx cpy x y :: cmds
+            CE.quadraticCurveTo cpx cpy x y :: cmds
 
 
 renderText : DrawOp -> Text -> Commands -> Commands
@@ -1370,14 +581,14 @@ renderTextDrawOp drawOp txt cmds =
 
 
 renderTextFill txt x y color cmds =
-    I.fillText txt.text x y txt.maxWidth
-        :: I.fillStyle color
+    CE.fillText txt.text x y txt.maxWidth
+        :: CE.fillStyle color
         :: cmds
 
 
 renderTextStroke txt x y color cmds =
-    I.strokeText txt.text x y txt.maxWidth
-        :: I.strokeStyle color
+    CE.strokeText txt.text x y txt.maxWidth
+        :: CE.strokeStyle color
         :: cmds
 
 
@@ -1401,35 +612,35 @@ renderShapeDrawOp drawOp cmds =
 
 renderShapeFill : Color -> Commands -> Commands
 renderShapeFill c cmds =
-    I.fill I.NonZero :: I.fillStyle c :: cmds
+    CE.fill CE.NonZero :: CE.fillStyle c :: cmds
 
 
 renderShapeStroke : Color -> Commands -> Commands
 renderShapeStroke c cmds =
-    I.stroke :: I.strokeStyle c :: cmds
+    CE.stroke :: CE.strokeStyle c :: cmds
 
 
 renderTexture : Point -> Texture -> Commands -> Commands
 renderTexture ( x, y ) t cmds =
-    TI.drawTexture x y t cmds
+    T.drawTexture x y t cmds
 
 
 renderTextureSource : Texture.Source msg -> ( String, Html msg )
 renderTextureSource textureSource =
     case textureSource of
-        TI.TSImageUrl url onLoad ->
+        T.TSImageUrl url onLoad ->
             ( url
             , img
                 [ src url
                 , style "display" "none"
-                , on "load" (D.map (TI.TImage >> Just >> onLoad) decodeTextureImageInfo)
+                , on "load" (D.map (T.TImage >> Just >> onLoad) decodeTextureImageInfo)
                 , on "error" (D.succeed (onLoad Nothing))
                 ]
                 []
             )
 
 
-decodeTextureImageInfo : D.Decoder TI.Image
+decodeTextureImageInfo : D.Decoder T.Image
 decodeTextureImageInfo =
     D.field "target" D.value
         |> D.andThen

@@ -1,4 +1,4 @@
-module Canvas.Internal exposing
+module Canvas.Internal.CustomElementJsonApi exposing
     ( Commands, empty
     , fillStyle, strokeStyle
     , font, textAlign, textBaseline, fillText, strokeText

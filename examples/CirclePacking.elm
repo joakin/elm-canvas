@@ -12,6 +12,8 @@ module Examples.CirclePacking exposing (main)
 
 import Browser
 import Canvas exposing (..)
+import Canvas.Settings exposing (..)
+import Canvas.Settings.Line exposing (..)
 import Circle2d exposing (Circle2d)
 import Color exposing (Color)
 import Html exposing (..)
