@@ -1,7 +1,7 @@
 module Canvas exposing
-    ( toHtml
+    ( toHtml, toHtmlWith
     , Renderable, Setting
-    , shapes, text
+    , shapes, text, texture
     , Point
     , fill, stroke
     , Shape
@@ -23,14 +23,14 @@ requires the `elm-canvas` web component to work.
 
 # Usage in HTML
 
-@docs toHtml
+@docs toHtml, toHtmlWith
 
 
 # Drawing things
 
 @docs Renderable, Setting
 
-@docs shapes, text
+@docs shapes, text, texture
 
 @docs Point
 
@@ -133,9 +133,14 @@ interesting visual effects:
 -}
 
 import Canvas.Internal as I exposing (Commands, commands)
+import Canvas.InternalTexture as TI
+import Canvas.Texture as Texture exposing (Texture)
 import Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (on)
+import Html.Keyed as Keyed
+import Json.Decode as D
 
 
 
@@ -165,6 +170,41 @@ toHtml ( w, h ) attrs entities =
         [ commands (render entities), height h, width w ]
         [ canvas (height h :: width w :: attrs) []
         ]
+
+
+{-| Similar to `toHtml` but with more explicit options and the ability to load
+textures.
+
+    Canvas.toHtmlWith
+        { width = 500
+        , height = 500
+        , textures = [ Texture.loadImageUrl "./assets/sprite.png" TextureLoaded ]
+        }
+        [ onClick CanvasClick ]
+        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        , text [ size 48, align Center ] ( 50, 50 ) "Hello world"
+        ]
+
+**Note**: Remember to include the `elm-canvas` web component from npm in your page for
+this to work!
+
+See `toHtml` above and the `Canvas.Texture` module for more details.
+
+-}
+toHtmlWith :
+    { width : Int
+    , height : Int
+    , textures : List (Texture.Source msg)
+    }
+    -> List (Attribute msg)
+    -> List Renderable
+    -> Html msg
+toHtmlWith options attrs entities =
+    Keyed.node "elm-canvas"
+        [ commands (render entities), height options.height, width options.width ]
+        (( "__canvas", canvas (height options.height :: width options.height :: attrs) [] )
+            :: List.map renderTextureSource options.textures
+        )
 
 
 
@@ -204,6 +244,7 @@ type Renderable
 type Drawable
     = DrawableText Text
     | DrawableShapes (List Shape)
+    | DrawableTexture Point Texture
 
 
 type DrawOp
@@ -722,6 +763,37 @@ maxWidth width =
 
                 DrawableShapes _ ->
                     d
+
+                DrawableTexture _ _ ->
+                    d
+        )
+
+
+
+-- Textures
+
+
+{-| Draw a texture into your canvas.
+
+Textures can be loaded by using `toHtmlWith` and passing in a `Texture.Source`.
+Once the texture is loaded, and you have an actual `Texture`, you can use it
+with this method to draw it.
+
+You can also make different types of textures from the same texture, in case you
+have a big sprite sheet and want to create smaller textures that are
+a _viewport_ into a bigger sheet.
+
+See the `Canvas.Texture` module and the `sprite` function in it.
+
+-}
+texture : List Setting -> Point -> Texture -> Renderable
+texture settings p t =
+    addSettingsToRenderable settings
+        (Renderable
+            { commands = []
+            , drawOp = NotSpecified
+            , drawable = DrawableTexture p t
+            }
         )
 
 
@@ -1228,6 +1300,9 @@ renderDrawable drawable drawOp cmds =
             List.foldl renderShape (I.beginPath :: cmds) ss
                 |> renderShapeDrawOp drawOp
 
+        DrawableTexture p t ->
+            renderTexture p t cmds
+
 
 renderShape : Shape -> Commands -> Commands
 renderShape shape cmds =
@@ -1332,3 +1407,40 @@ renderShapeFill c cmds =
 renderShapeStroke : Color -> Commands -> Commands
 renderShapeStroke c cmds =
     I.stroke :: I.strokeStyle c :: cmds
+
+
+renderTexture : Point -> Texture -> Commands -> Commands
+renderTexture ( x, y ) t cmds =
+    TI.drawTexture x y t cmds
+
+
+renderTextureSource : Texture.Source msg -> ( String, Html msg )
+renderTextureSource textureSource =
+    case textureSource of
+        TI.TSImageUrl url onLoad ->
+            ( url
+            , img
+                [ src url
+                , style "display" "none"
+                , on "load" (D.map (TI.TImage >> Just >> onLoad) decodeTextureImageInfo)
+                , on "error" (D.succeed (onLoad Nothing))
+                ]
+                []
+            )
+
+
+decodeTextureImageInfo : D.Decoder TI.Image
+decodeTextureImageInfo =
+    D.field "target" D.value
+        |> D.andThen
+            (\target ->
+                D.map2
+                    (\width height ->
+                        { json = target
+                        , width = width
+                        , height = height
+                        }
+                    )
+                    (D.at [ "target", "width" ] D.int)
+                    (D.at [ "target", "height" ] D.int)
+            )

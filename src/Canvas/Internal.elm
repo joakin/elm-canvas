@@ -8,6 +8,7 @@ module Canvas.Internal exposing
     , shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY
     , globalAlpha, globalCompositeOperation, save, restore
     , rotate, scale, translate, transform, setTransform
+    , drawImage
     , Command, commands
     )
 
@@ -69,6 +70,11 @@ better defaults as time goes by, and make specific tutorials with Elm.
 # Global Canvas transforms
 
 @docs rotate, scale, translate, transform, setTransform
+
+
+# Drawing images
+
+@docs drawImage
 
 -}
 
@@ -856,6 +862,11 @@ translate x y =
     fn "translate" [ float x, float y ]
 
 
+drawImage : Float -> Float -> Float -> Float -> Float -> Float -> Float -> Float -> Encode.Value -> Command
+drawImage sx sy sw sh dx dy dw dh imageObj =
+    fn "drawImage" [ imageObj, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh ]
+
+
 
 {- TODO: Should these functions be supported:
    - createImageData
@@ -863,7 +874,6 @@ translate x y =
    - createPattern
    - createRadialGradient
    - drawFocusIfNeeded
-   - drawImage
    - getImageData
    - isPointInPath
    - isPointInStroke
@@ -894,4 +904,3 @@ field name value =
 fn : String -> List Command -> Command
 fn name args =
     Encode.object [ ( "type", string "function" ), ( "name", string name ), ( "args", Encode.list identity args ) ]
-
