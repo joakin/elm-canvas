@@ -63,8 +63,6 @@ You can see many examples in the
 [examples/](https://github.com/joakin/elm-canvas/tree/master/examples) folder,
 and experience them [live](https://joakin.github.io/elm-canvas).
 
-Additionally, some of the [p5js.org examples](https://p5js.org/examples/) were adapted to Elm using this package. They can be found [here](https://discourse.elm-lang.org/t/some-p5js-org-examples-in-elm/3781).
-
-```
-
-```
+Additionally, some of the [p5js.org examples](https://p5js.org/examples/) were
+adapted to Elm using this package. They can be found
+[in the Elm discourse thread](https://discourse.elm-lang.org/t/some-p5js-org-examples-in-elm/3781).
