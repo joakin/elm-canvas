@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="./index.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <main></main>
+    <script src="./elm-canvas.js"></script>
+    <script src="./Textures.js"></script>
+    <script>
+      var app = Elm.Examples.Textures.init({
+        node: document.querySelector("main"),
+        flags: {
+          random: Math.random(),
+          devicePixelRatio: window.devicePixelRatio
+        }
+      });
+    </script>
+  </body>
+</html>
