@@ -59,9 +59,7 @@ view { count, width, height } =
         ]
         [ Canvas.toHtml
             ( round width, round height )
-            [ style "border" "10px solid rgba(0,0,0,0.1)"
-            , style "box-sizing" "border-box"
-            ]
+            []
             [ clearScreen width height
             , render count width height
             ]
