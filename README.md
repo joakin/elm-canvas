@@ -34,7 +34,8 @@ Then, you can add your HTML element like this:
 module Main exposing (main)
 
 import Canvas exposing (..)
-import Color
+import Canvas.Settings exposing (..)
+import Color -- elm install avh4/elm-color
 import Html exposing (Html)
 import Html.Attributes exposing (style)
 
