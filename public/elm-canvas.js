@@ -53,8 +53,8 @@ if (window["customElements"]) {
         );
 
         var devicePixelRatio = window.devicePixelRatio || 1;
-        this.canvas.style.width = width;
-        this.canvas.style.height = height;
+        this.canvas.style.width = width + "px";
+        this.canvas.style.height = height + "px";
         this.canvas.width = width * devicePixelRatio;
         this.canvas.height = height * devicePixelRatio;
         // Reset current transformation matrix to the identity matrix
