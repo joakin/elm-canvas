@@ -7,7 +7,7 @@ module Canvas exposing
     , Shape
     , rect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
-    , font, align, TextAlign(..), baseLine, TextBaseLine(..)
+    , font, align, TextAlign(..), baseLine, TextBaseLine(..), maxWidth
     , lineWidth, lineCap, LineCap(..), lineJoin, LineJoin(..), lineDash, lineDashOffset, miterLimit
     , shadow, Shadow
     , transform, Transform, translate, rotate, scale, applyMatrix
@@ -89,7 +89,7 @@ To draw text we use the function `text` documented above:
 You can apply the following styling settings to text specifically. They will do
 nothing if you apply them to other renderables, like `shapes`.
 
-@docs font, align, TextAlign, baseLine, TextBaseLine
+@docs font, align, TextAlign, baseLine, TextBaseLine, maxWidth
 
 
 # Advanced rendering settings
