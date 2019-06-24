@@ -1,6 +1,6 @@
 {
   "name": "elm-canvas",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Custom element to be used in conjunction with Elm",
   "main": "elm-canvas.js",
   "scripts": {
