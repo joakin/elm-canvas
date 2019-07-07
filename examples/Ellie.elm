@@ -4,6 +4,7 @@ import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
 import Canvas.Settings exposing (..)
+import Canvas.Settings.Advanced exposing (..)
 import Color
 import Html exposing (Html, div)
 import Html.Attributes exposing (style)

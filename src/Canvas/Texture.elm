@@ -60,7 +60,7 @@ bigger texture.
 Very useful for using sprite sheet textures.
 
 -}
-sprite : { x : Int, y : Int, width : Int, height : Int } -> Texture -> Texture
+sprite : { x : Float, y : Float, width : Float, height : Float } -> Texture -> Texture
 sprite data texture =
     case texture of
         T.TImage image ->
@@ -80,7 +80,7 @@ loadFromImageUrl url onLoad =
 
 {-| Get the width and height of a texture
 -}
-dimensions : Texture -> { width : Int, height : Int }
+dimensions : Texture -> { width : Float, height : Float }
 dimensions texture =
     case texture of
         T.TImage image ->

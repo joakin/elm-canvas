@@ -9,6 +9,7 @@ import Browser
 import Browser.Events exposing (onAnimationFrame)
 import Canvas exposing (..)
 import Canvas.Settings exposing (..)
+import Canvas.Settings.Advanced exposing (..)
 import Color exposing (Color)
 import Grid
 import Html exposing (Html)

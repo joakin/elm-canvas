@@ -6,8 +6,8 @@ import Json.Decode as D
 
 type alias Image =
     { json : D.Value
-    , width : Int
-    , height : Int
+    , width : Float
+    , height : Float
     }
 
 
@@ -21,16 +21,16 @@ type Texture
 
 
 type alias Sprite =
-    { x : Int, y : Int, width : Int, height : Int }
+    { x : Float, y : Float, width : Float, height : Float }
 
 
 drawTexture : Float -> Float -> Texture -> Commands -> Commands
 drawTexture x y t cmds =
     (case t of
         TImage image ->
-            C.drawImage (toFloat 0) (toFloat 0) (toFloat image.width) (toFloat image.height) x y (toFloat image.width) (toFloat image.height) image.json
+            C.drawImage 0 0 image.width image.height x y image.width image.height image.json
 
         TSprite sprite image ->
-            C.drawImage (toFloat sprite.x) (toFloat sprite.y) (toFloat sprite.width) (toFloat sprite.height) x y (toFloat sprite.width) (toFloat sprite.height) image.json
+            C.drawImage sprite.x sprite.y sprite.width sprite.height x y sprite.width sprite.height image.json
     )
         :: cmds

@@ -9,6 +9,7 @@
     "Canvas.Settings",
     "Canvas.Settings.Text",
     "Canvas.Settings.Line",
+    "Canvas.Settings.Advanced",
     "Canvas.Texture"
   ],
   "elm-version": "0.19.0 <= v < 0.20.0",

@@ -4,6 +4,7 @@ import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas exposing (..)
 import Canvas.Settings exposing (..)
+import Canvas.Settings.Advanced exposing (..)
 import Canvas.Settings.Text exposing (..)
 import Canvas.Texture as Texture exposing (Texture)
 import Color exposing (Color)
@@ -143,7 +144,7 @@ view model =
         , textures = textures
         }
         []
-        (shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        (shapes [ fill (Color.rgb 0.85 0.92 1) ] [ rect ( 0, 0 ) w h ]
             :: (case model.sprites of
                     Loading ->
                         [ renderText "Loading sprite sheet" ]
@@ -217,5 +218,40 @@ renderSprites frame sprites =
                         in
                         texture [] ( toFloat x, y ) sprites.floor
                     )
+
+        bg =
+            let
+                c =
+                    Color.rgba 1 1 1 0.45
+
+                t x y =
+                    transform [ translate x y, rotate (degrees 45) ]
+
+                wrap : Float -> Float -> Float -> Float
+                wrap n width speed =
+                    ((n - toFloat frame * speed |> round |> modBy (round (w + width * 2))) |> toFloat) - width
+
+                bgRect : Float -> Float -> Float -> Renderable
+                bgRect x y width =
+                    shapes [ fill c, t (wrap x width (5 - (width * 4 / 400))) y ] [ rect ( 0, 0 ) width width ]
+
+                -- 150 * 6 / 300 = 3
+                -- 300 6
+                -- w - x
+                -- 0 0
+            in
+            [ bgRect 0 20 150
+            , bgRect 200 300 150
+            , bgRect 50 150 40
+            , bgRect 350 320 40
+            , bgRect 100 200 70
+            , bgRect 400 20 70
+            , bgRect 150 250 100
+            , bgRect 370 400 100
+            , bgRect 350 200 200
+            , bgRect 75 500 200
+            , bgRect 450 50 300
+            , bgRect 550 350 400
+            ]
     in
-    floor ++ players
+    bg ++ floor ++ players

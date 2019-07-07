@@ -659,6 +659,6 @@ decodeTextureImageInfo =
                         , height = height
                         }
                     )
-                    (D.at [ "target", "width" ] D.int)
-                    (D.at [ "target", "height" ] D.int)
+                    (D.at [ "target", "width" ] D.float)
+                    (D.at [ "target", "height" ] D.float)
             )
