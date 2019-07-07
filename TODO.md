@@ -1,6 +1,0 @@
-- Fix README links (examples) after publishing and publish a patch version
-- See if we can do something about Textures/bitmaps with the library
-- _Maybe_
-  - Move style settings to Canvas.{Styles|Settings}
-  - Move shapes to Canvas.Shapes
-  - Move text to Canvas.Text
