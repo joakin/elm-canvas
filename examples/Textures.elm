@@ -234,11 +234,6 @@ renderSprites frame sprites =
                 bgRect : Float -> Float -> Float -> Renderable
                 bgRect x y width =
                     shapes [ fill c, t (wrap x width (5 - (width * 4 / 400))) y ] [ rect ( 0, 0 ) width width ]
-
-                -- 150 * 6 / 300 = 3
-                -- 300 6
-                -- w - x
-                -- 0 0
             in
             [ bgRect 0 20 150
             , bgRect 200 300 150
