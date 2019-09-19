@@ -68,7 +68,10 @@ import Json.Decode as D
     Canvas.toHtml ( width, height )
         [ onClick CanvasClick ]
         [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
-        , text [ size 48, align Center ] ( 50, 50 ) "Hello world"
+        , text
+            [ font { size = 48, family = "sans-serif" }, align Center ]
+            ( 50, 50 )
+            "Hello world"
         ]
 
 `toHtml` is almost like creating other Html elements. We need to pass `(width,
@@ -101,7 +104,10 @@ textures.
         }
         [ onClick CanvasClick ]
         [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
-        , text [ size 48, align Center ] ( 50, 50 ) "Hello world"
+        , text
+            [ font { size = 48, family = "sans-serif" }, align Center ]
+            ( 50, 50 )
+            "Hello world"
         ]
 
 **Note**: Remember to include the `elm-canvas` web component from npm in your page for
@@ -445,7 +451,11 @@ positioned with regards to the coordinates provided.
 
     Canvas.toHtml ( width, height )
         []
-        [ text [ size 48, align Center ] ( 50, 50 ) "Hello world" ]
+        [ text
+            [ font { size = 48, family = "sans-serif" }, align Center ]
+            ( 50, 50 )
+            "Hello world"
+        ]
 
 You can learn more about drawing text and its settings in the **Drawing text**
 section.
