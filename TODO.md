@@ -13,4 +13,4 @@
   * Should the coordinate system be different?
 * Get rid of the tuple Point and make an object one with x and y fields
 * Get rid of the tuple width height in favor of a named record
-
+* Add elm-verify-examples
