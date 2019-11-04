@@ -6,3 +6,7 @@
   * With auto resize and total time and frame diffs
 * Make default toHTML clear the screen and custom have the option to not clear it
 * Add shape batching / groups
+* Performance benchmarking / improvements
+  * Rendering vía hacky interop rather than json encoding?
+  * object updates vs full object copy
+
