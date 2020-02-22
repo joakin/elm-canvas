@@ -82,6 +82,11 @@ the canvas knows how to render. Read on for more information 👇.
 **Note**: Remember to include the `elm-canvas` web component from npm in your page for
 this to work!
 
+**Note about width and height**: This function generates a custom element. These have
+'display' style 'inline' by default, so setting their width or height will have no
+effect. Change it to 'block' or 'inline flex' in your css or attribute list.  See
+https://developer.mozilla.org/es/docs/Web/CSS/display for possible display values.
+
 -}
 toHtml : ( Int, Int ) -> List (Attribute msg) -> List Renderable -> Html msg
 toHtml ( w, h ) attrs entities =
@@ -112,6 +117,11 @@ textures.
 
 **Note**: Remember to include the `elm-canvas` web component from npm in your page for
 this to work!
+
+**Note about width and height**: This function generates a custom element. These have
+'display' style 'inline' by default, so setting their width or height will have no
+effect. Change it to 'block' or 'inline flex' in your css or attribute list.  See
+https://developer.mozilla.org/es/docs/Web/CSS/display for possible display values.
 
 See `toHtml` above and the `Canvas.Texture` module for more details.
 
