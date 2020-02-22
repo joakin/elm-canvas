@@ -649,6 +649,7 @@ renderTextureSource textureSource =
             ( url
             , img
                 [ src url
+                , attribute "crossorigin" "anonymous"
                 , style "display" "none"
                 , on "load" (D.map (T.TImage >> Just >> onLoad) decodeTextureImageInfo)
                 , on "error" (D.succeed (onLoad Nothing))
