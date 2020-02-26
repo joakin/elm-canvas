@@ -66,7 +66,7 @@ import Json.Decode as D
 {-| Create a Html element that you can use in your view.
 
     Canvas.toHtml ( width, height )
-        [ onClick CanvasClick ]
+        [ style "display" "block", onClick CanvasClick ]
         [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
         , text
             [ font { size = 48, family = "sans-serif" }, align Center ]
@@ -81,6 +81,11 @@ the canvas knows how to render. Read on for more information 👇.
 
 **Note**: Remember to include the `elm-canvas` web component from npm in your page for
 this to work!
+
+**Note**: This element has `display: inline` by default, so their width or
+height will have no effect. You can change it to `block` for example. See [MDN:
+display](https://developer.mozilla.org/es/docs/Web/CSS/display) for possible
+display values.
 
 -}
 toHtml : ( Int, Int ) -> List (Attribute msg) -> List Renderable -> Html msg
@@ -102,7 +107,7 @@ textures.
         , height = 500
         , textures = [ Texture.loadImageUrl "./assets/sprite.png" TextureLoaded ]
         }
-        [ onClick CanvasClick ]
+        [ style "display" "block", onClick CanvasClick ]
         [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
         , text
             [ font { size = 48, family = "sans-serif" }, align Center ]
@@ -112,6 +117,11 @@ textures.
 
 **Note**: Remember to include the `elm-canvas` web component from npm in your page for
 this to work!
+
+**Note**: This element has `display: inline` by default, so their width or
+height will have no effect. You can change it to `block` for example. See [MDN:
+display](https://developer.mozilla.org/es/docs/Web/CSS/display) for possible
+display values.
 
 See `toHtml` above and the `Canvas.Texture` module for more details.
 
