@@ -171,4 +171,7 @@ maxWidth width =
 
                 DrawableTexture _ _ ->
                     d
+
+                DrawableClear _ _ _ ->
+                    d
         )

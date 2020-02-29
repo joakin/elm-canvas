@@ -27,6 +27,7 @@ type Drawable
     = DrawableText Text
     | DrawableShapes (List Shape)
     | DrawableTexture Point Texture
+    | DrawableClear Point Float Float
 
 
 type alias Text =

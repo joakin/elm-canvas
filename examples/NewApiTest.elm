@@ -40,7 +40,8 @@ view ( count, fps ) =
     Canvas.toHtml
         ( w, h )
         [ Attributes.style "border" "2px solid red" ]
-        [ shapes [ fill Color.white ] [ rect ( 0, 0 ) w h ]
+        [ clear ( 0, 0 ) w h
+        , shapes [ fill Color.white ] [ rect ( 60, 60 ) 30 30 ]
         , shapes
             [ lineWidth 5
             , transform [ translate (w / 2) (h / 2), rotate (degrees (sin (count / 100) * 360)) ]

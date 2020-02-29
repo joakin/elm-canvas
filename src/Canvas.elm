@@ -1,7 +1,7 @@
 module Canvas exposing
     ( toHtml, toHtmlWith
     , Renderable, Point
-    , shapes, text, texture
+    , clear, shapes, text, texture
     , Shape
     , rect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
@@ -23,7 +23,7 @@ requires the `elm-canvas` web component to work.
 
 @docs Renderable, Point
 
-@docs shapes, text, texture
+@docs clear, shapes, text, texture
 
 
 # Drawing shapes
@@ -209,6 +209,31 @@ mergeDrawOp op1 op2 =
 
         ( whatever, NotSpecified ) ->
             whatever
+
+
+
+-- Clear
+
+
+{-| We use `clear` to remove the contents of a rectangle in the screen and make
+them transparent.
+
+    import Canvas exposing (..)
+
+    Canvas.toHtml ( width, height )
+        []
+        [ clear ( 0, 0 ) width height
+        , shapes [ fill Color.red ] [ rect ( 10, 10 ) 20 20 ]
+        ]
+
+-}
+clear : Point -> Float -> Float -> Renderable
+clear point w h =
+    Renderable
+        { commands = []
+        , drawOp = NotSpecified
+        , drawable = DrawableClear point w h
+        }
 
 
 
@@ -548,6 +573,9 @@ renderDrawable drawable drawOp cmds =
         DrawableTexture p t ->
             renderTexture p t cmds
 
+        DrawableClear p w h ->
+            renderClear p w h cmds
+
 
 renderShape : Shape -> Commands -> Commands
 renderShape shape cmds =
@@ -690,3 +718,8 @@ decodeTextureImageInfo =
                     (D.at [ "target", "width" ] D.float)
                     (D.at [ "target", "height" ] D.float)
             )
+
+
+renderClear : Point -> Float -> Float -> Commands -> Commands
+renderClear ( x, y ) w h cmds =
+    CE.clearRect x y w h :: cmds
