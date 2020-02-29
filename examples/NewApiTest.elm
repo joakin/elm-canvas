@@ -73,15 +73,45 @@ view ( count, fps ) =
             , transform [ translate 10 400 ]
             ]
             (List.range 0 10
-                |> List.map
+                |> List.concatMap
                     (\i ->
-                        arc
-                            ( toFloat i * 40 + 40, 0 )
-                            20
-                            { startAngle = degrees -45
-                            , endAngle = degrees 45
-                            , clockwise = modBy 2 i == 0
-                            }
+                        let
+                            (( x, y ) as center) =
+                                ( toFloat i * 40 + 40, 0 )
+
+                            radius =
+                                20
+
+                            startAngle =
+                                degrees -45
+
+                            endAngle =
+                                degrees 45
+                        in
+                        if (i |> modBy 4) < 2 then
+                            [ arc
+                                center
+                                radius
+                                { startAngle = startAngle
+                                , endAngle = endAngle
+                                , clockwise = modBy 2 i == 0
+                                }
+                            ]
+
+                        else
+                            [ path center
+                                [ lineTo ( x + radius * cos startAngle, y + radius * sin startAngle )
+                                , lineTo ( x + radius * cos endAngle, y + radius * sin endAngle )
+                                , lineTo center
+                                ]
+                            , arc
+                                center
+                                radius
+                                { startAngle = startAngle
+                                , endAngle = endAngle
+                                , clockwise = modBy 2 i == 0
+                                }
+                            ]
                     )
             )
         ]

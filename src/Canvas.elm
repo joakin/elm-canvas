@@ -366,6 +366,9 @@ function from elm/core.
 
     arc ( 10, 10 ) 40 { startAngle = degrees 15, endAngle = degrees 85, clockwise = True }
 
+**Note**: If you want to make a partial circle (like a pizza slice), combine
+with `path` to make a triangle, and then the arc. See the pie chart example.
+
 -}
 arc : Point -> Float -> { startAngle : Float, endAngle : Float, clockwise : Bool } -> Shape
 arc pos radius { startAngle, endAngle, clockwise } =
@@ -590,8 +593,9 @@ renderShape shape cmds =
             List.foldl renderLineSegment (CE.moveTo x y :: cmds) segments
 
         Arc ( x, y ) radius startAngle endAngle anticlockwise ->
-            CE.arc x y radius startAngle endAngle anticlockwise
-                :: CE.moveTo (x + cos startAngle) (y + sin startAngle)
+            CE.moveTo (x + radius * cos endAngle) (y + radius * sin endAngle)
+                :: CE.arc x y radius startAngle endAngle anticlockwise
+                :: CE.moveTo (x + radius * cos startAngle) (y + radius * sin startAngle)
                 :: cmds
 
 
