@@ -1,25 +1,25 @@
 <html>
-<head>
-  <link rel="stylesheet" href="./index.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-  body {
-    background: #0e0e0e;
-  }
-  elm-canvas {
-    border: 20px solid black;
-  }
-  </style>
-</head>
-<body>
-  <main></main>
-  <script src="./elm-canvas.js"></script>
-  <script src="./CubicDisarray.js"></script>
-  <script>
-    var app = Elm.Examples.CubicDisarray.init({
-      node: document.querySelector('main'),
-      flags: Math.random()
-    })
-  </script>
-</body>
+  <head>
+    <link rel="stylesheet" href="./index.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        background: #0e0e0e;
+      }
+      elm-canvas {
+        border: 20px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <main></main>
+    <script src="./elm-canvas.js"></script>
+    <script src="./CubicDisarray.js"></script>
+    <script>
+      var app = Elm.CubicDisarray.init({
+        node: document.querySelector("main"),
+        flags: Math.random()
+      });
+    </script>
+  </body>
 </html>
