@@ -1,4 +1,4 @@
-module Examples.Particles exposing (main)
+module Particles exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrame)

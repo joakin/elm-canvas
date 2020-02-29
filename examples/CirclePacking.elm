@@ -1,4 +1,4 @@
-module Examples.CirclePacking exposing (main)
+module CirclePacking exposing (main)
 
 {-| Based on the tutorial at <https://generativeartistry.com/tutorials/circle-packing/>
 

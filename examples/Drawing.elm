@@ -1,4 +1,4 @@
-module Examples.Drawing exposing (main)
+module Drawing exposing (main)
 
 import Array exposing (Array)
 import Browser

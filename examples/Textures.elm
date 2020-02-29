@@ -1,4 +1,4 @@
-module Examples.Textures exposing (main)
+module Textures exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)

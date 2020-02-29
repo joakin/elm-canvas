@@ -1,4 +1,4 @@
-module Examples.Template exposing (main)
+module Template exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)

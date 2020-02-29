@@ -1,4 +1,4 @@
-module Examples.Fullscreen exposing (main)
+module Fullscreen exposing (main)
 
 import Browser
 import Browser.Dom exposing (Viewport, getViewport)

@@ -1,4 +1,4 @@
-module Examples.DynamicParticles exposing (main)
+module DynamicParticles exposing (main)
 
 {-
    Adapted from:

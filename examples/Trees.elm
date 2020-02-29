@@ -1,4 +1,4 @@
-module Examples.Trees exposing (main)
+module Trees exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)

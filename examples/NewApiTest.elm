@@ -1,4 +1,4 @@
-module Examples.NewApiTest exposing (main)
+module NewApiTest exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)

@@ -1,4 +1,4 @@
-module Examples.JoyDivision exposing (main)
+module JoyDivision exposing (main)
 
 import Array exposing (Array)
 import Browser

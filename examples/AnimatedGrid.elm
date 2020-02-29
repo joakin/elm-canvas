@@ -1,4 +1,4 @@
-module Examples.AnimatedGrid exposing (main)
+module AnimatedGrid exposing (main)
 
 {-
    Adaptation from @mattdesl's gist

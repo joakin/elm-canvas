@@ -1,4 +1,4 @@
-module Examples.CubicDisarray exposing (main)
+module CubicDisarray exposing (main)
 
 {-| Based on:
 

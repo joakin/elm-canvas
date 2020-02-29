@@ -1,4 +1,4 @@
-module Examples.TiledLines exposing (main)
+module TiledLines exposing (main)
 
 import Browser
 import Browser.Events exposing (onAnimationFrame)
