@@ -3,7 +3,7 @@
     "name": "joakin/elm-canvas",
     "summary": "2D drawing API based on the DOM Canvas, but a nicer",
     "license": "BSD-3-Clause",
-    "version": "4.0.1",
+    "version": "4.1.0",
     "exposed-modules": [
         "Canvas",
         "Canvas.Settings",
