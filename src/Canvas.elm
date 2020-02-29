@@ -331,8 +331,9 @@ path startingPoint segments =
 circle, the radius of it, the start angle where the arc will start, the end
 angle where the arc will end, and if it should draw in clockwise or
 anti-clockwise direction.
+Angles must be in standard Elm angles (radians)
 
-    arc ( 10, 10 ) 40 { startAngle = 15, endAngle = 85, clockwise = True }
+    arc ( 10, 10 ) 40 { startAngle = degrees 15, endAngle = degrees 85, clockwise = True }
 
 -}
 arc : Point -> Float -> { startAngle : Float, endAngle : Float, clockwise : Bool } -> Shape
