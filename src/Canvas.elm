@@ -327,11 +327,17 @@ path startingPoint segments =
     Path startingPoint segments
 
 
-{-| Creates an arc, a partial circle. It takes the position of the center of the
-circle, the radius of it, the start angle where the arc will start, the end
-angle where the arc will end, and if it should draw in clockwise or
-anti-clockwise direction.
-Angles must be in standard Elm angles (radians)
+{-| Creates an arc, a partial circle. It takes:
+
+  - The position of the center of the circle
+  - The radius of the circle
+  - The start angle (in radians) where the arc will start
+      - 0 is center right, 90 is bottom center
+  - The end angle (in radians) where the arc will end
+  - If it should draw in clockwise or anti-clockwise direction
+
+**Note**: If you want to give the angles in degrees, you can use the `degrees`
+function from elm/core.
 
     arc ( 10, 10 ) 40 { startAngle = degrees 15, endAngle = degrees 85, clockwise = True }
 
