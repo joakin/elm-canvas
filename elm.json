@@ -1,17 +1,23 @@
 {
     "type": "package",
     "name": "joakin/elm-canvas",
-    "summary": "2D drawing API based on the DOM Canvas, but a nicer",
+    "summary": "2D drawing API based on DOM Canvas, but nicer",
     "license": "BSD-3-Clause",
     "version": "4.1.0",
-    "exposed-modules": [
-        "Canvas",
-        "Canvas.Settings",
-        "Canvas.Settings.Text",
-        "Canvas.Settings.Line",
-        "Canvas.Settings.Advanced",
-        "Canvas.Texture"
-    ],
+    "exposed-modules": {
+        "Main module": [
+            "Canvas"
+        ],
+        "Settings": [
+            "Canvas.Settings",
+            "Canvas.Settings.Text",
+            "Canvas.Settings.Line",
+            "Canvas.Settings.Advanced"
+        ],
+        "Textures": [
+            "Canvas.Texture"
+        ]
+    },
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
         "avh4/elm-color": "1.0.0 <= v < 2.0.0",

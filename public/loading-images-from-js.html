@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="./index.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <main></main>
+    <script src="./elm-canvas.js"></script>
+    <script src="./LoadingImagesFromJs.js"></script>
+    <script>
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          let image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = (err) => reject(err);
+          image.src = src;
+        });
+      }
+
+      let imageUrls = [
+        "https://upload.wikimedia.org/wikipedia/commons/1/17/Tangram_diagram.png",
+        "https://upload.wikimedia.org/wikipedia/commons/2/25/Tangram-set-blueplas.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Wiktionary_tangram_mark.svg/200px-Wiktionary_tangram_mark.svg.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Tangram-man.svg/200px-Tangram-man.svg.png",
+      ];
+
+      Promise.all(imageUrls.map(loadImage))
+        .then((images) => {
+          let app = Elm.LoadingImagesFromJs.init({
+            node: document.querySelector("main"),
+            flags: images,
+          });
+        })
+        .catch((err) =>
+          alert(
+            "Failed to load images\n\n" + err.path.map((i) => i.src).join("\n")
+          )
+        );
+    </script>
+  </body>
+</html>

@@ -1,4 +1,12 @@
-module Canvas.Internal.Texture exposing (Image, Source(..), Sprite, Texture(..), drawTexture)
+module Canvas.Internal.Texture exposing
+    ( Image
+    , Source(..)
+    , Sprite
+    , Texture(..)
+    , decodeImageLoadEvent
+    , decodeTextureImage
+    , drawTexture
+    )
 
 import Canvas.Internal.CustomElementJsonApi as C exposing (Commands)
 import Json.Decode as D
@@ -22,6 +30,37 @@ type Texture
 
 type alias Sprite =
     { x : Float, y : Float, width : Float, height : Float }
+
+
+decodeImageLoadEvent : D.Decoder (Maybe Texture)
+decodeImageLoadEvent =
+    D.field "target" decodeTextureImage
+
+
+decodeTextureImage : D.Decoder (Maybe Texture)
+decodeTextureImage =
+    -- TODO: Verify the Value is actually a DOM image
+    D.value
+        |> D.andThen
+            (\image ->
+                D.map3
+                    (\constructor width height ->
+                        if constructor == "HTMLImageElement" then
+                            Just
+                                (TImage
+                                    { json = image
+                                    , width = width
+                                    , height = height
+                                    }
+                                )
+
+                        else
+                            Nothing
+                    )
+                    (D.at [ "constructor", "name" ] D.string)
+                    (D.field "width" D.float)
+                    (D.field "height" D.float)
+            )
 
 
 drawTexture : Float -> Float -> Texture -> Commands -> Commands

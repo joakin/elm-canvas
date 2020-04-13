@@ -700,27 +700,10 @@ renderTextureSource textureSource =
                 [ src url
                 , attribute "crossorigin" "anonymous"
                 , style "display" "none"
-                , on "load" (D.map (T.TImage >> Just >> onLoad) decodeTextureImageInfo)
+                , on "load" (D.map onLoad T.decodeImageLoadEvent)
                 , on "error" (D.succeed (onLoad Nothing))
                 ]
                 []
-            )
-
-
-decodeTextureImageInfo : D.Decoder T.Image
-decodeTextureImageInfo =
-    D.field "target" D.value
-        |> D.andThen
-            (\target ->
-                D.map2
-                    (\width height ->
-                        { json = target
-                        , width = width
-                        , height = height
-                        }
-                    )
-                    (D.at [ "target", "width" ] D.float)
-                    (D.at [ "target", "height" ] D.float)
             )
 
 
