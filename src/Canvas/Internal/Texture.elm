@@ -44,8 +44,8 @@ decodeTextureImage =
         |> D.andThen
             (\image ->
                 D.map3
-                    (\constructor width height ->
-                        if constructor == "HTMLImageElement" then
+                    (\tagName width height ->
+                        if tagName == "IMG" then
                             Just
                                 (TImage
                                     { json = image
@@ -57,7 +57,7 @@ decodeTextureImage =
                         else
                             Nothing
                     )
-                    (D.at [ "constructor", "name" ] D.string)
+                    (D.field "tagName" D.string)
                     (D.field "width" D.float)
                     (D.field "height" D.float)
             )
