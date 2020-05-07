@@ -1,4 +1,4 @@
-if (window["customElements"]) {
+if (typeof window !== "undefined" && window["customElements"]) {
   customElements.define(
     "elm-canvas",
     class extends HTMLElement {
