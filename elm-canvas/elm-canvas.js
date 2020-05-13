@@ -1,3 +1,4 @@
+// Only run the script on the browser
 if (typeof window !== "undefined") {
   if (window["customElements"]) {
     customElements.define(
