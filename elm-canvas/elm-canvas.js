@@ -27,7 +27,6 @@ if (typeof window !== "undefined") {
             this.mounted = true;
 
             this.setCanvasDimensions();
-
             this.render();
           });
         }
@@ -41,6 +40,7 @@ if (typeof window !== "undefined") {
             // changing the inner canvas dimensions
             requestAnimationFrame(() => {
               this.setCanvasDimensions();
+              this.render();
             });
           }
         }
@@ -74,7 +74,6 @@ if (typeof window !== "undefined") {
           for (let i = this.commands.length - 1; i >= 0; i--) {
             this.execCommand(this.commands[i]);
           }
-          this.commands = [];
         }
 
         execCommand(cmd) {
