@@ -1,7 +1,7 @@
 module Canvas.Settings.Advanced exposing
     ( shadow, Shadow
     , transform, Transform(..), translate, rotate, scale, applyMatrix
-    , alpha, compositeOperationMode, GlobalCompositeOperationMode(..)
+    , alpha, imageSmoothing, compositeOperationMode, GlobalCompositeOperationMode(..)
     )
 
 {-|
@@ -38,17 +38,17 @@ sensible defaults.
 @docs transform, Transform, translate, rotate, scale, applyMatrix
 
 
-## Alpha and global composite mode
+## Alpha, image smoothing and global composite mode
 
 Finally, there are a couple of other settings that you can use to create
 interesting visual effects:
 
-@docs alpha, compositeOperationMode, GlobalCompositeOperationMode
+@docs alpha, imageSmoothing, compositeOperationMode, GlobalCompositeOperationMode
 
 -}
 
 import Canvas.Internal.Canvas as C exposing (..)
-import Canvas.Internal.CustomElementJsonApi as CE exposing (..)
+import Canvas.Internal.CustomElementJsonApi as CE
 import Color exposing (Color)
 
 
@@ -226,6 +226,18 @@ See `GlobalCompositeOperationMode` below for more information.
 compositeOperationMode : GlobalCompositeOperationMode -> Setting
 compositeOperationMode mode =
     mode |> globalCompositeOperationModeToString |> CE.globalCompositeOperation |> SettingCommand
+
+
+{-| Specify if scaled images are smoothed (default) or not.
+
+This property is useful for games and other apps that use pixel art. When
+enlarging images, the default resizing algorithm will blur the pixels. Set this
+property to false to retain the pixels' sharpness.
+
+-}
+imageSmoothing : Bool -> Setting
+imageSmoothing enabled =
+    SettingCommand (CE.globalImageSmoothingEnabled enabled)
 
 
 
