@@ -44,7 +44,7 @@ padding =
 
 
 type alias Model =
-    { frame : Int
+    { frame : Float
     , sprites : Load Sprites
     }
 
@@ -81,8 +81,8 @@ init { random } =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        AnimationFrame _ ->
-            ( { model | frame = model.frame + 1 }
+        AnimationFrame delta ->
+            ( { model | frame = model.frame + delta / 10 }
             , Cmd.none
             )
 
@@ -125,7 +125,7 @@ textures =
 
 
 numOfPlayers =
-    10
+    5
 
 
 spriteSheetCellSize =
@@ -169,9 +169,10 @@ renderText txt =
         txt
 
 
-renderSprites : Int -> Sprites -> List Renderable
+renderSprites : Float -> Sprites -> List Renderable
 renderSprites frame sprites =
     let
+        renderPlayer : Int -> Renderable
         renderPlayer i =
             let
                 dimensions =
@@ -188,7 +189,7 @@ renderSprites frame sprites =
                         sprites.player.up
 
                 x =
-                    toFloat i * (w - toFloat spriteSheetCellSize) / numOfPlayers
+                    toFloat (i * (w - spriteSheetCellSize)) / numOfPlayers
 
                 y =
                     y_ frame
@@ -197,7 +198,10 @@ renderSprites frame sprites =
                     y_ (frame - 1)
 
                 y_ f =
-                    sin (toFloat (f + i * 10) / 20) * (h / 4) + h / 2 - (toFloat spriteSheetCellSize / 2)
+                    sin ((f + toFloat i * 10) / 20) * (h / 4) + h / 2 - (toFloat spriteSheetCellSize / 2)
+
+                smoothing =
+                    imageSmoothing ((i |> modBy 2) == 0)
             in
             texture [] ( x, y ) sprite
 
@@ -211,7 +215,7 @@ renderSprites frame sprites =
                     (\i ->
                         let
                             x =
-                                (i * spriteSheetCellSize - frame * 4 |> modBy (w + spriteSheetCellSize * 2)) - spriteSheetCellSize
+                                (i * spriteSheetCellSize - round frame * 4 |> modBy (w + spriteSheetCellSize * 2)) - spriteSheetCellSize
 
                             y =
                                 h - spriteSheetCellSize
@@ -229,7 +233,7 @@ renderSprites frame sprites =
 
                 wrap : Float -> Float -> Float -> Float
                 wrap n width speed =
-                    ((n - toFloat frame * speed |> round |> modBy (round (w + width * 2))) |> toFloat) - width
+                    ((n - frame * speed |> round |> modBy (round (w + width * 2))) |> toFloat) - width
 
                 bgRect : Float -> Float -> Float -> Renderable
                 bgRect x y width =

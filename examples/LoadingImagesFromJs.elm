@@ -44,7 +44,7 @@ padding =
 
 
 type alias Model =
-    ( Int, List Texture )
+    ( Float, List Texture )
 
 
 type Msg
@@ -66,8 +66,8 @@ init images =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ( count, textures ) =
     case msg of
-        AnimationFrame _ ->
-            ( ( count + 1, textures )
+        AnimationFrame delta ->
+            ( ( count + delta / 10, textures )
             , Cmd.none
             )
 
@@ -96,15 +96,22 @@ view ( count, textures ) =
                         d =
                             dimensions t
 
-                        ratio =
-                            maxSize / max d.width d.height
+                        ( ratio, smoothing ) =
+                            if i == round total - 1 then
+                                ( 7.5, False )
+
+                            else
+                                ( maxSize / max d.width d.height, True )
 
                         ( x, y ) =
                             ( padding + (tw / total) * toFloat i
-                            , padding + sin (toFloat (count + i * 6) / 20) * (th / 2) + th / 2
+                            , padding + sin ((count + toFloat i * 6) / 40) * (th / 2) + th / 2
                             )
                     in
-                    texture [ transform [ translate x y, scale ratio ratio ] ]
+                    texture
+                        [ transform [ translate x y, scale ratio ratio ]
+                        , imageSmoothing smoothing
+                        ]
                         ( 0, 0 )
                         t
                 )
