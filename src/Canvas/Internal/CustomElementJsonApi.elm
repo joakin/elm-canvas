@@ -169,7 +169,15 @@ globalCompositeOperation mode =
     field "globalCompositeOperation" (string mode)
 
 
-{-| Enable/disable smoothing of the canvas.
+{-| Determines whether scaled images are smoothed (true, default) or not
+(false).
+
+This property is useful for games and other apps that use pixel art. When
+enlarging images, the default resizing algorithm will blur the pixels. Set this
+property to false to retain the pixels' sharpness.
+
+    empty |> globalImageSmoothingEnabled False
+
 -}
 globalImageSmoothingEnabled : Bool -> Command
 globalImageSmoothingEnabled enabled =
