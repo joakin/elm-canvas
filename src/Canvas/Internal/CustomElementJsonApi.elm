@@ -6,7 +6,7 @@ module Canvas.Internal.CustomElementJsonApi exposing
     , beginPath, closePath, FillRule(..), fill, clip, stroke, arc, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo, rect, circle
     , lineCap, lineDashOffset, lineJoin, lineWidth, miterLimit, setLineDash
     , shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY
-    , globalAlpha, globalCompositeOperation, save, restore
+    , globalAlpha, globalCompositeOperation, globalImageSmoothingEnabled, save, restore
     , rotate, scale, translate, transform, setTransform
     , drawImage
     , Command, commands
@@ -64,7 +64,7 @@ better defaults as time goes by, and make specific tutorials with Elm.
 
 # Global Canvas settings
 
-@docs globalAlpha, globalCompositeOperation, save, restore
+@docs globalAlpha, globalCompositeOperation, globalImageSmoothingEnabled, save, restore
 
 
 # Global Canvas transforms
@@ -167,6 +167,13 @@ for more information and pictures of what each mode does.
 globalCompositeOperation : String -> Command
 globalCompositeOperation mode =
     field "globalCompositeOperation" (string mode)
+
+
+{-| Enable/disable smoothing of the canvas.
+-}
+globalImageSmoothingEnabled : Bool -> Command
+globalImageSmoothingEnabled enabled =
+    field "imageSmoothingEnabled" (bool enabled)
 
 
 {-| Determines how the end points of every line are drawn. See `LineCap` for the

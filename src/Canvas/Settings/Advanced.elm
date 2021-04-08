@@ -1,7 +1,7 @@
 module Canvas.Settings.Advanced exposing
     ( shadow, Shadow
     , transform, Transform(..), translate, rotate, scale, applyMatrix
-    , alpha, compositeOperationMode, GlobalCompositeOperationMode(..)
+    , alpha, smoothing, compositeOperationMode, GlobalCompositeOperationMode(..)
     )
 
 {-|
@@ -38,12 +38,12 @@ sensible defaults.
 @docs transform, Transform, translate, rotate, scale, applyMatrix
 
 
-## Alpha and global composite mode
+## Alpha, smoothing and global composite mode
 
 Finally, there are a couple of other settings that you can use to create
 interesting visual effects:
 
-@docs alpha, compositeOperationMode, GlobalCompositeOperationMode
+@docs alpha, smoothing, compositeOperationMode, GlobalCompositeOperationMode
 
 -}
 
@@ -226,6 +226,13 @@ See `GlobalCompositeOperationMode` below for more information.
 compositeOperationMode : GlobalCompositeOperationMode -> Setting
 compositeOperationMode mode =
     mode |> globalCompositeOperationModeToString |> CE.globalCompositeOperation |> SettingCommand
+
+
+{-| Specify if scaled images are smoothed (default) or not.
+-}
+smoothing : Bool -> Setting
+smoothing enabled =
+    SettingCommand (globalImageSmoothingEnabled enabled)
 
 
 
