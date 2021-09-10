@@ -3,6 +3,7 @@ module Canvas.Internal.Texture exposing
     , Source(..)
     , Sprite
     , Texture(..)
+    , decodeCanvasImageSource
     , decodeImageLoadEvent
     , decodeTextureImage
     , drawTexture
@@ -58,6 +59,24 @@ decodeTextureImage =
                             Nothing
                     )
                     (D.field "tagName" D.string)
+                    (D.field "width" D.float)
+                    (D.field "height" D.float)
+            )
+
+
+decodeCanvasImageSource : D.Decoder Texture
+decodeCanvasImageSource =
+    D.value
+        |> D.andThen
+            (\image ->
+                D.map2
+                    (\width height ->
+                        TImage
+                            { json = image
+                            , width = width
+                            , height = height
+                            }
+                    )
                     (D.field "width" D.float)
                     (D.field "height" D.float)
             )

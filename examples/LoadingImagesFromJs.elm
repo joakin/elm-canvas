@@ -56,7 +56,7 @@ init images =
     let
         textures =
             images
-                |> List.filterMap fromDomImage
+                |> List.filterMap (Result.toMaybe << fromCanvasImageSource)
     in
     ( ( 0, textures )
     , Cmd.none

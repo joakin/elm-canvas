@@ -1,6 +1,6 @@
 module Canvas.Texture exposing
     ( Source, loadFromImageUrl
-    , fromDomImage
+    , fromCanvasImageSource, fromDomImage
     , Texture
     , sprite
     , dimensions
@@ -22,7 +22,7 @@ You can load textures by using `toHtmlWith`, and use them to draw with
 
 ## From existing sources
 
-@docs fromDomImage
+@docs fromCanvasImageSource, fromDomImage
 
 
 # Texture types
@@ -103,6 +103,8 @@ dimensions texture =
 
 {-| Make a `Texture` from a DOM image.
 
+**DEPRECATED**. Use `fromCanvasImageSource` instead.
+
 For example, if you want to make textures out of images you loaded yourself in
 JS and passed to Elm via ports or flags, you would use this method.
 
@@ -115,3 +117,16 @@ fromDomImage value =
     D.decodeValue T.decodeTextureImage value
         |> Result.toMaybe
         |> Maybe.andThen identity
+
+
+{-| Make a `Texture` from a `CanvasImageSource` received from JS via ports or flags.
+
+This could for example be an `HTMLImageElement`, an `SVGImageElement`, or an `ImageBitmap`.
+
+Decoding will fail if the `Json.Decode.Value` does not have both `width` and
+`height` fields with float values.
+
+-}
+fromCanvasImageSource : D.Value -> Result D.Error Texture
+fromCanvasImageSource value =
+    D.decodeValue T.decodeCanvasImageSource value
