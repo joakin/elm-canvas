@@ -92,6 +92,7 @@ type alias Command =
     Encode.Value
 
 
+empty : List Command
 empty =
     []
 

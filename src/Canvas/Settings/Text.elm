@@ -21,7 +21,7 @@ nothing if you apply them to other renderables, like `shapes`.
 
 -}
 
-import Canvas.Internal.Canvas as C exposing (..)
+import Canvas.Internal.Canvas exposing (..)
 import Canvas.Internal.CustomElementJsonApi as CE exposing (..)
 import Canvas.Settings exposing (Setting)
 
@@ -93,6 +93,7 @@ type TextBaseLine
     | Bottom
 
 
+textBaseLineToString : TextBaseLine -> String
 textBaseLineToString baseLineSetting =
     case baseLineSetting of
         Top ->
@@ -157,6 +158,10 @@ baseLine textBaseLine =
 
 
 {-| Specify a maximum width. The text is scaled to fit that width.
+
+Note: max-width must be directly applied to the text renderable, if applied to
+a group it will have no effect.
+
 -}
 maxWidth : Float -> Setting
 maxWidth width =
@@ -173,5 +178,8 @@ maxWidth width =
                     d
 
                 DrawableClear _ _ _ ->
+                    d
+
+                DrawableGroup _ ->
                     d
         )

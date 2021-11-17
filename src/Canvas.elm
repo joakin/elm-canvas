@@ -1,7 +1,7 @@
 module Canvas exposing
     ( toHtml, toHtmlWith
     , Renderable, Point
-    , clear, shapes, text, texture
+    , clear, shapes, text, texture, group
     , Shape
     , rect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
@@ -23,7 +23,7 @@ requires the `elm-canvas` web component to work.
 
 @docs Renderable, Point
 
-@docs clear, shapes, text, texture
+@docs clear, shapes, text, texture, group
 
 
 # Drawing shapes
@@ -142,6 +142,7 @@ toHtmlWith options attrs entities =
         )
 
 
+cnvs : Html msg
 cnvs =
     canvas [] []
 
@@ -172,12 +173,8 @@ We can make `Renderable`s to use with `Canvas.toHtml` with functions like
 `shapes` and `text`.
 
 -}
-type Renderable
-    = Renderable
-        { commands : Commands
-        , drawOp : DrawOp
-        , drawable : Drawable
-        }
+type alias Renderable =
+    C.Renderable
 
 
 mergeDrawOp : DrawOp -> DrawOp -> DrawOp
@@ -198,10 +195,10 @@ mergeDrawOp op1 op2 =
         ( _, FillAndStroke c sc ) ->
             FillAndStroke c sc
 
-        ( FillAndStroke c sc, Fill c2 ) ->
+        ( FillAndStroke _ sc, Fill c2 ) ->
             FillAndStroke c2 sc
 
-        ( FillAndStroke c sc, Stroke sc2 ) ->
+        ( FillAndStroke c _, Stroke sc2 ) ->
             FillAndStroke c sc2
 
         ( NotSpecified, whatever ) ->
@@ -546,20 +543,50 @@ texture settings p t =
 
 
 
+-- Groups
+
+
+{-| Groups many renderables into one, and provides the opportunity to apply
+settings for the whole group.
+
+    Canvas.toHtml ( width, height )
+        []
+        [ group [ fill Color.red ]
+            [ shapes [] [ rect ( 0, 0 ) w h ]
+            , text
+                [ font { size = 48, family = "sans-serif" }, align Center ]
+                ( 50, 50 )
+                "Hello world"
+            ]
+        ]
+
+-}
+group : List Setting -> List Renderable -> Renderable
+group settings entities =
+    addSettingsToRenderable settings
+        (Renderable
+            { commands = []
+            , drawOp = NotSpecified
+            , drawable = DrawableGroup entities
+            }
+        )
+
+
+
 -- Rendering internals
 
 
 render : List Renderable -> Commands
 render entities =
-    List.foldl renderOne CE.empty entities
+    List.foldl (renderOne NotSpecified) CE.empty entities
 
 
-renderOne : Renderable -> Commands -> Commands
-renderOne (Renderable ({ commands, drawable, drawOp } as data)) cmds =
+renderOne : DrawOp -> Renderable -> Commands -> Commands
+renderOne parentDrawOp (Renderable { commands, drawable, drawOp }) cmds =
     cmds
         |> (::) CE.save
         |> (++) commands
-        |> renderDrawable drawable drawOp
+        |> renderDrawable drawable (mergeDrawOp parentDrawOp drawOp)
         |> (::) CE.restore
 
 
@@ -578,6 +605,9 @@ renderDrawable drawable drawOp cmds =
 
         DrawableClear p w h ->
             renderClear p w h cmds
+
+        DrawableGroup renderables ->
+            renderGroup drawOp renderables cmds
 
 
 renderShape : Shape -> Commands -> Commands
@@ -632,58 +662,88 @@ renderTextDrawOp drawOp txt cmds =
     in
     case drawOp of
         NotSpecified ->
-            renderTextFill txt x y Color.black cmds
+            cmds
+                |> renderTextFill txt x y Nothing
+                |> renderTextStroke txt x y Nothing
 
         Fill c ->
-            renderTextFill txt x y c cmds
+            renderTextFill txt x y (Just c) cmds
 
         Stroke c ->
-            renderTextStroke txt x y c cmds
+            renderTextStroke txt x y (Just c) cmds
 
         FillAndStroke fc sc ->
             cmds
-                |> renderTextFill txt x y fc
-                |> renderTextStroke txt x y sc
+                |> renderTextFill txt x y (Just fc)
+                |> renderTextStroke txt x y (Just sc)
 
 
-renderTextFill txt x y color cmds =
+renderTextFill : Text -> Float -> Float -> Maybe Color -> Commands -> Commands
+renderTextFill txt x y maybeColor cmds =
     CE.fillText txt.text x y txt.maxWidth
-        :: CE.fillStyle color
-        :: cmds
+        :: (case maybeColor of
+                Just color ->
+                    CE.fillStyle color :: cmds
+
+                Nothing ->
+                    cmds
+           )
 
 
-renderTextStroke txt x y color cmds =
+renderTextStroke : Text -> Float -> Float -> Maybe Color -> Commands -> Commands
+renderTextStroke txt x y maybeColor cmds =
     CE.strokeText txt.text x y txt.maxWidth
-        :: CE.strokeStyle color
-        :: cmds
+        :: (case maybeColor of
+                Just color ->
+                    CE.strokeStyle color :: cmds
+
+                Nothing ->
+                    cmds
+           )
 
 
 renderShapeDrawOp : DrawOp -> Commands -> Commands
 renderShapeDrawOp drawOp cmds =
     case drawOp of
         NotSpecified ->
-            renderShapeFill Color.black cmds
+            cmds
+                |> renderShapeFill Nothing
+                |> renderShapeStroke Nothing
 
         Fill c ->
-            renderShapeFill c cmds
+            renderShapeFill (Just c) cmds
 
         Stroke c ->
-            renderShapeStroke c cmds
+            renderShapeStroke (Just c) cmds
 
         FillAndStroke fc sc ->
             cmds
-                |> renderShapeFill fc
-                |> renderShapeStroke sc
+                |> renderShapeFill (Just fc)
+                |> renderShapeStroke (Just sc)
 
 
-renderShapeFill : Color -> Commands -> Commands
-renderShapeFill c cmds =
-    CE.fill CE.NonZero :: CE.fillStyle c :: cmds
+renderShapeFill : Maybe Color -> Commands -> Commands
+renderShapeFill maybeColor cmds =
+    CE.fill CE.NonZero
+        :: (case maybeColor of
+                Just color ->
+                    CE.fillStyle color :: cmds
+
+                Nothing ->
+                    cmds
+           )
 
 
-renderShapeStroke : Color -> Commands -> Commands
-renderShapeStroke c cmds =
-    CE.stroke :: CE.strokeStyle c :: cmds
+renderShapeStroke : Maybe Color -> Commands -> Commands
+renderShapeStroke maybeColor cmds =
+    CE.stroke
+        :: (case maybeColor of
+                Just color ->
+                    CE.strokeStyle color :: cmds
+
+                Nothing ->
+                    cmds
+           )
 
 
 renderTexture : Point -> Texture -> Commands -> Commands
@@ -710,3 +770,23 @@ renderTextureSource textureSource =
 renderClear : Point -> Float -> Float -> Commands -> Commands
 renderClear ( x, y ) w h cmds =
     CE.clearRect x y w h :: cmds
+
+
+renderGroup : DrawOp -> List Renderable -> Commands -> Commands
+renderGroup drawOp renderables cmds =
+    let
+        cmdsWithDraw =
+            case drawOp of
+                NotSpecified ->
+                    cmds
+
+                Fill c ->
+                    CE.fillStyle c :: cmds
+
+                Stroke c ->
+                    CE.strokeStyle c :: cmds
+
+                FillAndStroke fc sc ->
+                    CE.fillStyle fc :: CE.strokeStyle sc :: cmds
+    in
+    List.foldl (renderOne drawOp) cmdsWithDraw renderables
