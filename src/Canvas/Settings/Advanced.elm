@@ -41,7 +41,7 @@ sensible defaults.
 
 ## Filter
 
-Filter is powerful.
+Filters are powerful when you want to add visual effects to your renderable objects.
 
 @docs filter
 
@@ -212,7 +212,13 @@ shadow { blur, color, offset } =
         ]
 
 
-{-| Specify a filter applied on the Renderable
+{-| Specify a filter applied on the renderable object
+
+You can use functions like `blur`, `brightness`, `contrast` and so on to apply the filters.
+
+The property is a string, so you can choose your filters like this:
+
+`"<filter-function1> [<filter-function2] [<filter-functionN]"`
 
 See the [MDN docs](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/filter)
 for more information and examples.
