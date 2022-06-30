@@ -1,6 +1,7 @@
 module Canvas.Settings.Advanced exposing
     ( shadow, Shadow
     , transform, Transform(..), translate, rotate, scale, applyMatrix
+    , filter
     , alpha, imageSmoothing, compositeOperationMode, GlobalCompositeOperationMode(..)
     )
 
@@ -36,6 +37,13 @@ system, since it very hard to know what the center of your shape is to give
 sensible defaults.
 
 @docs transform, Transform, translate, rotate, scale, applyMatrix
+
+
+## Filter
+
+Filter is powerful.
+
+@docs filter
 
 
 ## Alpha, image smoothing and global composite mode
@@ -202,6 +210,17 @@ shadow { blur, color, offset } =
         , CE.shadowOffsetX x
         , CE.shadowOffsetY y
         ]
+
+
+{-| Specify a filter applied on the Renderable
+
+See the [MDN docs](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/filter)
+for more information and examples.
+
+-}
+filter : String -> Setting
+filter f =
+    SettingCommand (CE.filter f)
 
 
 {-| Specifies the alpha value that is applied before renderables are drawn onto
