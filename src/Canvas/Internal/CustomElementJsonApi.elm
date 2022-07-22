@@ -9,7 +9,7 @@ module Canvas.Internal.CustomElementJsonApi exposing
     , globalAlpha, globalCompositeOperation, globalImageSmoothingEnabled, save, restore
     , rotate, scale, translate, transform, setTransform
     , drawImage
-    , Command, commands
+    , Command, commands, filter
     )
 
 {-| This module exposes a low level drawing API to work with the DOM canvas.
@@ -349,6 +349,16 @@ The default value is 0. Infinity or NaN values are ignored.
 shadowOffsetY : Float -> Command
 shadowOffsetY value =
     field "shadowOffsetY" (float value)
+
+
+{-| Specify the filter property.
+
+[MDN docs](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/filter)
+
+-}
+filter : String -> Command
+filter value =
+    field "filter" (string value)
 
 
 {-| Specifies the color or style to use for the lines around shapes. The default

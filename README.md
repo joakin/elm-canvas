@@ -1,4 +1,6 @@
-# joakin/elm-canvas
+# linsyking/elm-canvas
+
+Fork from joakin/elm-canvas
 
 This module exposes a nice drawing API that works on top of the the DOM canvas.
 
