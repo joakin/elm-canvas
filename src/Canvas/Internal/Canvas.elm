@@ -54,6 +54,7 @@ type alias Text =
 
 type Shape
     = Rect Point Float Float
+    | RoundRect Point Float Float (List Float)
     | Circle Point Float
     | Path Point (List PathSegment)
     | Arc Point Float Float Float Bool

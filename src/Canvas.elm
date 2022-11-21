@@ -3,7 +3,7 @@ module Canvas exposing
     , Renderable, Point
     , clear, shapes, text, texture, group
     , Shape
-    , rect, circle, arc, path
+    , rect, roundRect, circle, arc, path
     , PathSegment, arcTo, bezierCurveTo, lineTo, moveTo, quadraticCurveTo
     )
 
@@ -36,7 +36,7 @@ a `Shape`, which you can feed to `shapes` to get something on the screen.
 
 Here are the different functions that produce shapes that we can draw.
 
-@docs rect, circle, arc, path
+@docs rect, roundRect, circle, arc, path
 
 
 ## Paths
@@ -322,6 +322,20 @@ corner, the width, and the height.
 rect : Point -> Float -> Float -> Shape
 rect pos width height =
     Rect pos width height
+
+
+{-| Creates the shape of a rounded rectangle.
+
+It takes the position of the top left corner, the width, the height and a list specifying
+the radii of the circular arc to be used for the corners of the rectangle. The list must
+contain between 1 and 4 positive numbers.
+
+You can find more info on this [page](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/roundRect).
+
+-}
+roundRect : Point -> Float -> Float -> List Float -> Shape
+roundRect pos width height radii =
+    RoundRect pos width height radii
 
 
 {-| Creates a circle. It takes the position of the center of the circle, and the
@@ -615,6 +629,9 @@ renderShape shape cmds =
     case shape of
         Rect ( x, y ) w h ->
             CE.rect x y w h :: CE.moveTo x y :: cmds
+
+        RoundRect ( x, y ) w h r ->
+            CE.roundRect x y w h r :: CE.moveTo x y :: cmds
 
         Circle ( x, y ) r ->
             CE.circle x y r :: CE.moveTo (x + r) y :: cmds
