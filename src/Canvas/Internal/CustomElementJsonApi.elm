@@ -9,7 +9,7 @@ module Canvas.Internal.CustomElementJsonApi exposing
     , globalAlpha, globalCompositeOperation, globalImageSmoothingEnabled, save, restore
     , rotate, scale, translate, transform, setTransform
     , drawImage
-    , Command, commands
+    , Command, commands, roundRect
     )
 
 {-| This module exposes a low level drawing API to work with the DOM canvas.
@@ -672,6 +672,15 @@ this rectangle. [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Canv
 rect : Float -> Float -> Float -> Float -> Command
 rect x y w h =
     fn "rect" [ float x, float y, float w, float h ]
+
+
+{-| Adds a rounded rectangle to the current path.
+The radii of the corners can be specified in much the same way as the CSS border-radius property.
+[MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/roundRect)
+-}
+roundRect : Float -> Float -> Float -> Float -> List Float -> Command
+roundRect x y w h r =
+    fn "roundRect" [ float x, float y, float w, float h, Encode.list float r ]
 
 
 {-| Restores the most recently saved canvas state by popping the top entry in
